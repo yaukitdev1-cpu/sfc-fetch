@@ -1,0 +1,23 @@
+{
+  "name": "sfc-fetch",
+  "version": "1.0.0",
+  "description": "SFC Document Processing Microservice with Git-backed persistence",
+  "main": "src/index.js",
+  "scripts": {
+    "start": "node src/index.js",
+    "dev": "node --watch src/index.js",
+    "test": "node --test tests/*.test.js"
+  },
+  "dependencies": {
+    "better-sqlite3": "^11.8.1",
+    "express": "^4.21.2",
+    "js-yaml": "^4.1.0",
+    "uuid": "^11.0.5",
+    "archiver": "^7.0.1",
+    "unzipper": "^0.11.5",
+    "dotenv": "^16.4.7"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}
