@@ -1,9 +1,62 @@
-import { Injectable, OnModuleInit, OnModuleDestroy } from '@nestjs/common';
+import { Injectable, OnModuleInit, OnModuleDestroy, BadRequestException, UseGuards, RateLimit, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { Low } from 'lowdb';
 import { JSONFile } from 'lowdb/node';
 import * as fs from 'fs-extra';
 import * as path from 'path';
+import { z } from 'zod';
+import { AuthGuard } from '@nestjs/passport';
+import { RolesGuard } from '../auth/roles.guard';
+import { Roles } from '../auth/roles.decorator';
+import * as crypto from 'crypto-js';
+import * as nodeCrypto from 'crypto'; // For integrity checks
+
+// Reuse validation schemas from ContentService for consistency
+const CategorySchema = z.enum(['circulars', 'guidelines', 'consultations', 'news']);
+const RefNoSchema = z.string().regex(/^[A-Z0-9-]+$/, 'RefNo must contain only uppercase letters, numbers, and hyphens');
+const StatusSchema = z.string().regex(/^[a-z_-]+$/, 'Status must contain only lowercase letters, underscores, and hyphens');
+const StepNameSchema = z.string().regex(/^[a-z_-]+$/, 'Step name must contain only lowercase letters, underscores, and hyphens');
+const BackupIdSchema = z.string().regex(/^[A-Z0-9-]+$/, 'Backup ID must contain only uppercase letters, numbers, and hyphens');
+
+// Security configuration
+const DB_ENCRYPTION_KEY = process.env.DB_ENCRYPTION_KEY || 'default-development-key'; // Should be from secrets manager in production
+const RATE_LIMIT_MAX_REQUESTS = 100;
+const RATE_LIMIT_WINDOW_MS = 60000;
+
+// Create default auth decorators for critical operations
+const Protected = () => UseGuards(AuthGuard('jwt'), RolesGuard);
+const AdminOnly = () => Roles('admin');
+const RateLimited = () => RateLimit({ limit: RATE_LIMIT_MAX_REQUESTS, windowMs: RATE_LIMIT_WINDOW_MS });
+
+// Encryption helper functions
+const encryptData = (data: any): string => {
+  return crypto.AES.encrypt(JSON.stringify(data), DB_ENCRYPTION_KEY).toString();
+};
+
+const decryptData = (encryptedData: string): any => {
+  const bytes = crypto.AES.decrypt(encryptedData, DB_ENCRYPTION_KEY);
+  return JSON.parse(bytes.toString(crypto.enc.Utf8));
+};
+
+// Custom encrypted LowDB adapter (OWASP A02: Sensitive Data Exposure mitigation)
+class EncryptedJSONFile<T> implements Low.Adapter<T> {
+  private adapter: Low.Adapter<T>;
+
+  constructor(path: string) {
+    this.adapter = new JSONFile<T>(path);
+  }
+
+  async read(): Promise<T | null> {
+    const encryptedData = await this.adapter.read();
+    if (!encryptedData) return null;
+    return decryptData(encryptedData as unknown as string);
+  }
+
+  async write(data: T): Promise<void> {
+    const encryptedData = encryptData(data) as unknown as T;
+    await this.adapter.write(encryptedData);
+  }
+};
 
 interface DocumentData {
   circulars: any[];
@@ -11,15 +64,25 @@ interface DocumentData {
   consultations: any[];
   news: any[];
   backupMetadata: any[];
+  queue: any[];
 }
 
 @Injectable()
 export class LowdbService implements OnModuleInit, OnModuleDestroy {
   private db: Low<DocumentData>;
   private dbPath: string;
+  private idIndex: Map<string, any>; // In-memory index for _id lookups
+  private collectionCache: Map<string, any[]>; // In-memory cache for frequent collections
+  private cachedCollections: string[]; // List of collections to cache (frequent access)
+  private logger: Logger; // Database profiling logger
 
   constructor(private configService: ConfigService) {
     this.dbPath = this.configService.get<string>('dbPath') || './data/db/sfc-db.json';
+    // Initialize collection cache for frequent access collections (circulars, guidelines)
+    this.collectionCache = new Map<string, any[]>();
+    this.cachedCollections = ['circulars', 'guidelines'];
+    // Initialize logger for database profiling
+    this.logger = new Logger(LowdbService.name);
   }
 
   async onModuleInit() {
@@ -31,6 +94,7 @@ export class LowdbService implements OnModuleInit, OnModuleDestroy {
   }
 
   private async initialize() {
+    const start = Date.now();
     const dbDir = path.dirname(this.dbPath);
     await fs.ensureDir(dbDir);
 
@@ -40,21 +104,71 @@ export class LowdbService implements OnModuleInit, OnModuleDestroy {
       consultations: [],
       news: [],
       backupMetadata: [],
+  queue: [],
     };
 
-    this.db = new Low<DocumentData>(new JSONFile<DocumentData>(this.dbPath), defaultData);
+    this.db = new Low<DocumentData>(new EncryptedJSONFile<DocumentData>(this.dbPath), defaultData);
     await this.db.read();
 
-    console.log(`[DB] Initialized LowDB at ${this.dbPath}`);
+    // Initialize and populate idIndex here for consistent setup
+    this.idIndex = new Map<string, any>();
+    Object.values(this.db.data).forEach((collection: any[]) => {
+      collection.forEach(doc => doc._id && this.idIndex.set(doc._id, doc));
+    });
+
+    // Database profiling - log initialization duration
+    const duration = Date.now() - start;
+    this.logger.log(`[DB] Initialized encrypted LowDB at ${this.dbPath} in ${duration}ms`);
   }
 
   // Get collection by category
   getCollection(category: string): any[] {
-    return this.db.data[category as keyof DocumentData] || [];
+    const validatedCategory = CategorySchema.safeParse(category);
+    if (!validatedCategory.success) {
+      throw new BadRequestException(`Invalid category: ${validatedCategory.error.issues[0].message}`);
+    }
+    const categoryKey = validatedCategory.data;
+
+    // Use in-memory cache for frequent access collections
+    if (this.cachedCollections.includes(categoryKey)) {
+      if (this.collectionCache.has(categoryKey)) {
+        return [...this.collectionCache.get(categoryKey)!];
+      }
+      // Populate cache if not present
+      const collection = this.db.data[categoryKey as keyof DocumentData] || [];
+      this.collectionCache.set(categoryKey, [...collection]);
+      return collection;
+    }
+
+    return this.db.data[categoryKey as keyof DocumentData] || [];
+  }
+
+  // Manual cache invalidation helper
+  clearCache(category?: string): void {
+    if (category) {
+      this.collectionCache.delete(category);
+    } else {
+      this.collectionCache.clear();
+    }
   }
 
   // Get document by refNo
   getDocument(refNo: string, category: string): any | null {
+    const validatedRefNo = RefNoSchema.safeParse(refNo);
+    const validatedCategory = CategorySchema.safeParse(category);
+
+    if (!validatedRefNo.success) {
+      throw new BadRequestException(`Invalid refNo: ${validatedRefNo.error.issues[0].message}`);
+    }
+    if (!validatedCategory.success) {
+      throw new BadRequestException(`Invalid category: ${validatedCategory.error.issues[0].message}`);
+    }
+    // Use in-memory index for O(1) lookups
+    const indexedDoc = this.idIndex.get(refNo);
+    if (indexedDoc && indexedDoc.category === category) {
+      return indexedDoc;
+    }
+    // Fallback to collection scan if index is out of sync
     const collection = this.getCollection(category);
     return collection.find((doc: any) => doc._id === refNo) || null;
   }
@@ -106,7 +220,21 @@ export class LowdbService implements OnModuleInit, OnModuleDestroy {
   }
 
   // Upsert document
+  @Protected()
+  @AdminOnly()
   async upsertDocument(refNo: string, category: string, document: any): Promise<any> {
+    const start = Date.now();
+    // Fix undefined validatedCategory reference and add profiling
+    const validatedCategory = CategorySchema.safeParse(category);
+    const validatedRefNo = RefNoSchema.safeParse(refNo);
+
+    if (!validatedCategory.success) {
+      throw new BadRequestException(`Invalid category: ${validatedCategory.error.issues[0].message}`);
+    }
+    if (!validatedRefNo.success) {
+      throw new BadRequestException(`Invalid refNo: ${validatedRefNo.error.issues[0].message}`);
+    }
+
     const collection = this.getCollection(category);
     const index = collection.findIndex((doc: any) => doc._id === refNo);
 
@@ -116,22 +244,53 @@ export class LowdbService implements OnModuleInit, OnModuleDestroy {
 
     if (index >= 0) {
       collection[index] = { ...collection[index], ...document };
+    this.idIndex.set(refNo, collection[index]);
     } else {
       document.createdAt = new Date().toISOString();
       collection.push(document);
+    this.idIndex.set(refNo, document);
+    }
+
+    // Invalidate cache for modified collection
+    if (this.cachedCollections.includes(validatedCategory.data)) {
+      this.collectionCache.delete(validatedCategory.data);
     }
 
     await this.db.write();
+
+    // Database profiling - log operation duration
+    const duration = Date.now() - start;
+    this.logger.debug(`Upserted document ${refNo} (${category}) in ${duration}ms`);
+
     return document;
+  }
   }
 
   // Update workflow status
+  @Protected()
   async updateWorkflowStatus(
     refNo: string,
     category: string,
     status: string,
     currentStep?: string,
   ): Promise<any | null> {
+    const validatedRefNo = RefNoSchema.safeParse(refNo);
+    const validatedCategory = CategorySchema.safeParse(category);
+    const validatedStatus = StatusSchema.safeParse(status);
+    const validatedStep = currentStep ? StepNameSchema.safeParse(currentStep) : { success: true };
+
+    if (!validatedRefNo.success) {
+      throw new BadRequestException(`Invalid refNo: ${validatedRefNo.error.issues[0].message}`);
+    }
+    if (!validatedCategory.success) {
+      throw new BadRequestException(`Invalid category: ${validatedCategory.error.issues[0].message}`);
+    }
+    if (!validatedStatus.success) {
+      throw new BadRequestException(`Invalid status: ${validatedStatus.error.issues[0].message}`);
+    }
+    if (currentStep && !validatedStep.success) {
+      throw new BadRequestException(`Invalid currentStep: ${validatedStep.error.issues[0].message}`);
+    }
     const doc = this.getDocument(refNo, category);
     if (!doc) return null;
 
@@ -222,7 +381,12 @@ export class LowdbService implements OnModuleInit, OnModuleDestroy {
   }
 
   // Save backup metadata
+  @Protected()
   async saveBackupMetadata(backupId: string, data: any): Promise<void> {
+    const validatedBackupId = BackupIdSchema.safeParse(backupId);
+    if (!validatedBackupId.success) {
+      throw new BadRequestException(`Invalid backupId: ${validatedBackupId.error.issues[0].message}`);
+    }
     this.db.data.backupMetadata.push({
       backupId,
       createdAt: new Date().toISOString(),
@@ -250,12 +414,71 @@ export class LowdbService implements OnModuleInit, OnModuleDestroy {
   }
 
   // Import data
-  async importAll(data: Partial<DocumentData>): Promise<void> {
+  @Protected()
+  @AdminOnly()
+  async importAll(data: Partial<DocumentData>, integrityHash?: string): Promise<void> {
+    // OWASP A04: Insecure Design - Add data integrity check
+    if (integrityHash) {
+      const computedHash = crypto.createHash('sha256').update(JSON.stringify(data)).digest('hex');
+      if (computedHash !== integrityHash) {
+        throw new BadRequestException('Import data integrity check failed - data may have been tampered with');
+      }
+    }
+
+    // Validate imported data structure
+    const ImportDataSchema = z.object({
+      circulars: z.array(z.any()).optional(),
+      guidelines: z.array(z.any()).optional(),
+      consultations: z.array(z.any()).optional(),
+      news: z.array(z.any()).optional()
+    });
+    const validatedData = ImportDataSchema.safeParse(data);
+    if (!validatedData.success) {
+      throw new BadRequestException(`Invalid import data structure: ${validatedData.error.issues[0].message}`);
+    }
+
     if (data.circulars) this.db.data.circulars = [...data.circulars];
     if (data.guidelines) this.db.data.guidelines = [...data.guidelines];
     if (data.consultations) this.db.data.consultations = [...data.consultations];
     if (data.news) this.db.data.news = [...data.news];
+
+    // Refresh in-memory index after import
+    this.idIndex.clear();
+    Object.values(this.db.data).forEach((collection: any[]) => {
+      collection.forEach(doc => doc._id && this.idIndex.set(doc._id, doc));
+    });
+
     await this.db.write();
+  }
+
+  // Queue operations for persistent storage
+  async addQueueJob(job: any): Promise<any> {
+    job._id = job.jobId || `${job.action}-${job.category}-${job.refNo}`;
+    job.createdAt = new Date().toISOString();
+    job.updatedAt = new Date().toISOString();
+    this.db.data.queue.push(job);
+    this.idIndex.set(job._id, job);
+    await this.db.write();
+    return job;
+  }
+
+  async updateQueueJobStatus(jobId: string, status: string, error?: any): Promise<any | null> {
+    const job = this.idIndex.get(jobId) || this.db.data.queue.find((j: any) => j._id === jobId);
+    if (!job) return null;
+    job.status = status;
+    job.updatedAt = new Date().toISOString();
+    if (error) job.error = error;
+    this.idIndex.set(jobId, job);
+    await this.db.write();
+    return job;
+  }
+
+  getQueueJob(jobId: string): any | null {
+    return this.idIndex.get(jobId) || this.db.data.queue.find((j: any) => j._id === jobId) || null;
+  }
+
+  getPendingQueueJobs(): any[] {
+    return this.db.data.queue.filter((j: any) => j.status === 'pending' || j.status === 'in_progress');
   }
 
   // Close database

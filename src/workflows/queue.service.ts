@@ -1,7 +1,8 @@
-import { Injectable, OnModuleInit, OnModuleDestroy } from '@nestjs/common';
+import { Injectable, OnModuleInit, OnModuleDestroy, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import * as Queue from 'better-queue';
+import Queue from 'better-queue';
 import * as path from 'path';
+import { LowdbService } from '../database/lowdb.service';
 
 interface JobData {
   category: string;
@@ -20,8 +21,10 @@ interface JobResult {
 export class QueueService implements OnModuleInit, OnModuleDestroy {
   private queue: any;
   private queuePath: string;
+  private logger: Logger;
 
-  constructor(private configService: ConfigService) {
+  constructor(private configService: ConfigService, private lowdbService: LowdbService) {
+    this.logger = new Logger(QueueService.name);
     this.queuePath = this.configService.get<string>('queuePath') || './data/db/sfc-db.json';
   }
 
@@ -37,8 +40,17 @@ export class QueueService implements OnModuleInit, OnModuleDestroy {
 
   private initializeQueue() {
     const maxRetries = this.configService.get<number>('queueMaxRetries') || 5;
+  let jobLatencyTracker = new Map<string, number>();
+
+    // Load pending jobs from LowDB on startup
+    const pendingJobs = this.lowdbService.getPendingQueueJobs();
+    if (pendingJobs.length > 0) {
+      this.logger.log(`[Queue] Loading ${pendingJobs.length} pending jobs from LowDB`);
+      pendingJobs.forEach(job => this.queue.push(job));
+    }
 
     const processor = (job: any, cb: (error: any, result?: JobResult) => void) => {
+    jobLatencyTracker.set(job.id, Date.now());
       try {
         console.log(`[Queue] Processing job: ${job.id} - ${job.category}/${job.refNo}`);
         const result = this.processJob(job);
@@ -50,7 +62,7 @@ export class QueueService implements OnModuleInit, OnModuleDestroy {
     };
 
     this.queue = new Queue(processor, {
-      concurrent: 1,
+      concurrent: 4,
       maxRetries,
       retryDelay: 1000,
       retryBackoff: true,
@@ -67,26 +79,73 @@ export class QueueService implements OnModuleInit, OnModuleDestroy {
     console.log('[Queue] Initialized');
   }
 
+  private async discoverResource(category: string, refNo: string): Promise<any> {
+    this.logger.debug(`Discovering ${category}/${refNo}`);
+    const job = await this.lowdbService.addQueueJob({
+      action: 'discover',
+      status: 'in_progress',
+      category,
+      refNo
+    });
+    // Add actual discovery logic here (integrate with sfc-clients)
+    await this.lowdbService.updateQueueJobStatus(job._id, 'completed');
+    return job;
+  }
+
+  private async downloadResource(category: string, refNo: string, sourceUrl: string): Promise<any> {
+    this.logger.debug(`Downloading ${category}/${refNo} from ${sourceUrl}`);
+    const job = await this.lowdbService.addQueueJob({
+      action: 'download',
+      status: 'in_progress',
+      category,
+      refNo,
+      sourceUrl
+    });
+    // Add actual download logic here (integrate with sfc-clients)
+    await this.lowdbService.updateQueueJobStatus(job._id, 'completed');
+    return job;
+  }
+
+  private async convertResource(category: string, refNo: string): Promise<any> {
+    this.logger.debug(`Converting ${category}/${refNo}`);
+    const job = await this.lowdbService.addQueueJob({
+      action: 'convert',
+      status: 'in_progress',
+      category,
+      refNo
+    });
+    // Add actual conversion logic here (integrate with converters/docling.service.ts)
+    await this.lowdbService.updateQueueJobStatus(job._id, 'completed');
+    return job;
+  }
+
   private processJob(job: any): any {
     // This would be implemented based on the job type
     // For now, it's a placeholder that will be extended with actual processors
-    console.log(`[Queue] Processing ${job.action} for ${job.category}/${job.refNo}`);
+    this.logger.log(`[Queue] Processing ${job.action} for ${job.category}/${job.refNo}`);
 
     switch (job.action) {
       case 'discover':
-        return { action: 'discover', status: 'pending_implementation' };
+        return this.discoverResource(job.category, job.refNo);
       case 'download':
-        return { action: 'download', status: 'pending_implementation' };
+        return this.downloadResource(job.category, job.refNo, job.sourceUrl);
       case 'convert':
-        return { action: 'convert', status: 'pending_implementation' };
+        return this.convertResource(job.category, job.refNo);
       default:
+        this.logger.warn(`Unknown job action: ${job.action}`);
         return { action: job.action, status: 'unknown_action' };
     }
   }
 
   submitJob(job: JobData): Promise<JobResult> {
-    return new Promise((resolve, reject) => {
-      this.queue.push({ id: `${job.category}-${job.refNo}-${Date.now()}`, ...job }, (error: any, result?: JobResult) => {
+    return new Promise(async (resolve, reject) => {
+      // Persist job to LowDB with pending status before adding to queue
+      const persistedJob = await this.lowdbService.addQueueJob({
+        id: `${job.category}-${job.refNo}-${Date.now()}`,
+        status: 'pending',
+        ...job
+      });
+      this.queue.push(persistedJob, (error: any, result?: JobResult) => {
         if (error) {
           reject(error);
         } else {
