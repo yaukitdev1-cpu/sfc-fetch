@@ -1,7 +1,9 @@
-import { Controller, Get, Post, Param, Body, NotFoundException, Query } from '@nestjs/common';
+import { Controller, Get, Post, Param, Body, NotFoundException, Query, BadRequestException } from '@nestjs/common';
 import { LowdbService } from '../database/lowdb.service';
 import { WorkflowService } from '../workflows/workflow.service';
 import { ContentService } from '../services/content.service';
+import { QueueService } from '../workflows/queue.service';
+import { NewsClient } from '../sfc-clients/news.client';
 
 @Controller('news')
 export class NewsController {
@@ -9,6 +11,8 @@ export class NewsController {
     private readonly db: LowdbService,
     private readonly workflowService: WorkflowService,
     private readonly contentService: ContentService,
+    private readonly queueService: QueueService,
+    private readonly newsClient: NewsClient,
   ) {}
 
   @Get(':refNo')
@@ -104,6 +108,190 @@ export class NewsController {
       category: 'news',
       count: docs.length,
       documents: docs,
+    };
+  }
+
+  @Post(':refNo/download')
+  async download(@Param('refNo') refNo: string) {
+    const doc = this.db.getDocument(refNo, 'news');
+    if (!doc) {
+      throw new NotFoundException('Document not found');
+    }
+
+    const result = await this.queueService.submitJob({
+      category: 'news',
+      refNo,
+      action: 'download',
+      data: { sourceUrl: doc.downloadUrl },
+    });
+
+    return {
+      success: true,
+      refNo,
+      category: 'news',
+      job: result.result,
+    };
+  }
+
+  @Post('batch-download')
+  async batchDownload(
+    @Body() body: { status?: string; year?: number; limit?: number; ids?: string[] },
+  ) {
+    const { status, year, limit = 100, ids } = body;
+
+    if (!status && !year && !ids) {
+      throw new BadRequestException('At least one filter (status, year, or ids) must be provided');
+    }
+
+    let docs: any[] = [];
+
+    if (ids && ids.length > 0) {
+      for (const id of ids) {
+        const doc = this.db.getDocument(id, 'news');
+        if (doc) docs.push(doc);
+      }
+    } else {
+      const filters: any = {};
+      if (status) filters.status = status;
+      if (year) filters.year = year;
+      if (limit) filters.limit = limit;
+      docs = this.db.getDocuments('news', filters);
+    }
+
+    const jobs = [];
+    for (const doc of docs) {
+      const result = await this.queueService.submitJob({
+        category: 'news',
+        refNo: doc._id,
+        action: 'download',
+        data: { sourceUrl: doc.downloadUrl },
+      });
+      jobs.push({
+        refNo: doc._id,
+        jobId: result.result?.id,
+      });
+    }
+
+    return {
+      success: true,
+      category: 'news',
+      queued: jobs.length,
+      jobs,
+    };
+  }
+
+  @Get('search')
+  async search(@Query('year') year?: string, @Query('limit') limit?: string) {
+    const results = await this.newsClient.searchNews({
+      year: year ? parseInt(year, 10) : undefined,
+      limit: limit ? parseInt(limit, 10) : undefined,
+    });
+
+    return {
+      category: 'news',
+      count: results.length,
+      results,
+    };
+  }
+
+  @Post(':refNo/discover')
+  async discover(@Param('refNo') refNo: string) {
+    const metadata = await this.newsClient.getNews(refNo);
+
+    const doc = {
+      metadata: {
+        ...metadata,
+        title: metadata.title || metadata.headline,
+        issueDate: metadata.issueDate || metadata.date || metadata.publishedAt,
+        year: metadata.year || new Date(metadata.issueDate || metadata.date || metadata.publishedAt).getFullYear(),
+      },
+      source: {
+        htmlUrl: metadata.htmlUrl || metadata.url,
+      },
+    };
+
+    await this.db.upsertDocument(refNo, 'news', doc);
+
+    const result = await this.queueService.submitJob({
+      category: 'news',
+      refNo,
+      action: 'discover',
+    });
+
+    return {
+      success: true,
+      refNo,
+      category: 'news',
+      job: result.result,
+    };
+  }
+
+  @Post('discover-batch')
+  async discoverBatch(@Body() body: { years?: number[]; refNos?: string[]; all?: boolean }) {
+    const { years, refNos, all } = body;
+
+    if (!all && (!years || years.length === 0) && (!refNos || refNos.length === 0)) {
+      throw new BadRequestException('At least one filter (years, refNos, or all=true) must be provided');
+    }
+
+    let searchResults: any[] = [];
+
+    if (all) {
+      searchResults = await this.newsClient.searchNews({});
+    } else if (refNos && refNos.length > 0) {
+      for (const refNo of refNos) {
+        try {
+          const metadata = await this.newsClient.getNews(refNo);
+          searchResults.push(metadata);
+        } catch (error) {
+          // Skip documents that can't be found
+        }
+      }
+    } else if (years && years.length > 0) {
+      for (const year of years) {
+        const results = await this.newsClient.searchNews({ year });
+        searchResults.push(...results);
+      }
+    }
+
+    const jobs = [];
+    for (const item of searchResults) {
+      const refNo = item.refNo || item._id;
+      if (!refNo) continue;
+
+      try {
+        const doc = {
+          metadata: {
+            ...item,
+            title: item.title || item.headline,
+            issueDate: item.issueDate || item.date || item.publishedAt,
+            year: item.year || new Date(item.issueDate || item.date || item.publishedAt).getFullYear(),
+          },
+          source: {
+            htmlUrl: item.htmlUrl || item.url,
+          },
+        };
+
+        await this.db.upsertDocument(refNo, 'news', doc);
+
+        const result = await this.queueService.submitJob({
+          category: 'news',
+          refNo,
+          action: 'discover',
+        });
+
+        jobs.push({ refNo, jobId: result.result?.id });
+      } catch (error) {
+        // Skip documents that fail
+      }
+    }
+
+    return {
+      success: true,
+      category: 'news',
+      found: searchResults.length,
+      queued: jobs.length,
+      jobs,
     };
   }
 }
