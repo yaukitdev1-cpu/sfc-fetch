@@ -22,44 +22,61 @@ export class NewsClient {
 
   async searchNews(params: {
     year?: number;
+    month?: number;
     limit?: number;
+    lang?: string;
+    category?: string;
+    pageNo?: number;
+    pageSize?: number;
   }): Promise<any[]> {
     await this.throttle();
     const url = `${this.baseUrl}/api/news/search`;
+    const body = {
+      lang: params.lang || 'EN',
+      category: params.category || 'all',
+      year: params.year || 'all',
+      month: params.month ?? 'all',
+      pageNo: params.pageNo ?? 0,
+      pageSize: params.pageSize || params.limit || 20,
+      sort: { field: 'issueDate', order: 'desc' },
+    };
     const response = await fetch(url, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(params),
+      body: JSON.stringify(body),
     });
 
     if (!response.ok) {
       throw new Error(`Failed to search news: ${response.statusText}`);
     }
 
-    return (await response.json()) as any[];
+    const data = await response.json() as { items?: any[] };
+    return data.items || [];
   }
 
-  async getNews(refNo: string): Promise<any> {
+  async getNews(refNo: string, lang: string = 'EN'): Promise<any> {
     await this.throttle();
-    const url = `${this.baseUrl}/api/news/${refNo}`;
+    // Use the content API to get full news details
+    const url = `${this.baseUrl}/api/news/content?refNo=${encodeURIComponent(refNo)}&lang=${lang}`;
     const response = await fetch(url);
 
     if (!response.ok) {
       throw new Error(`Failed to get news ${refNo}: ${response.statusText}`);
     }
 
-    return response.json();
+    return response.json() as any;
   }
 
-  async getNewsContent(refNo: string): Promise<string> {
+  async getNewsContent(refNo: string, lang: string = 'EN'): Promise<string> {
     await this.throttle();
-    const url = `${this.baseUrl}/api/news/${refNo}/content`;
+    const url = `${this.baseUrl}/api/news/content?refNo=${encodeURIComponent(refNo)}&lang=${lang}`;
     const response = await fetch(url);
 
     if (!response.ok) {
       throw new Error(`Failed to get news content ${refNo}: ${response.statusText}`);
     }
 
-    return response.text();
+    const data = await response.json() as { html?: string };
+    return data.html || '';
   }
 }

@@ -24,37 +24,54 @@ export class ConsultationClient {
     year?: number;
     status?: 'open' | 'closed' | 'concluded';
     limit?: number;
+    lang?: string;
+    category?: string;
+    pageNo?: number;
+    pageSize?: number;
   }): Promise<any[]> {
     await this.throttle();
-    const url = `${this.baseUrl}/api/consultations/search`;
+    const url = `${this.baseUrl}/api/consultation/search`;
+    const body = {
+      lang: params.lang || 'EN',
+      category: params.category || '',
+      year: params.year?.toString() || 'all',
+      pageNo: params.pageNo ?? 0,
+      pageSize: params.pageSize || params.limit || 50,
+      isLoading: true,
+      errors: null,
+      items: null,
+      total: -1,
+      sort: { field: 'cpIssueDate', order: 'desc' },
+    };
     const response = await fetch(url, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(params),
+      body: JSON.stringify(body),
     });
 
     if (!response.ok) {
       throw new Error(`Failed to search consultations: ${response.statusText}`);
     }
 
-    return (await response.json()) as any[];
+    const data = await response.json() as { items?: any[] };
+    return data.items || [];
   }
 
-  async getConsultation(refNo: string): Promise<any> {
+  async getConsultation(refNo: string, lang: string = 'EN'): Promise<any> {
     await this.throttle();
-    const url = `${this.baseUrl}/api/consultations/${refNo}`;
+    const url = `${this.baseUrl}/api/consultation/content?refNo=${encodeURIComponent(refNo)}&lang=${lang}`;
     const response = await fetch(url);
 
     if (!response.ok) {
       throw new Error(`Failed to get consultation ${refNo}: ${response.statusText}`);
     }
 
-    return response.json();
+    return response.json() as any;
   }
 
-  async getConsultationPdf(refNo: string): Promise<Buffer> {
+  async getConsultationPdf(refNo: string, lang: string = 'EN'): Promise<Buffer> {
     await this.throttle();
-    const url = `${this.baseUrl}/api/consultations/${refNo}/pdf`;
+    const url = `${this.baseUrl}/api/consultation/openFile?lang=${lang}&refNo=${encodeURIComponent(refNo)}`;
     const response = await fetch(url);
 
     if (!response.ok) {
@@ -64,9 +81,9 @@ export class ConsultationClient {
     return Buffer.from(await response.arrayBuffer());
   }
 
-  async getConclusionPdf(refNo: string): Promise<Buffer | null> {
+  async getConclusionPdf(refNo: string, lang: string = 'EN'): Promise<Buffer | null> {
     await this.throttle();
-    const url = `${this.baseUrl}/api/consultations/${refNo}/conclusion/pdf`;
+    const url = `${this.baseUrl}/api/consultation/openFile?lang=${lang}&refNo=${encodeURIComponent(refNo)}&type=conclusion`;
     const response = await fetch(url);
 
     if (response.status === 404) {
