@@ -161,4 +161,8 @@ export class GuidelineScraper {
   async downloadPdf(pdfUrl: string): Promise<Buffer> {
     return this.downloadGuidelinePdf(pdfUrl);
   }
+
+  async listAllGuidelines(): Promise<any[]> {
+    return this.getGuidelinesList();
+  }
 }
