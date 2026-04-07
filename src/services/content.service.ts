@@ -1,18 +1,8 @@
-import { Injectable, BadRequestException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import * as fs from 'fs-extra';
 import * as path from 'path';
 import * as crypto from 'crypto';
-import { z } from 'zod';
-
-// Zod validation schemas
-const CategorySchema = z.enum(['circulars', 'guidelines', 'consultations', 'news']);
-const RefNoSchema = z.string().regex(/^[A-Z0-9-]+$/, 'RefNo must contain only uppercase letters, numbers, and hyphens');
-const MarkdownPathSchema = z.string().regex(/^[^\/\.\.]+$/, 'Markdown path cannot contain traversal sequences or slashes');
-const YearSchema = z.number().int().positive().optional();
-const LanguageSchema = z.string().regex(/^[A-Z]{2}$/, 'Language must be 2-letter uppercase code').default('EN');
-const AppendixIndexSchema = z.number().int().nonnegative().optional().nullable();
-const IsConclusionSchema = z.boolean().default(false);
 
 @Injectable()
 export class ContentService {
@@ -25,11 +15,7 @@ export class ContentService {
   }
 
   getCategoryDir(category: string): string {
-    const validatedCategory = CategorySchema.safeParse(category);
-    if (!validatedCategory.success) {
-      throw new BadRequestException(`Invalid category: ${validatedCategory.error.issues[0].message}`);
-    }
-    return path.join(this.contentDir, validatedCategory.data, 'markdown');
+    return path.join(this.contentDir, category, 'markdown');
   }
 
   async saveMarkdown(
@@ -43,34 +29,6 @@ export class ContentService {
       isConclusion?: boolean;
     } = {},
   ): Promise<{
-    // Validate input parameters
-    const validatedCategory = CategorySchema.safeParse(category);
-    const validatedRefNo = RefNoSchema.safeParse(refNo);
-    const validatedYear = YearSchema.safeParse(options.year);
-    const validatedLanguage = LanguageSchema.safeParse(options.language);
-    const validatedAppendixIndex = AppendixIndexSchema.safeParse(options.appendixIndex);
-    const validatedIsConclusion = IsConclusionSchema.safeParse(options.isConclusion);
-
-    if (!validatedCategory.success) {
-      throw new BadRequestException(`Invalid category: ${validatedCategory.error.issues[0].message}`);
-    }
-    if (!validatedRefNo.success) {
-      throw new BadRequestException(`Invalid refNo: ${validatedRefNo.error.issues[0].message}`);
-    }
-    if (!validatedYear.success) {
-      throw new BadRequestException(`Invalid year: ${validatedYear.error.issues[0].message}`);
-    }
-    if (!validatedLanguage.success) {
-      throw new BadRequestException(`Invalid language: ${validatedLanguage.error.issues[0].message}`);
-    }
-    if (!validatedAppendixIndex.success) {
-      throw new BadRequestException(`Invalid appendixIndex: ${validatedAppendixIndex.error.issues[0].message}`);
-    }
-    if (!validatedIsConclusion.success) {
-      throw new BadRequestException(`Invalid isConclusion: ${validatedIsConclusion.error.issues[0].message}`);
-    }
-
-    const { year = validatedYear.data, language = validatedLanguage.data, appendixIndex = validatedAppendixIndex.data, isConclusion = validatedIsConclusion.data } = options;
     markdownPath: string;
     markdownSize: number;
     markdownHash: string;
@@ -140,34 +98,6 @@ export class ContentService {
       isConclusion?: boolean;
     } = {},
   ): Promise<{
-    // Validate input parameters
-    const validatedCategory = CategorySchema.safeParse(category);
-    const validatedRefNo = RefNoSchema.safeParse(refNo);
-    const validatedYear = YearSchema.safeParse(options.year);
-    const validatedLanguage = LanguageSchema.safeParse(options.language);
-    const validatedAppendixIndex = AppendixIndexSchema.safeParse(options.appendixIndex);
-    const validatedIsConclusion = IsConclusionSchema.safeParse(options.isConclusion);
-
-    if (!validatedCategory.success) {
-      throw new BadRequestException(`Invalid category: ${validatedCategory.error.issues[0].message}`);
-    }
-    if (!validatedRefNo.success) {
-      throw new BadRequestException(`Invalid refNo: ${validatedRefNo.error.issues[0].message}`);
-    }
-    if (!validatedYear.success) {
-      throw new BadRequestException(`Invalid year: ${validatedYear.error.issues[0].message}`);
-    }
-    if (!validatedLanguage.success) {
-      throw new BadRequestException(`Invalid language: ${validatedLanguage.error.issues[0].message}`);
-    }
-    if (!validatedAppendixIndex.success) {
-      throw new BadRequestException(`Invalid appendixIndex: ${validatedAppendixIndex.error.issues[0].message}`);
-    }
-    if (!validatedIsConclusion.success) {
-      throw new BadRequestException(`Invalid isConclusion: ${validatedIsConclusion.error.issues[0].message}`);
-    }
-
-    const { year = validatedYear.data, language = validatedLanguage.data, appendixIndex = validatedAppendixIndex.data, isConclusion = validatedIsConclusion.data } = options;
     markdown: string;
     size: number;
     hash: string;
@@ -217,12 +147,7 @@ export class ContentService {
   }
 
   async archiveMarkdown(markdownPath: string): Promise<string | null> {
-    // Validate markdown path to prevent path traversal
-    const validatedPath = MarkdownPathSchema.safeParse(markdownPath);
-    if (!validatedPath.success) {
-      throw new BadRequestException(`Invalid markdown path: ${validatedPath.error.issues[0].message}`);
-    }
-    const fullPath = path.join(this.contentDir, validatedPath.data);
+    const fullPath = path.join(this.contentDir, markdownPath);
     if (!fs.existsSync(fullPath)) {
       return null;
     }
@@ -241,12 +166,7 @@ export class ContentService {
   }
 
   async deleteMarkdown(markdownPath: string): Promise<boolean> {
-    // Validate markdown path to prevent path traversal
-    const validatedPath = MarkdownPathSchema.safeParse(markdownPath);
-    if (!validatedPath.success) {
-      throw new BadRequestException(`Invalid markdown path: ${validatedPath.error.issues[0].message}`);
-    }
-    const fullPath = path.join(this.contentDir, validatedPath.data);
+    const fullPath = path.join(this.contentDir, markdownPath);
     if (fs.existsSync(fullPath)) {
       await fs.remove(fullPath);
       return true;

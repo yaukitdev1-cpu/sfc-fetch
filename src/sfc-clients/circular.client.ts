@@ -24,37 +24,50 @@ export class CircularClient {
     year?: number;
     refNo?: string;
     limit?: number;
+    lang?: string;
+    category?: string;
+    pageNo?: number;
+    pageSize?: number;
   }): Promise<any[]> {
     await this.throttle();
-    const url = `${this.baseUrl}/api/circulars/search`;
+    const url = `${this.baseUrl}/api/circular/search`;
+    const body = {
+      lang: params.lang || 'EN',
+      category: params.category || 'all',
+      year: params.year || 2025,
+      pageNo: params.pageNo ?? 0,
+      pageSize: params.pageSize || params.limit || 100,
+      sort: { field: 'issueDate', order: 'desc' },
+    };
     const response = await fetch(url, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(params),
+      body: JSON.stringify(body),
     });
 
     if (!response.ok) {
       throw new Error(`Failed to search circulars: ${response.statusText}`);
     }
 
-    return (await response.json()) as any[];
+    const data = await response.json() as { items?: any[] };
+    return data.items || [];
   }
 
-  async getCircular(refNo: string): Promise<any> {
+  async getCircular(refNo: string, lang: string = 'EN'): Promise<any> {
     await this.throttle();
-    const url = `${this.baseUrl}/api/circulars/${refNo}`;
+    const url = `${this.baseUrl}/api/circular/content?refNo=${encodeURIComponent(refNo)}&lang=${lang}`;
     const response = await fetch(url);
 
     if (!response.ok) {
       throw new Error(`Failed to get circular ${refNo}: ${response.statusText}`);
     }
 
-    return response.json();
+    return response.json() as any;
   }
 
-  async getCircularPdf(refNo: string): Promise<Buffer> {
+  async getCircularPdf(refNo: string, lang: string = 'EN'): Promise<Buffer> {
     await this.throttle();
-    const url = `${this.baseUrl}/api/circulars/${refNo}/pdf`;
+    const url = `${this.baseUrl}/api/circular/openFile?lang=${lang}&refNo=${encodeURIComponent(refNo)}`;
     const response = await fetch(url);
 
     if (!response.ok) {
@@ -64,15 +77,16 @@ export class CircularClient {
     return Buffer.from(await response.arrayBuffer());
   }
 
-  async getCircularHtml(refNo: string): Promise<string> {
+  async getCircularHtml(refNo: string, lang: string = 'EN'): Promise<string> {
     await this.throttle();
-    const url = `${this.baseUrl}/api/circulars/${refNo}/html`;
+    const url = `${this.baseUrl}/api/circular/content?refNo=${encodeURIComponent(refNo)}&lang=${lang}`;
     const response = await fetch(url);
 
     if (!response.ok) {
       throw new Error(`Failed to get HTML for ${refNo}: ${response.statusText}`);
     }
 
-    return response.text();
+    const data = await response.json() as { html?: string };
+    return data.html || '';
   }
 }
