@@ -86,7 +86,127 @@ bun --watch run src/main.ts
 bun run build
 ```
 
-### API Examples
+### How to Trigger Workflows
+
+The service supports multiple mechanisms to trigger document processing workflows, from individual document operations to large-scale batch processing.
+
+### Auto-Hydrate on Startup
+
+If `AUTO_HYDRATE=true` and no local data exists, the service automatically restores from git backup on startup:
+
+```bash
+# Service auto-hydrates if:
+# - DATA_DIR has no existing data
+# - AUTO_HYDRATE=true
+# - GIT_REPO_URL is configured
+bun run src/main.ts
+```
+
+### Queue Endpoints
+
+Queue jobs for asynchronous processing with built-in retry and concurrency control:
+
+```bash
+# Queue a discover job
+curl -X POST http://localhost:3000/queue/discover \
+  -H "Content-Type: application/json" \
+  -d '{"category": "circulars", "refNo": "26EC6"}'
+
+# Queue a download job
+curl -X POST http://localhost:3000/queue/download \
+  -H "Content-Type: application/json" \
+  -d '{"category": "circulars", "refNo": "26EC6"}'
+
+# Queue a convert job
+curl -X POST http://localhost:3000/queue/convert \
+  -H "Content-Type: application/json" \
+  -d '{"category": "circulars", "refNo": "26EC6"}'
+
+# Get queue statistics
+curl http://localhost:3000/queue/status
+```
+
+Queue configuration (from environment):
+- `QUEUE_MAX_RETRIES=5` - Maximum retry attempts per job
+- `QUEUE_CONCURRENCY=4` - Concurrent jobs (default: 4)
+- Jobs use exponential backoff on failure
+
+### Document Discovery Endpoints
+
+```bash
+# Discover a single document
+curl -X POST http://localhost:3000/circulars/26EC6/discover \
+  -H "Content-Type: application/json"
+
+# Batch discover documents in a category
+curl -X POST http://localhost:3000/circulars/discover-batch \
+  -H "Content-Type: application/json" \
+  -d '{"filters": {"year": 2024, "status": "PENDING"}}'
+```
+
+### Batch Operations
+
+```bash
+# Batch download all documents in a category
+curl -X POST http://localhost:3000/circulars/batch-download \
+  -H "Content-Type: application/json" \
+  -d '{"filters": {"year": 2024}}'
+
+# Batch download with limit
+curl -X POST http://localhost:3000/circulars/batch-download \
+  -H "Content-Type: application/json" \
+  -d '{"filters": {"year": 2024}, "limit": 50}'
+```
+
+### Single Document Operations
+
+```bash
+# Download a single document
+curl -X POST http://localhost:3000/circulars/26EC6/download \
+  -H "Content-Type: application/json"
+
+# Retry from failure (resume workflow at failed step)
+curl -X POST http://localhost:3000/circulars/26EC6/workflow/retry \
+  -H "Content-Type: application/json" \
+  -d '{"reason": "network_timeout_recovery"}'
+
+# Re-run from scratch (full workflow reset)
+curl -X POST http://localhost:3000/circulars/26EC6/workflow/re-run \
+  -H "Content-Type: application/json" \
+  -d '{"reason": "markdown_converter_bug_fix", "preservePrevious": true}'
+```
+
+### Job Processing Flow
+
+Documents progress through these sequential steps:
+
+```
+discover → download → convert → store
+```
+
+| Step | Description |
+|------|-------------|
+| `discover` | Locates document in SFC source system |
+| `download` | Fetches raw PDF/HTML content |
+| `convert` | Transforms to Markdown (Docling or Turndown) |
+| `store` | Saves markdown to content directory |
+
+Each step can succeed, fail, or be skipped. Failed steps trigger automatic retry with backoff. The workflow state machine tracks all transitions.
+
+### Manual Backup Operations
+
+```bash
+# Create backup (dehydrate) - archives all data to git
+curl -X POST http://localhost:3000/dehydrate
+
+# Restore from backup (hydrate)
+curl -X POST http://localhost:3000/hydrate
+
+# Check backup status
+curl http://localhost:3000/backup/status
+```
+
+## API Examples
 
 ```bash
 # Health check
@@ -110,27 +230,59 @@ curl http://localhost:3000/circulars/26EC6/history
 # List documents with filters
 curl http://localhost:3000/circulars?status=COMPLETED&year=2024
 
-# Retry failed document
-curl -X POST http://localhost:3000/circulars/26EC6/workflow/retry \
+# Discover a single document
+curl -X POST http://localhost:3000/circulars/26EC6/discover \
+  -H "Content-Type: application/json"
+
+# Download a single document
+curl -X POST http://localhost:3000/circulars/26EC6/download \
+  -H "Content-Type: application/json"
+
+# Batch discover
+curl -X POST http://localhost:3000/circulars/discover-batch \
   -H "Content-Type: application/json" \
-  -d '{"reason": "network_timeout_recovery"}'
+  -d '{"filters": {"year": 2024}}'
 
-# Re-run completed document
-curl -X POST http://localhost:3000/circulars/26EC6/workflow/re-run \
+# Batch download
+curl -X POST http://localhost:3000/circulars/batch-download \
   -H "Content-Type: application/json" \
-  -d '{"reason": "markdown_converter_bug_fix", "preservePrevious": true}'
+  -d '{"filters": {"year": 2024}}'
 
-# Manual dehydration (backup)
-curl -X POST http://localhost:3000/dehydrate
+# Queue a discover job
+curl -X POST http://localhost:3000/queue/discover \
+  -H "Content-Type: application/json" \
+  -d '{"category": "circulars", "refNo": "26EC6"}'
 
-# Manual hydration (restore)
-curl -X POST http://localhost:3000/hydrate
+# Queue a download job
+curl -X POST http://localhost:3000/queue/download \
+  -H "Content-Type: application/json" \
+  -d '{"category": "circulars", "refNo": "26EC6"}'
+
+# Queue a convert job
+curl -X POST http://localhost:3000/queue/convert \
+  -H "Content-Type: application/json" \
+  -d '{"category": "circulars", "refNo": "26EC6"}'
+
+# Get queue statistics
+curl http://localhost:3000/queue/status
+
+# Health check
+curl http://localhost:3000/health
 
 # Get backup status
 curl http://localhost:3000/backup/status
 ```
 
 ## API Endpoints
+
+### Queue Endpoints
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| POST | `/queue/discover` | Queue a discover job |
+| POST | `/queue/download` | Queue a download job |
+| POST | `/queue/convert` | Queue a convert job |
+| GET | `/queue/status` | Get queue statistics |
 
 ### Document Endpoints
 
@@ -139,12 +291,16 @@ curl http://localhost:3000/backup/status
 | GET | `/:category/:refNo` | Get document by refNo |
 | GET | `/:category/:refNo/content` | Get markdown content |
 | GET | `/:category/:refNo/content?appendix=0` | Get specific appendix content |
+| POST | `/:category/:refNo/discover` | Discover a document |
+| POST | `/:category/:refNo/download` | Download a document |
 | GET | `/:category/:refNo/workflow/status` | Get workflow status |
 | GET | `/:category/:refNo/workflow/steps` | Get sub-workflow steps |
 | POST | `/:category/:refNo/workflow/retry` | Retry from failure |
 | POST | `/:category/:refNo/workflow/re-run` | Re-run from scratch |
 | GET | `/:category/:refNo/history` | Get processing history |
 | GET | `/:category` | List documents with filters |
+| POST | `/:category/discover-batch` | Batch discover documents |
+| POST | `/:category/batch-download` | Batch download documents |
 
 **Categories:** `circulars`, `guidelines`, `consultations`, `news`
 
