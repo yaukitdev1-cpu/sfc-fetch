@@ -43,6 +43,14 @@ export default () => ({
   sfcRateLimit: parseInt(process.env.SFC_RATE_LIMIT || '2', 10),
   sfcRetryAttempts: parseInt(process.env.SFC_RETRY_ATTEMPTS || '5', 10),
 
+  // Auto-discovery configuration
+  discoveryEnabled: process.env.DISCOVERY_ENABLED !== 'false',
+  discoveryScheduleCron: process.env.DISCOVERY_SCHEDULE_CRON || '0 2 * * *',
+  discoveryCategories: (process.env.DISCOVERY_CATEGORIES || 'circulars,consultations,news').split(','),
+  discoveryStartYear: parseInt(process.env.DISCOVERY_START_YEAR || '2020', 10),
+  discoveryPageSize: parseInt(process.env.DISCOVERY_PAGE_SIZE || '100', 10),
+  discoveryRequestIntervalMs: parseInt(process.env.DISCOVERY_REQUEST_INTERVAL_MS || '500', 10),
+
   backupRetention: parseInt(process.env.BACKUP_RETENTION || '10', 10),
 
   doclingPath: process.env.DOCLING_PATH || '/usr/local/bin/docling',
