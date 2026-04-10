@@ -58,17 +58,10 @@ export class QueueService implements OnModuleInit, OnModuleDestroy {
 
   private initializeQueue() {
     const maxRetries = this.configService.get<number>('queueMaxRetries') || 5;
-  let jobLatencyTracker = new Map<string, number>();
-
-    // Load pending jobs from LowDB on startup
-    const pendingJobs = this.lowdbService.getPendingQueueJobs();
-    if (pendingJobs.length > 0) {
-      this.logger.log(`[Queue] Loading ${pendingJobs.length} pending jobs from LowDB`);
-      pendingJobs.forEach(job => this.queue.push(job));
-    }
+    let jobLatencyTracker = new Map<string, number>();
 
     const processor = (job: any, cb: (error: any, result?: JobResult) => void) => {
-    jobLatencyTracker.set(job.id, Date.now());
+      jobLatencyTracker.set(job.id, Date.now());
       try {
         console.log(`[Queue] Processing job: ${job.id} - ${job.category}/${job.refNo}`);
         const result = this.processJob(job);
@@ -79,6 +72,7 @@ export class QueueService implements OnModuleInit, OnModuleDestroy {
       }
     };
 
+    // Initialize queue FIRST
     this.queue = new Queue(processor, {
       concurrent: 4,
       maxRetries,
@@ -93,6 +87,13 @@ export class QueueService implements OnModuleInit, OnModuleDestroy {
     this.queue.on('task_failed', (taskId: string, error: any) => {
       console.error(`[Queue] Task failed: ${taskId}`, error);
     });
+
+    // THEN load pending jobs from LowDB
+    const pendingJobs = this.lowdbService.getPendingQueueJobs();
+    if (pendingJobs.length > 0) {
+      this.logger.log(`[Queue] Loading ${pendingJobs.length} pending jobs from LowDB`);
+      pendingJobs.forEach(job => this.queue.push(job));
+    }
 
     console.log('[Queue] Initialized');
   }
@@ -141,28 +142,26 @@ export class QueueService implements OnModuleInit, OnModuleDestroy {
           throw new Error(`Unknown category: ${category}`);
       }
 
-      // Update document with metadata
+      // Update document with metadata (upsert handles both new and existing documents)
       const doc = this.lowdbService.getDocument(refNo, category);
-      if (doc) {
-        await this.lowdbService.upsertDocument(refNo, category, {
-          ...doc,
-          metadata: {
-            ...doc.metadata,
-            ...metadata,
-            title: metadata.title || metadata.subject || metadata.headline,
-            year: metadata.year || new Date(metadata.issueDate || metadata.effectiveDate || metadata.date || Date.now()).getFullYear(),
-          },
-          source: {
-            ...doc.source,
-            pdfUrl: metadata.pdfUrl || metadata.pdfLink,
-            htmlUrl: metadata.htmlUrl || metadata.url,
-          },
-          workflow: {
-            ...doc.workflow,
-            status: 'DISCOVERED',
-          },
-        });
-      }
+      await this.lowdbService.upsertDocument(refNo, category, {
+        ...(doc || {}),
+        metadata: {
+          ...(doc?.metadata || {}),
+          ...metadata,
+          title: metadata.title || metadata.subject || metadata.headline,
+          year: metadata.year || new Date(metadata.issueDate || metadata.effectiveDate || metadata.date || Date.now()).getFullYear(),
+        },
+        source: {
+          ...(doc?.source || {}),
+          pdfUrl: metadata.pdfUrl || metadata.pdfLink,
+          htmlUrl: metadata.htmlUrl || metadata.url,
+        },
+        workflow: {
+          ...(doc?.workflow || {}),
+          status: 'DISCOVERED',
+        },
+      });
 
       await this.lowdbService.updateQueueJobStatus(job._id, 'completed');
       return job;

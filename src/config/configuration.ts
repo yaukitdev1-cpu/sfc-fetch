@@ -47,11 +47,13 @@ export default () => ({
   discoveryEnabled: process.env.DISCOVERY_ENABLED !== 'false',
   discoveryScheduleCron: process.env.DISCOVERY_SCHEDULE_CRON || '0 2 * * *',
   discoveryCategories: (process.env.DISCOVERY_CATEGORIES || 'circulars,consultations,news').split(','),
-  discoveryStartYear: parseInt(process.env.DISCOVERY_START_YEAR || '2020', 10),
+  discoveryStartYear: parseInt(process.env.DISCOVERY_START_YEAR || '1990', 10),
   discoveryPageSize: parseInt(process.env.DISCOVERY_PAGE_SIZE || '100', 10),
   discoveryRequestIntervalMs: parseInt(process.env.DISCOVERY_REQUEST_INTERVAL_MS || '500', 10),
 
   backupRetention: parseInt(process.env.BACKUP_RETENTION || '10', 10),
+
+  dbEncryption: process.env.DB_ENCRYPTION === 'true' || false,
 
   doclingPath: process.env.DOCLING_PATH || '/usr/local/bin/docling',
   doclingTimeout: parseInt(process.env.DOCLING_TIMEOUT || '30000', 10),
