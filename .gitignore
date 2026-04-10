@@ -24,8 +24,7 @@ coverage/
 # nyc test coverage
 .nyc_output
 
-# Environment variables
-.env
+# Environment variables (local only)
 .env.local
 .env.*.local
 
