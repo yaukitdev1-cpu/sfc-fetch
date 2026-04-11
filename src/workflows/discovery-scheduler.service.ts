@@ -187,8 +187,9 @@ export class DiscoverySchedulerService implements OnModuleInit, OnModuleDestroy 
 
     let pageNo = 0;
     let hasMorePages = true;
+    const MAX_PAGES = 100; // Safety cap to prevent infinite loops
 
-    while (hasMorePages) {
+    while (hasMorePages && pageNo < MAX_PAGES) {
       try {
         await this.throttle();
 
@@ -226,6 +227,9 @@ export class DiscoverySchedulerService implements OnModuleInit, OnModuleDestroy 
 
         // Check if there are more pages (based on returned count vs page size)
         if (items.length < this.pageSize) {
+          hasMorePages = false;
+        } else if (pageNo >= MAX_PAGES) {
+          this.logger.warn(`MAX_PAGES limit (${MAX_PAGES}) reached at page ${pageNo} for ${category}/${year}, stopping pagination after ${pageResults.totalFound} items found`);
           hasMorePages = false;
         } else {
           pageNo++;

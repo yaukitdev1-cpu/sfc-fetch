@@ -60,14 +60,16 @@ export class QueueService implements OnModuleInit, OnModuleDestroy {
     const maxRetries = this.configService.get<number>('queueMaxRetries') || 5;
     let jobLatencyTracker = new Map<string, number>();
 
-    const processor = (job: any, cb: (error: any, result?: JobResult) => void) => {
+    const processor = async (job: any, cb: (error: any, result?: JobResult) => void) => {
       jobLatencyTracker.set(job.id, Date.now());
       try {
-        console.log(`[Queue] Processing job: ${job.id} - ${job.category}/${job.refNo}`);
-        const result = this.processJob(job);
+        this.logger.log(`[Queue] Processing job: ${job.id} - ${job.category}/${job.refNo}`);
+        const result = await this.processJob(job);
+        jobLatencyTracker.delete(job.id);
         cb(null, { success: true, result });
       } catch (error) {
-        console.error(`[Queue] Job failed: ${job.id}`, error);
+        jobLatencyTracker.delete(job.id);
+        this.logger.error(`[Queue] Job failed: ${job.id}`, error);
         cb(error, { success: false, error: (error as Error).message });
       }
     };
@@ -81,11 +83,11 @@ export class QueueService implements OnModuleInit, OnModuleDestroy {
     });
 
     this.queue.on('task_finish', (taskId: string, result: JobResult) => {
-      console.log(`[Queue] Task completed: ${taskId}`, result);
+      this.logger.log(`[Queue] Task completed: ${taskId}`, JSON.stringify(result));
     });
 
     this.queue.on('task_failed', (taskId: string, error: any) => {
-      console.error(`[Queue] Task failed: ${taskId}`, error);
+      this.logger.error(`[Queue] Task failed: ${taskId}`, error);
     });
 
     // THEN load pending jobs from LowDB
@@ -95,7 +97,7 @@ export class QueueService implements OnModuleInit, OnModuleDestroy {
       pendingJobs.forEach(job => this.queue.push(job));
     }
 
-    console.log('[Queue] Initialized');
+    this.logger.log('[Queue] Initialized');
   }
 
   private async cleanupRawFile(filePath: string): Promise<void> {
@@ -341,18 +343,16 @@ export class QueueService implements OnModuleInit, OnModuleDestroy {
       .trim();
   }
 
-  private processJob(job: any): any {
-    // This would be implemented based on the job type
-    // For now, it's a placeholder that will be extended with actual processors
+  private async processJob(job: any): Promise<any> {
     this.logger.log(`[Queue] Processing ${job.action} for ${job.category}/${job.refNo}`);
 
     switch (job.action) {
       case 'discover':
-        return this.discoverResource(job.category, job.refNo);
+        return await this.discoverResource(job.category, job.refNo);
       case 'download':
-        return this.downloadResource(job.category, job.refNo, job.sourceUrl);
+        return await this.downloadResource(job.category, job.refNo, job.sourceUrl);
       case 'convert':
-        return this.convertResource(job.category, job.refNo);
+        return await this.convertResource(job.category, job.refNo);
       default:
         this.logger.warn(`Unknown job action: ${job.action}`);
         return { action: job.action, status: 'unknown_action' };
@@ -361,19 +361,23 @@ export class QueueService implements OnModuleInit, OnModuleDestroy {
 
   submitJob(job: JobData): Promise<JobResult> {
     return new Promise(async (resolve, reject) => {
-      // Persist job to LowDB with pending status before adding to queue
-      const persistedJob = await this.lowdbService.addQueueJob({
-        id: `${job.category}-${job.refNo}-${Date.now()}`,
-        status: 'pending',
-        ...job
-      });
-      this.queue.push(persistedJob, (error: any, result?: JobResult) => {
-        if (error) {
-          reject(error);
-        } else {
-          resolve(result || { success: true });
-        }
-      });
+      try {
+        // Persist job to LowDB with pending status before adding to queue
+        const persistedJob = await this.lowdbService.addQueueJob({
+          id: `${job.category}-${job.refNo}-${Date.now()}`,
+          status: 'pending',
+          ...job
+        });
+        this.queue.push(persistedJob, (error: any, result?: JobResult) => {
+          if (error) {
+            reject(error);
+          } else {
+            resolve(result || { success: true });
+          }
+        });
+      } catch (error) {
+        reject(error);
+      }
     });
   }
 
