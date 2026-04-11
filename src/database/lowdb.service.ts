@@ -113,7 +113,12 @@ export class LowdbService implements OnModuleInit, OnModuleDestroy {
   queue: [],
     };
 
-    this.db = new Low<DocumentData>(new EncryptedJSONFile<DocumentData>(this.dbPath), defaultData);
+    const useEncryption = this.configService.get<boolean>('dbEncryption') || false;
+    if (useEncryption) {
+      this.db = new Low<DocumentData>(new EncryptedJSONFile<DocumentData>(this.dbPath), defaultData);
+    } else {
+      this.db = new Low<DocumentData>(new JSONFile<DocumentData>(this.dbPath), defaultData);
+    }
     await this.db.read();
 
     // Initialize and populate idIndex here for consistent setup
@@ -241,7 +246,12 @@ export class LowdbService implements OnModuleInit, OnModuleDestroy {
       throw new BadRequestException(`Invalid refNo: ${validatedRefNo.error.issues[0].message}`);
     }
 
-    const collection = this.getCollection(category);
+    const categoryKey = validatedCategory.data;
+    // Get reference to actual database array, not a copy
+    const collection = this.cachedCollections.includes(categoryKey)
+      ? this.db.data[categoryKey as keyof DocumentData]
+      : this.getCollection(category);
+
     const index = collection.findIndex((doc: any) => doc._id === refNo);
 
     document._id = refNo;
@@ -258,8 +268,8 @@ export class LowdbService implements OnModuleInit, OnModuleDestroy {
     }
 
     // Invalidate cache for modified collection
-    if (this.cachedCollections.includes(validatedCategory.data)) {
-      this.collectionCache.delete(validatedCategory.data);
+    if (this.cachedCollections.includes(categoryKey)) {
+      this.collectionCache.delete(categoryKey);
     }
 
     await this.db.write();

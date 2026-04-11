@@ -52,9 +52,15 @@ export class DiscoverySchedulerService implements OnModuleInit, OnModuleDestroy 
   ) {
     this.enabled = this.configService.get<boolean>('discoveryEnabled') ?? true;
     this.scheduleCron = this.configService.get<string>('discoveryScheduleCron') ?? '0 2 * * *';
-    this.categories = (this.configService.get<string>('discoveryCategories') ?? 'circulars,consultations,news')
-      .split(',')
-      .map((c) => c.trim());
+    const rawCategories = this.configService.get<string[]>('discoveryCategories') ?? ['circulars', 'consultations', 'news'];
+    // Handle both array (from config) and string (from env var) inputs
+    if (Array.isArray(rawCategories)) {
+      this.categories = rawCategories;
+    } else if (typeof rawCategories === 'string') {
+      this.categories = (rawCategories as string).split(',').map((c: string) => c.trim());
+    } else {
+      this.categories = ['circulars', 'consultations', 'news'];
+    }
     this.startYear = this.configService.get<number>('discoveryStartYear') ?? 2020;
     this.pageSize = this.configService.get<number>('discoveryPageSize') ?? 100;
     this.requestIntervalMs = this.configService.get<number>('discoveryRequestIntervalMs') ?? 500;
