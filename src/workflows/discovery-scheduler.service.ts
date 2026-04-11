@@ -6,6 +6,7 @@ import { LowdbService } from '../database/lowdb.service';
 import { CircularClient } from '../sfc-clients/circular.client';
 import { ConsultationClient } from '../sfc-clients/consultation.client';
 import { NewsClient } from '../sfc-clients/news.client';
+import { GuidelineScraper } from '../sfc-clients/guideline.scraper';
 
 interface DiscoveryResult {
   category: string;
@@ -49,6 +50,7 @@ export class DiscoverySchedulerService implements OnModuleInit, OnModuleDestroy 
     private circularClient: CircularClient,
     private consultationClient: ConsultationClient,
     private newsClient: NewsClient,
+    private guidelineScraper: GuidelineScraper,
   ) {
     this.enabled = this.configService.get<boolean>('discoveryEnabled') ?? true;
     this.scheduleCron = this.configService.get<string>('discoveryScheduleCron') ?? '0 2 * * *';
@@ -145,17 +147,28 @@ export class DiscoverySchedulerService implements OnModuleInit, OnModuleDestroy 
     this.logger.log(`Discovering category: ${category}`);
 
     try {
-      const currentYear = new Date().getFullYear();
-      const years = Array.from({ length: currentYear - this.startYear + 1 }, (_, i) => currentYear - i);
+      // Guidelines are scraped from a single HTML page, not year-paginated
+      if (category === 'guidelines') {
+        const guidelinesResult = await this.discoverGuidelines(result);
+        result.totalFound = guidelinesResult.totalFound;
+        result.newlyQueued = guidelinesResult.newlyQueued;
+        result.alreadyCompleted = guidelinesResult.alreadyCompleted;
+        result.inProgress = guidelinesResult.inProgress;
+        result.errors = guidelinesResult.errors;
+        result.documentRefs = guidelinesResult.documentRefs;
+      } else {
+        const currentYear = new Date().getFullYear();
+        const years = Array.from({ length: currentYear - this.startYear + 1 }, (_, i) => currentYear - i);
 
-      for (const year of years) {
-        const yearResults = await this.discoverYear(category, year, result);
-        result.totalFound += yearResults.totalFound;
-        result.newlyQueued += yearResults.newlyQueued;
-        result.alreadyCompleted += yearResults.alreadyCompleted;
-        result.inProgress += yearResults.inProgress;
-        result.errors += yearResults.errors;
-        result.documentRefs.push(...yearResults.documentRefs);
+        for (const year of years) {
+          const yearResults = await this.discoverYear(category, year, result);
+          result.totalFound += yearResults.totalFound;
+          result.newlyQueued += yearResults.newlyQueued;
+          result.alreadyCompleted += yearResults.alreadyCompleted;
+          result.inProgress += yearResults.inProgress;
+          result.errors += yearResults.errors;
+          result.documentRefs.push(...yearResults.documentRefs);
+        }
       }
 
       this.logger.log(
@@ -169,6 +182,56 @@ export class DiscoverySchedulerService implements OnModuleInit, OnModuleDestroy 
 
     result.durationMs = Date.now() - startTime;
     return result;
+  }
+
+  private async discoverGuidelines(
+    result: DiscoveryResult,
+  ): Promise<Omit<DiscoveryResult, 'category' | 'discoveredAt' | 'durationMs'>> {
+    const pageResults = {
+      totalFound: 0,
+      newlyQueued: 0,
+      alreadyCompleted: 0,
+      inProgress: 0,
+      errors: 0,
+      documentRefs: [] as string[],
+    };
+
+    try {
+      await this.throttle();
+      const items = await this.guidelineScraper.getGuidelinesList();
+
+      pageResults.totalFound = items.length;
+
+      for (const item of items) {
+        const refNo = this.extractRefNo('guidelines', item);
+        if (!refNo) {
+          this.logger.warn(`Could not extract refNo from guideline item`, item);
+          continue;
+        }
+
+        pageResults.documentRefs.push(refNo);
+
+        const shouldQueue = await this.shouldQueueDocument(refNo, 'guidelines');
+        if (shouldQueue) {
+          await this.queueDocument(refNo, 'guidelines', item);
+          pageResults.newlyQueued++;
+        } else {
+          const doc = this.lowdbService.getDocument(refNo, 'guidelines');
+          if (doc?.workflow?.status === 'COMPLETED') {
+            pageResults.alreadyCompleted++;
+          } else {
+            pageResults.inProgress++;
+          }
+        }
+      }
+
+      this.logger.log(`Guidelines discovery completed: found=${pageResults.totalFound}, queued=${pageResults.newlyQueued}`);
+    } catch (error) {
+      this.logger.error(`Error discovering guidelines: ${error}`);
+      pageResults.errors++;
+    }
+
+    return pageResults;
   }
 
   private async discoverYear(
@@ -257,6 +320,9 @@ export class DiscoverySchedulerService implements OnModuleInit, OnModuleDestroy 
         return this.consultationClient.searchConsultations({ year, pageNo, pageSize });
       case 'news':
         return this.newsClient.searchNews({ year, pageNo, pageSize });
+      case 'guidelines':
+        // Guidelines are scraped from a single HTML page, not paginated by year
+        return this.guidelineScraper.getGuidelinesList();
       default:
         this.logger.warn(`Unknown category for search: ${category}`);
         return [];
@@ -271,6 +337,8 @@ export class DiscoverySchedulerService implements OnModuleInit, OnModuleDestroy 
         return item.cpRefNo || null;
       case 'news':
         return item.newsRefNo || null;
+      case 'guidelines':
+        return item.guidelineId || item.refNo || null;
       default:
         return null;
     }
@@ -300,7 +368,7 @@ export class DiscoverySchedulerService implements OnModuleInit, OnModuleDestroy 
         data: {
           discoveredFrom: 'auto-discovery',
           discoveredAt: new Date().toISOString(),
-          year: item.year || item.releaseDate?.split('-')[0] || new Date().getFullYear(),
+          year: item.year || item.releaseDate?.split('-')[0] || item.effectiveDate?.split('-')[0] || new Date().getFullYear(),
         },
       });
       this.logger.debug(`Queued document: ${category}/${refNo}`);
