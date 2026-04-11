@@ -1,0 +1,40 @@
+## Summary
+
+This PR adds a comprehensive monitoring plan for running sfc-fetch in dev mode, plus a bug fix for the discovery scheduler.
+
+## Changes
+
+### 1. Documentation (MONITORING_PLAN.md)
+
+- **Configuration reference** - All settings from .env (Port 3401, etc.)
+- **Health endpoint monitoring** - GET /health with expected response
+- **Queue & workflow monitoring** - Endpoints and thresholds
+- **Log patterns** - Success/error indicators to watch for
+- **Monitoring checklist** - Frequency guidelines (every 30s/60s/5min)
+- **tmux session management** - Optional persistent monitoring setup
+
+### 2. Bug Fix (configuration.ts)
+
+Fixed discoveryCategories config type error:
+- **Problem:** configuration.ts called .split(',') returning an array, but discovery-scheduler.service.ts expected a string and called .split() again
+- **Error:** TypeError: .split is not a function
+- **Fix:** Return the raw string from config, let the scheduler handle parsing
+
+## Key Monitoring Endpoints
+
+| Endpoint | Purpose |
+|----------|---------|
+| GET http://localhost:3401/health | Service health & doc counts |
+| GET http://localhost:3401/queue/status | Queue depth & job stats |
+| GET http://localhost:3401/workflows/stats | Workflow state distribution |
+| GET http://localhost:3401/backup/status | Git backup status |
+
+## Testing
+
+1. Start service: bun run dev
+2. Verify health: curl http://localhost:3401/health
+3. Check queue: curl http://localhost:3401/queue/status
+
+---
+
+**Note:** Port is 3401 (not 3000) as configured in .env.
