@@ -40,10 +40,11 @@ sleep 1
 # Build the project first (Bun-specific build from package.json)
 echo "🔨 Building TypeScript project with Bun..."
 rm -rf dist
-bun build src/main.ts --outdir dist --target node 2>&1 | tee logs/build.log
+# Use tsc for building (bun bundler has issues with optional peer deps)
+npx tsc --build --force 2>&1 | tee logs/build.log
 if [ $? -ne 0 ]; then
   echo "❌ Build failed - check logs/build.log for details"
-exit 1
+  exit 1
 fi
 
 # Verify build output exists
