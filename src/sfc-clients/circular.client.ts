@@ -34,7 +34,7 @@ export class CircularClient {
     const body = {
       lang: params.lang || 'EN',
       category: params.category || 'all',
-      year: params.year || 2025,
+      year: params.year ?? 2025,
       pageNo: params.pageNo ?? 0,
       pageSize: params.pageSize || params.limit || 100,
       sort: { field: 'issueDate', order: 'desc' },
