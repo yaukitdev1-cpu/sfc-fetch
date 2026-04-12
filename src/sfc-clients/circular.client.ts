@@ -77,16 +77,20 @@ export class CircularClient {
     return Buffer.from(await response.arrayBuffer());
   }
 
-  async getCircularHtml(refNo: string, lang: string = 'EN'): Promise<string> {
+  async getCircularHtml(refNo: string, lang: string = 'EN'): Promise<string | null> {
     await this.throttle();
     const url = `${this.baseUrl}/api/circular/content?refNo=${encodeURIComponent(refNo)}&lang=${lang}`;
     const response = await fetch(url);
+
+    if (response.status === 404) {
+      return null; // Legacy circular with no HTML content
+    }
 
     if (!response.ok) {
       throw new Error(`Failed to get HTML for ${refNo}: ${response.statusText}`);
     }
 
     const data = await response.json() as { html?: string };
-    return data.html || '';
+    return data.html || null;
   }
 }

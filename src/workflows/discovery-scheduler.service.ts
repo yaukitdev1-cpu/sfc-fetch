@@ -63,7 +63,7 @@ export class DiscoverySchedulerService implements OnModuleInit, OnModuleDestroy 
     } else {
       this.categories = ['circulars', 'consultations', 'news'];
     }
-    this.startYear = this.configService.get<number>('discoveryStartYear') ?? 2020;
+    this.startYear = this.configService.get<number>('discoveryStartYear') ?? 2000;
     this.pageSize = this.configService.get<number>('discoveryPageSize') ?? 100;
     this.requestIntervalMs = this.configService.get<number>('discoveryRequestIntervalMs') ?? 500;
   }
@@ -156,11 +156,31 @@ export class DiscoverySchedulerService implements OnModuleInit, OnModuleDestroy 
         result.inProgress = guidelinesResult.inProgress;
         result.errors = guidelinesResult.errors;
         result.documentRefs = guidelinesResult.documentRefs;
+      } else if (category === 'consultations') {
+        // Consultations: use year="all" for single API call (only 217 total)
+        const consultationsResult = await this.discoverAllAtOnce(category, result);
+        result.totalFound = consultationsResult.totalFound;
+        result.newlyQueued = consultationsResult.newlyQueued;
+        result.alreadyCompleted = consultationsResult.alreadyCompleted;
+        result.inProgress = consultationsResult.inProgress;
+        result.errors = consultationsResult.errors;
+        result.documentRefs = consultationsResult.documentRefs;
+      } else if (category === 'news') {
+        // News: use year="all" for single API call (5205 items across 30 years)
+        const newsResult = await this.discoverAllAtOnce(category, result);
+        result.totalFound = newsResult.totalFound;
+        result.newlyQueued = newsResult.newlyQueued;
+        result.alreadyCompleted = newsResult.alreadyCompleted;
+        result.inProgress = newsResult.inProgress;
+        result.errors = newsResult.errors;
+        result.documentRefs = newsResult.documentRefs;
       } else {
+        // Circulars: must iterate year-by-year (no year="all" support)
+        // Iterate backward from current year, stopping when a year returns 0 items
         const currentYear = new Date().getFullYear();
-        const years = Array.from({ length: currentYear - this.startYear + 1 }, (_, i) => currentYear - i);
+        let year = currentYear;
 
-        for (const year of years) {
+        while (year >= 1) {
           const yearResults = await this.discoverYear(category, year, result);
           result.totalFound += yearResults.totalFound;
           result.newlyQueued += yearResults.newlyQueued;
@@ -168,6 +188,14 @@ export class DiscoverySchedulerService implements OnModuleInit, OnModuleDestroy 
           result.inProgress += yearResults.inProgress;
           result.errors += yearResults.errors;
           result.documentRefs.push(...yearResults.documentRefs);
+
+          // Stop when a year returns 0 items - no earlier years will have data either
+          if (yearResults.totalFound === 0) {
+            this.logger.log(`Year ${year} returned 0 items for ${category}, stopping discovery`);
+            break;
+          }
+
+          year--;
         }
       }
 
@@ -229,6 +257,95 @@ export class DiscoverySchedulerService implements OnModuleInit, OnModuleDestroy 
     } catch (error) {
       this.logger.error(`Error discovering guidelines: ${error}`);
       pageResults.errors++;
+    }
+
+    return pageResults;
+  }
+
+  /**
+   * Discovery for categories that support year="all" (consultations, news).
+   * Uses a single API call to fetch all documents across all years.
+   */
+  private async discoverAllAtOnce(
+    category: string,
+    result: DiscoveryResult,
+  ): Promise<Omit<DiscoveryResult, 'category' | 'discoveredAt' | 'durationMs'>> {
+    const pageResults = {
+      totalFound: 0,
+      newlyQueued: 0,
+      alreadyCompleted: 0,
+      inProgress: 0,
+      errors: 0,
+      documentRefs: [] as string[],
+    };
+
+    let pageNo = 0;
+    let hasMorePages = true;
+    const MAX_ITEMS = 10000; // Safety cap
+    const PAGE_SIZE = 500; // Large page size for efficiency
+
+    while (hasMorePages && pageNo < MAX_ITEMS / PAGE_SIZE) {
+      try {
+        this.logger.log(`DEBUG discoverAllAtOnce: about to call searchCategory for ${category} page ${pageNo}`);
+        await this.throttle();
+        this.logger.log(`DEBUG discoverAllAtOnce: throttle done, calling searchCategory`);
+
+        // Use 'all' for year parameter - single call gets everything
+        const items = await this.searchCategory(category, 'all' as any, pageNo, PAGE_SIZE);
+        this.logger.log(`DEBUG discoverAllAtOnce: searchCategory returned ${items?.length ?? 'null'} items, starting loop`);
+
+        if (!items || items.length === 0) {
+          hasMorePages = false;
+          break;
+        }
+
+        pageResults.totalFound += items.length;
+        this.logger.log(`DEBUG discoverAllAtOnce: totalFound now ${pageResults.totalFound}, starting item loop`);
+
+        for (const item of items) {
+          this.logger.log(`DEBUG discoverAllAtOnce: processing item`);
+          const refNo = this.extractRefNo(category, item);
+          if (!refNo) {
+            this.logger.warn(`Could not extract refNo from item in ${category}`, item);
+            continue;
+          }
+
+          this.logger.log(`DEBUG discoverAllAtOnce: refNo=${refNo}`);
+          pageResults.documentRefs.push(refNo);
+
+          this.logger.log(`DEBUG discoverAllAtOnce: calling shouldQueueDocument for ${refNo}`);
+          const shouldQueue = await this.shouldQueueDocument(refNo, category);
+          this.logger.log(`DEBUG discoverAllAtOnce: shouldQueue=${shouldQueue} for ${refNo}`);
+          if (shouldQueue) {
+            this.logger.log(`DEBUG discoverAllAtOnce: queueing document ${refNo}`);
+            await this.queueDocument(refNo, category, item);
+            pageResults.newlyQueued++;
+            this.logger.log(`DEBUG discoverAllAtOnce: queued, newlyQueued=${pageResults.newlyQueued}`);
+          } else {
+            const doc = this.lowdbService.getDocument(refNo, category);
+            if (doc?.workflow?.status === 'COMPLETED') {
+              pageResults.alreadyCompleted++;
+            } else {
+              pageResults.inProgress++;
+            }
+          }
+        }
+
+        this.logger.log(`DEBUG discoverAllAtOnce: item loop complete, queued=${pageResults.newlyQueued}, checking pagination`);
+
+        // Check if there are more pages
+        if (items.length < PAGE_SIZE) {
+          this.logger.log(`DEBUG discoverAllAtOnce: items.length (${items.length}) < PAGE_SIZE (${PAGE_SIZE}), setting hasMorePages=false`);
+          hasMorePages = false;
+        } else {
+          pageNo++;
+          this.logger.log(`DEBUG discoverAllAtOnce: more pages available, pageNo=${pageNo}`);
+        }
+      } catch (error) {
+        this.logger.error(`Error fetching page ${pageNo} for ${category} (year=all): ${error}`);
+        pageResults.errors++;
+        hasMorePages = false;
+      }
     }
 
     return pageResults;
@@ -309,17 +426,17 @@ export class DiscoverySchedulerService implements OnModuleInit, OnModuleDestroy 
 
   private async searchCategory(
     category: string,
-    year: number,
+    year: number | string,
     pageNo: number,
     pageSize: number,
   ): Promise<any[]> {
     switch (category) {
       case 'circulars':
-        return this.circularClient.searchCirculars({ year, pageNo, pageSize });
+        return this.circularClient.searchCirculars({ year: year as number, pageNo, pageSize });
       case 'consultations':
-        return this.consultationClient.searchConsultations({ year, pageNo, pageSize });
+        return this.consultationClient.searchConsultations({ year: year as any, pageNo, pageSize });
       case 'news':
-        return this.newsClient.searchNews({ year, pageNo, pageSize });
+        return this.newsClient.searchNews({ year: year as any, pageNo, pageSize });
       case 'guidelines':
         // Guidelines are scraped from a single HTML page, not paginated by year
         return this.guidelineScraper.getGuidelinesList();
