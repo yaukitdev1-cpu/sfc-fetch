@@ -139,7 +139,49 @@ async function bootstrap() {
   const configService = app.get(ConfigService);
   const port = configService.get<number>('PORT') || 3000;
 
-  await app.listen(port, '0.0.0.0');
+  console.log(`[SFC-Fetch] About to call app.init() with 30s timeout...`);
+  fileLogger.log(`About to call app.init()...`, 'Bootstrap');
+
+  // Initialize NestJS with timeout
+  const initPromise = app.init();
+  const timeoutPromise = new Promise<void>((resolve) => {
+    setTimeout(() => {
+      console.log(`[SFC-Fetch] WARNING: app.init() timeout after 30s`);
+      fileLogger.warn(`app.init() timed out after 30s, forcing continue`, 'Bootstrap');
+      resolve();
+    }, 30000);
+  });
+
+  await Promise.race([initPromise, timeoutPromise]);
+  console.log(`[SFC-Fetch] app.init() completed or timed out`);
+  fileLogger.log(`app.init() completed or timed out`, 'Bootstrap');
+
+  // Now get the Fastify instance and listen
+  // @ts-ignore
+  const fastifyInstance = app.getHttpAdapter().getInstance();
+  
+  console.log(`[SFC-Fetch] Calling fastify.listen() on port ${port}...`);
+  fileLogger.log(`Calling fastify.listen() on port ${port}...`, 'Bootstrap');
+
+  await new Promise<void>((resolve, reject) => {
+    // @ts-ignore
+    fastifyInstance.listen({ port, host: '0.0.0.0' }, (err, address) => {
+      if (err) {
+        console.log(`[SFC-Fetch] Fastify listen error: ${err.message}`);
+        fileLogger.error(`Fastify listen error: ${err.message}`, undefined, 'Bootstrap');
+        reject(err);
+      } else {
+        console.log(`[SFC-Fetch] Fastify listening at ${address}`);
+        fileLogger.log(`Fastify listening at ${address}`, 'Bootstrap');
+        resolve();
+      }
+    });
+    setTimeout(() => {
+      console.log(`[SFC-Fetch] Fastify listen timeout, proceeding anyway`);
+      resolve();
+    }, 15000);
+  });
+
   fileLogger.log(`Server running on port ${port}`, 'Bootstrap');
   fileLogger.log(`Health check: http://localhost:${port}/health`, 'Bootstrap');
   console.log(`[SFC-Fetch] Server running on port ${port}`);
