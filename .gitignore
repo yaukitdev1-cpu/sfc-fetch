@@ -60,3 +60,6 @@ temp/
 
 # Test artifacts
 tests/output/
+
+# Raw files
+data/raw/
