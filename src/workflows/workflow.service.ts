@@ -266,7 +266,7 @@ export class WorkflowService {
       (new Date(now).getTime() - new Date(doc.workflow.startedAt).getTime()) / 1000,
     );
 
-    if (doc.history.runs && doc.history.runs.length > 0) {
+    if (doc.history?.runs && doc.history.runs.length > 0) {
       const lastRun = doc.history.runs[doc.history.runs.length - 1];
       lastRun.completedAt = now;
       lastRun.status = this.workflowStates.COMPLETED;
