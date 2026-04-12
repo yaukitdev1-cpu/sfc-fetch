@@ -63,22 +63,24 @@ export class QueueService implements OnModuleInit, OnModuleDestroy {
     const maxRetries = this.configService.get<number>('queueMaxRetries') || 5;
     let jobLatencyTracker = new Map<string, number>();
 
-    const processor = async (job: any): Promise<JobResult> => {
+    // Processor function for better-queue v3
+    // Uses callback-style because that's what better-queue v3 expects
+    const processor = (job: any, cb: (error: any, result?: JobResult) => void) => {
       jobLatencyTracker.set(job.id, Date.now());
-      try {
-        this.logger.log(`[Queue] Processing job: ${job.id} - ${job.category}/${job.refNo}`);
-        const result = await this.processJob(job);
-        jobLatencyTracker.delete(job.id);
-        return { success: true, result };
-      } catch (error) {
-        jobLatencyTracker.delete(job.id);
-        this.logger.error(`[Queue] Job failed: ${job.id}`, error);
-        throw error; // better-queue v3 handles errors via rejection
-      }
+      this.processJob(job)
+        .then(result => {
+          jobLatencyTracker.delete(job.id);
+          cb(null, { success: true, result });
+        })
+        .catch(error => {
+          jobLatencyTracker.delete(job.id);
+          this.logger.error(`[Queue] Job failed: ${job.id}`, error);
+          cb(error, { success: false, error: error.message });
+        });
     };
 
-    // Initialize queue FIRST - don't pass processor, we'll use .process() later
-    this.queue = new Queue(null, {
+    // Initialize queue FIRST with processor
+    this.queue = new Queue(processor, {
       concurrent: 4,
       maxRetries,
       retryDelay: 1000,
