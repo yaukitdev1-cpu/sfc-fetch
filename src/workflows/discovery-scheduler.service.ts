@@ -176,10 +176,11 @@ export class DiscoverySchedulerService implements OnModuleInit, OnModuleDestroy 
         result.documentRefs = newsResult.documentRefs;
       } else {
         // Circulars: must iterate year-by-year (no year="all" support)
+        // Iterate backward from current year, stopping when a year returns 0 items
         const currentYear = new Date().getFullYear();
-        const years = Array.from({ length: currentYear - this.startYear + 1 }, (_, i) => currentYear - i);
+        let year = currentYear;
 
-        for (const year of years) {
+        while (year >= 1) {
           const yearResults = await this.discoverYear(category, year, result);
           result.totalFound += yearResults.totalFound;
           result.newlyQueued += yearResults.newlyQueued;
@@ -187,6 +188,14 @@ export class DiscoverySchedulerService implements OnModuleInit, OnModuleDestroy 
           result.inProgress += yearResults.inProgress;
           result.errors += yearResults.errors;
           result.documentRefs.push(...yearResults.documentRefs);
+
+          // Stop when a year returns 0 items - no earlier years will have data either
+          if (yearResults.totalFound === 0) {
+            this.logger.log(`Year ${year} returned 0 items for ${category}, stopping discovery`);
+            break;
+          }
+
+          year--;
         }
       }
 
