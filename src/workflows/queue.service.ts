@@ -77,8 +77,8 @@ export class QueueService implements OnModuleInit, OnModuleDestroy {
       }
     };
 
-    // Initialize queue FIRST
-    this.queue = new Queue(processor, {
+    // Initialize queue FIRST - don't pass processor, we'll use .process() later
+    this.queue = new Queue(null, {
       concurrent: 4,
       maxRetries,
       retryDelay: 1000,
@@ -97,8 +97,13 @@ export class QueueService implements OnModuleInit, OnModuleDestroy {
       this.logger.error(`[Queue] Task failed: ${taskId}`, error);
     });
 
+    // IMPORTANT: Start the queue consumer BEFORE pushing jobs
+    // better-queue v3 requires explicit .process() call to start consuming
+    const concurrent = this.configService.get<number>('queue.concurrent') || 4;
+    this.queue.process(processor, concurrent);
+    this.logger.log(`[Queue] Queue consumer started with concurrency ${concurrent}`);
+
     // Load pending jobs from LowDB
-    // Queue consumer is already started via constructor (processor passed to Queue)
     const pendingJobs = this.lowdbService.getPendingQueueJobs();
     if (pendingJobs.length > 0) {
       this.logger.log(`[Queue] Loading ${pendingJobs.length} pending jobs from LowDB`);
