@@ -416,8 +416,14 @@ export class QueueService implements OnModuleInit, OnModuleDestroy {
       let markdownContent: string;
 
       if (rawFilePath.endsWith('.pdf')) {
-        // Convert PDF to markdown using Docling
-        markdownContent = await this.doclingService.convertPdfToMarkdown(rawFilePath);
+        // Try Docling first, fall back to basic text extraction
+        try {
+          markdownContent = await this.doclingService.convertPdfToMarkdown(rawFilePath);
+        } catch (doclingError) {
+          this.logger.warn(`Docling failed for ${category}/${refNo}, using fallback: ${(doclingError as Error).message}`);
+          const fileBuffer: Buffer = await fs.readFile(rawFilePath) as Buffer;
+          markdownContent = await this.basicPdfFallback(fileBuffer);
+        }
       } else {
         // Read HTML file and convert using Turndown
         const htmlContent = (await fs.readFile(rawFilePath, 'utf8')).toString();
@@ -498,6 +504,47 @@ export class QueueService implements OnModuleInit, OnModuleDestroy {
       .replace(/&lt;/g, '<')
       .replace(/&gt;/g, '>')
       .trim();
+  }
+
+  private async basicPdfFallback(buffer: Buffer): Promise<string> {
+    // Use pdftotext utility if available
+    const { spawn } = await import('child_process');
+    const path = await import('path');
+    const os = await import('os');
+    const fsExtra = await import('fs-extra');
+
+    const tempInput = path.join(os.tmpdir(), `pdf_fallback_${Date.now()}.pdf`);
+    const tempOutput = path.join(os.tmpdir(), `pdf_fallback_${Date.now()}.txt`);
+
+    try {
+      await fsExtra.writeFile(tempInput, buffer);
+
+      return new Promise<string>((resolve, reject) => {
+        const proc = spawn('pdftotext', [tempInput, tempOutput], { timeout: 30000 });
+        proc.on('close', async (code) => {
+          try {
+            await fsExtra.remove(tempInput);
+            if (code === 0 && await fsExtra.pathExists(tempOutput)) {
+              const text: string = (await fsExtra.readFile(tempOutput, 'utf8')) as string;
+              await fsExtra.remove(tempOutput);
+              resolve(text || '# PDF content (extracted via pdftotext fallback)\n\nNo text content extracted.');
+            } else {
+              if (await fsExtra.pathExists(tempOutput)) {
+                await fsExtra.remove(tempOutput);
+              }
+              resolve('# PDF fallback - could not extract text\n\nPDF file exists but text extraction failed.');
+            }
+          } catch (e) {
+            resolve('# PDF fallback - extraction error\n\nError: ' + (e as Error).message);
+          }
+        });
+        proc.on('error', () => {
+          resolve('# PDF fallback - pdftotext not available\n\nPDF file exists. Install docling or pdftotext for proper conversion.');
+        });
+      });
+    } catch (error) {
+      return '# PDF fallback - error\n\nError: ' + (error as Error).message;
+    }
   }
 
   private async processJob(job: any): Promise<any> {

@@ -45,30 +45,30 @@ export class DoclingService {
 
   private runDocling(inputPath: string, outputPath: string): Promise<void> {
     return new Promise((resolve, reject) => {
-      const args = [
-        this.doclingPath,
+      // Docling outputs to a directory and creates a file named after the input
+      // Use the docling CLI directly
+      const proc = spawn(this.doclingPath, [
         inputPath,
-        '--to-md',
+        '--to',
+        'md',
         '--output',
         outputPath,
-      ];
-
-      const process = spawn('python', ['-m', 'docling', ...args.slice(1)], {
+      ], {
         timeout: this.timeout,
       });
 
       let stdout = '';
       let stderr = '';
 
-      process.stdout.on('data', (data) => {
+      proc.stdout.on('data', (data) => {
         stdout += data.toString();
       });
 
-      process.stderr.on('data', (data) => {
+      proc.stderr.on('data', (data) => {
         stderr += data.toString();
       });
 
-      process.on('close', (code) => {
+      proc.on('close', (code) => {
         if (code === 0) {
           resolve();
         } else {
@@ -76,7 +76,7 @@ export class DoclingService {
         }
       });
 
-      process.on('error', (error) => {
+      proc.on('error', (error) => {
         reject(error);
       });
     });
