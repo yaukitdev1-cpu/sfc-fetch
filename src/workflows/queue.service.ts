@@ -89,6 +89,10 @@ export class QueueService implements OnModuleInit, OnModuleDestroy {
       this.logger.log(`[Queue] Task completed: ${taskId}`, JSON.stringify(result));
     });
 
+    this.queue.on('task_start', (taskId: string) => {
+      this.logger.debug(`[Queue] Task started: ${taskId}`);
+    });
+
     this.queue.on('task_failed', (taskId: string, error: any) => {
       this.logger.error(`[Queue] Task failed: ${taskId}`, error);
     });
@@ -97,8 +101,16 @@ export class QueueService implements OnModuleInit, OnModuleDestroy {
     const pendingJobs = this.lowdbService.getPendingQueueJobs();
     if (pendingJobs.length > 0) {
       this.logger.log(`[Queue] Loading ${pendingJobs.length} pending jobs from LowDB`);
-      pendingJobs.forEach(job => this.queue.push(job));
+      pendingJobs.forEach(job => {
+        this.logger.debug(`[Queue] push(): ${job.action}/${job.refNo} id=${job.id}`);
+        this.queue.push(job);
+      });
     }
+
+    // IMPORTANT: Start the queue consumer
+    // Without this, jobs are pushed but never processed!
+    this.queue.process(processor, this.configService.get<number>('queue.concurrent') || 4);
+    this.logger.log('[Queue] Queue consumer started');
 
     // Recovery: Re-submit jobs for documents stuck in intermediate workflow states
     await this.recoverStuckDocuments();
@@ -642,6 +654,7 @@ export class QueueService implements OnModuleInit, OnModuleDestroy {
           status: 'pending',
           ...job
         });
+        this.logger.debug(`[Queue] push() [new]: ${persistedJob.action}/${persistedJob.refNo} id=${persistedJob._id || persistedJob.id}`);
         this.queue.push(persistedJob, (error: any, result?: JobResult) => {
           if (error) {
             reject(error);
