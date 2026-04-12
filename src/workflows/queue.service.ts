@@ -333,11 +333,51 @@ export class QueueService implements OnModuleInit, OnModuleDestroy {
           rawPath = this.getRawFilePath(category, refNo, 'html');
         }
       } else if (category === 'circulars') {
-        content = await this.circularClient.getCircularPdf(refNo);
         rawPath = this.getRawFilePath(category, refNo, 'pdf');
+        try {
+          content = await this.circularClient.getCircularPdf(refNo);
+        } catch (pdfError) {
+          // If PDF fails, try HTML for modern circulars (2012+)
+          const year = doc.metadata?.year || new Date().getFullYear();
+          if (year >= 2012) {
+            this.logger.log(`[Queue] PDF not available for ${category}/${refNo}, trying HTML content`);
+            const htmlContent = await this.circularClient.getCircularHtml(refNo);
+            if (htmlContent) {
+              content = htmlContent;
+              rawPath = this.getRawFilePath(category, refNo, 'html');
+            } else {
+              throw pdfError;
+            }
+          } else {
+            throw pdfError;
+          }
+        }
       } else if (category === 'consultations') {
-        content = await this.consultationClient.getConsultationPdf(refNo);
-        rawPath = this.getRawFilePath(category, refNo, 'pdf');
+        // Consultations: check available assets first
+        const assets = await this.consultationClient.checkConsultationAssets(refNo);
+
+        if (assets.hasPdf) {
+          // Try PDF first, fall back to HTML if PDF unavailable
+          const pdfBuffer = await this.consultationClient.getConsultationPdf(refNo);
+          if (pdfBuffer) {
+            content = pdfBuffer;
+            rawPath = this.getRawFilePath(category, refNo, 'pdf');
+          } else if (assets.hasHtml) {
+            // PDF check returned null but HTML available - use HTML
+            this.logger.log(`[Queue] PDF not available for ${category}/${refNo}, using HTML content`);
+            content = assets.html || '';
+            rawPath = this.getRawFilePath(category, refNo, 'html');
+          } else {
+            throw new Error(`PDF not available and no HTML content for consultation ${refNo}`);
+          }
+        } else if (assets.hasHtml) {
+          // No PDF available, use HTML content
+          this.logger.log(`[Queue] No PDF for ${category}/${refNo}, using HTML content`);
+          content = assets.html || '';
+          rawPath = this.getRawFilePath(category, refNo, 'html');
+        } else {
+          throw new Error(`No PDF or HTML available for consultation ${refNo}`);
+        }
       } else if (category === 'news') {
         content = await this.newsClient.getNewsContent(refNo);
         rawPath = this.getRawFilePath(category, refNo, 'html');

@@ -69,10 +69,14 @@ export class ConsultationClient {
     return response.json() as any;
   }
 
-  async getConsultationPdf(refNo: string, lang: string = 'EN'): Promise<Buffer> {
+  async getConsultationPdf(refNo: string, lang: string = 'EN'): Promise<Buffer | null> {
     await this.throttle();
     const url = `${this.baseUrl}/api/consultation/openFile?lang=${lang}&refNo=${encodeURIComponent(refNo)}`;
     const response = await fetch(url);
+
+    if (response.status === 404) {
+      return null; // PDF not available for this document
+    }
 
     if (!response.ok) {
       throw new Error(`Failed to download consultation PDF: ${response.statusText}`);
@@ -87,7 +91,7 @@ export class ConsultationClient {
     const response = await fetch(url);
 
     if (response.status === 404) {
-      return null;
+      return null; // Conclusion not yet published
     }
 
     if (!response.ok) {
@@ -95,5 +99,24 @@ export class ConsultationClient {
     }
 
     return Buffer.from(await response.arrayBuffer());
+  }
+
+  /**
+   * Check what assets are available for a consultation without downloading them.
+   * Returns info about PDF availability, conclusion availability, and HTML content.
+   */
+  async checkConsultationAssets(refNo: string, lang: string = 'EN'): Promise<{
+    hasPdf: boolean;
+    hasConclusion: boolean;
+    hasHtml: boolean;
+    html?: string;
+  }> {
+    const content = await this.getConsultation(refNo, lang);
+    return {
+      hasPdf: content.fileKeySeq != null && content.fileKeySeq > 0,
+      hasConclusion: content.ccRefNo != null,
+      hasHtml: !!(content.html && content.html.length > 0),
+      html: content.html,
+    };
   }
 }
