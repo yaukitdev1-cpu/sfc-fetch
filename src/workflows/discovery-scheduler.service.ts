@@ -286,10 +286,13 @@ export class DiscoverySchedulerService implements OnModuleInit, OnModuleDestroy 
 
     while (hasMorePages && pageNo < MAX_ITEMS / PAGE_SIZE) {
       try {
+        this.logger.log(`DEBUG discoverAllAtOnce: about to call searchCategory for ${category} page ${pageNo}`);
         await this.throttle();
+        this.logger.log(`DEBUG discoverAllAtOnce: throttle done, calling searchCategory`);
 
         // Use 'all' for year parameter - single call gets everything
         const items = await this.searchCategory(category, 'all' as any, pageNo, PAGE_SIZE);
+        this.logger.log(`DEBUG discoverAllAtOnce: searchCategory returned ${items?.length ?? 'null'} items, starting loop`);
 
         if (!items || items.length === 0) {
           hasMorePages = false;
@@ -297,20 +300,27 @@ export class DiscoverySchedulerService implements OnModuleInit, OnModuleDestroy 
         }
 
         pageResults.totalFound += items.length;
+        this.logger.log(`DEBUG discoverAllAtOnce: totalFound now ${pageResults.totalFound}, starting item loop`);
 
         for (const item of items) {
+          this.logger.log(`DEBUG discoverAllAtOnce: processing item`);
           const refNo = this.extractRefNo(category, item);
           if (!refNo) {
             this.logger.warn(`Could not extract refNo from item in ${category}`, item);
             continue;
           }
 
+          this.logger.log(`DEBUG discoverAllAtOnce: refNo=${refNo}`);
           pageResults.documentRefs.push(refNo);
 
+          this.logger.log(`DEBUG discoverAllAtOnce: calling shouldQueueDocument for ${refNo}`);
           const shouldQueue = await this.shouldQueueDocument(refNo, category);
+          this.logger.log(`DEBUG discoverAllAtOnce: shouldQueue=${shouldQueue} for ${refNo}`);
           if (shouldQueue) {
+            this.logger.log(`DEBUG discoverAllAtOnce: queueing document ${refNo}`);
             await this.queueDocument(refNo, category, item);
             pageResults.newlyQueued++;
+            this.logger.log(`DEBUG discoverAllAtOnce: queued, newlyQueued=${pageResults.newlyQueued}`);
           } else {
             const doc = this.lowdbService.getDocument(refNo, category);
             if (doc?.workflow?.status === 'COMPLETED') {
@@ -321,11 +331,15 @@ export class DiscoverySchedulerService implements OnModuleInit, OnModuleDestroy 
           }
         }
 
+        this.logger.log(`DEBUG discoverAllAtOnce: item loop complete, queued=${pageResults.newlyQueued}, checking pagination`);
+
         // Check if there are more pages
         if (items.length < PAGE_SIZE) {
+          this.logger.log(`DEBUG discoverAllAtOnce: items.length (${items.length}) < PAGE_SIZE (${PAGE_SIZE}), setting hasMorePages=false`);
           hasMorePages = false;
         } else {
           pageNo++;
+          this.logger.log(`DEBUG discoverAllAtOnce: more pages available, pageNo=${pageNo}`);
         }
       } catch (error) {
         this.logger.error(`Error fetching page ${pageNo} for ${category} (year=all): ${error}`);
