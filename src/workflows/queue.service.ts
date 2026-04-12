@@ -10,12 +10,14 @@ import { CircularClient } from '../sfc-clients/circular.client';
 import { ConsultationClient } from '../sfc-clients/consultation.client';
 import { NewsClient } from '../sfc-clients/news.client';
 import { GuidelineScraper } from '../sfc-clients/guideline.scraper';
+import { WorkflowService } from './workflow.service';
 
 interface JobData {
   category: string;
   refNo: string;
   action: string;
   data?: any;
+  sourceUrl?: string;
 }
 
 interface JobResult {
@@ -40,14 +42,15 @@ export class QueueService implements OnModuleInit, OnModuleDestroy {
     private consultationClient: ConsultationClient,
     private newsClient: NewsClient,
     private guidelineScraper: GuidelineScraper,
+    private workflowService: WorkflowService,
   ) {
     this.logger = new Logger(QueueService.name);
     this.queuePath = this.configService.get<string>('queuePath') || './data/db/sfc-db.json';
     this.rawFilesDir = this.configService.get<string>('rawFilesDir') || './data/raw';
   }
 
-  onModuleInit() {
-    this.initializeQueue();
+  async onModuleInit() {
+    await this.initializeQueue();
   }
 
   onModuleDestroy() {
@@ -56,7 +59,7 @@ export class QueueService implements OnModuleInit, OnModuleDestroy {
     }
   }
 
-  private initializeQueue() {
+  private async initializeQueue(): Promise<void> {
     const maxRetries = this.configService.get<number>('queueMaxRetries') || 5;
     let jobLatencyTracker = new Map<string, number>();
 
@@ -97,7 +100,98 @@ export class QueueService implements OnModuleInit, OnModuleDestroy {
       pendingJobs.forEach(job => this.queue.push(job));
     }
 
+    // Recovery: Re-submit jobs for documents stuck in intermediate workflow states
+    await this.recoverStuckDocuments();
+
     this.logger.log('[Queue] Initialized');
+  }
+
+  /**
+   * Recovery mechanism to handle documents stuck in intermediate workflow states.
+   * This handles cases where the application crashed after a job completed but before
+   * the next job was auto-submitted, or where jobs were otherwise lost.
+   */
+  private async recoverStuckDocuments(): Promise<void> {
+    try {
+      const categories = ['circulars', 'consultations', 'news', 'guidelines'];
+      let recoveredCount = 0;
+
+      for (const category of categories) {
+        const documents = this.lowdbService.getDocuments(category);
+
+        for (const doc of documents) {
+          const status = doc.workflow?.status;
+          const refNo = doc._id;
+
+          if (status === 'DISCOVERED') {
+            // Document has been discovered but download hasn't started
+            // Check for existing pending/in_progress jobs to avoid duplicates
+            const existingJobs = this.lowdbService.getPendingQueueJobs()
+              .filter(j => j.category === category && j.refNo === refNo);
+            if (existingJobs.length > 0) {
+              this.logger.debug(`[Recovery] Job already exists for ${category}/${refNo}, skipping`);
+              continue;
+            }
+            this.logger.log(`[Recovery] Re-submitting download job for stuck ${category}/${refNo}`);
+            await this.submitJob({
+              action: 'download',
+              category,
+              refNo,
+              sourceUrl: doc.source?.pdfUrl || doc.source?.htmlUrl,
+            });
+            recoveredCount++;
+          } else if (status === 'DOWNLOADING') {
+            // Document download was completed but convert wasn't submitted
+            // Check for existing pending/in_progress jobs to avoid duplicates
+            const existingJobs = this.lowdbService.getPendingQueueJobs()
+              .filter(j => j.category === category && j.refNo === refNo);
+            if (existingJobs.length > 0) {
+              this.logger.debug(`[Recovery] Job already exists for ${category}/${refNo}, skipping`);
+              continue;
+            }
+            this.logger.log(`[Recovery] Re-submitting convert job for stuck ${category}/${refNo}`);
+            await this.submitJob({
+              action: 'convert',
+              category,
+              refNo,
+            });
+            recoveredCount++;
+          } else if (status === 'PROCESSING') {
+            // If markdownPath exists, conversion finished but workflow wasn't completed
+            // If markdownPath doesn't exist, conversion didn't finish - resubmit convert
+            if (doc.content?.markdownPath) {
+              this.logger.log(`[Recovery] Completing stuck workflow for ${category}/${refNo}`);
+              try {
+                await this.workflowService.completeWorkflow(refNo, category);
+              } catch (error) {
+                this.logger.warn(`[Recovery] Failed to complete stuck workflow for ${category}/${refNo}: ${error}`);
+              }
+            } else {
+              // Check for existing pending/in_progress jobs to avoid duplicates
+              const existingJobs = this.lowdbService.getPendingQueueJobs()
+                .filter(j => j.category === category && j.refNo === refNo);
+              if (existingJobs.length > 0) {
+                this.logger.debug(`[Recovery] Job already exists for ${category}/${refNo}, skipping`);
+              } else {
+                this.logger.log(`[Recovery] Re-submitting convert job for stuck ${category}/${refNo}`);
+                await this.submitJob({
+                  action: 'convert',
+                  category,
+                  refNo,
+                });
+              }
+            }
+            recoveredCount++;
+          }
+        }
+      }
+
+      if (recoveredCount > 0) {
+        this.logger.log(`[Recovery] Recovered ${recoveredCount} stuck documents`);
+      }
+    } catch (error) {
+      this.logger.error('[Recovery] Error during stuck document recovery:', error);
+    }
   }
 
   private async cleanupRawFile(filePath: string): Promise<void> {
@@ -125,6 +219,9 @@ export class QueueService implements OnModuleInit, OnModuleDestroy {
     });
 
     try {
+      // Track step in workflow
+      await this.workflowService.startStep(refNo, category, 'discover');
+
       // Fetch metadata from appropriate SFC client
       let metadata: any;
       switch (category) {
@@ -166,9 +263,32 @@ export class QueueService implements OnModuleInit, OnModuleDestroy {
       });
 
       await this.lowdbService.updateQueueJobStatus(job._id, 'completed');
+
+      // Complete the discover step
+      await this.workflowService.completeStep(refNo, category, 'discover', {
+        pdfUrl: metadata.pdfUrl || metadata.pdfLink,
+        htmlUrl: metadata.htmlUrl || metadata.url,
+      });
+
+      // Auto-submit download job after discover succeeds
+      // Use try/catch to prevent chain failures from affecting discover completion
+      this.logger.log(`[Queue] Auto-submitting download job for ${category}/${refNo} after discover`);
+      try {
+        await this.submitJob({
+          action: 'download',
+          category,
+          refNo,
+          sourceUrl: metadata.pdfUrl || metadata.pdfLink || metadata.url,
+        });
+      } catch (err) {
+        this.logger.error(`[Queue] Failed to chain download job for ${category}/${refNo}:`, err);
+        // Don't rollback - current step still completes
+      }
+
       return job;
     } catch (error) {
       await this.lowdbService.updateQueueJobStatus(job._id, 'failed');
+      await this.workflowService.failStep(refNo, category, 'discover', error);
       throw error;
     }
   }
@@ -184,13 +304,18 @@ export class QueueService implements OnModuleInit, OnModuleDestroy {
     });
 
     try {
+      // Track step in workflow
+      await this.workflowService.startStep(refNo, category, 'download');
+
       const doc = this.lowdbService.getDocument(refNo, category);
       if (!doc) {
         throw new Error(`Document ${refNo} not found in category ${category}`);
       }
 
       const url = sourceUrl || doc.source?.pdfUrl || doc.source?.htmlUrl;
-      if (!url) {
+      // For circulars/consultations/news, we can fetch directly via API using refNo even without a URL
+      // Only require URL for guidelines (which need the PDF URL for scraping)
+      if (!url && category === 'guidelines') {
         throw new Error(`No source URL found for ${category}/${refNo}`);
       }
 
@@ -238,9 +363,28 @@ export class QueueService implements OnModuleInit, OnModuleDestroy {
       });
 
       await this.lowdbService.updateQueueJobStatus(job._id, 'completed');
+
+      // Complete the download step
+      await this.workflowService.completeStep(refNo, category, 'download', { rawFilePath: rawPath });
+
+      // Auto-submit convert job after download succeeds
+      // Use try/catch to prevent chain failures from affecting download completion
+      this.logger.log(`[Queue] Auto-submitting convert job for ${category}/${refNo} after download`);
+      try {
+        await this.submitJob({
+          action: 'convert',
+          category,
+          refNo,
+        });
+      } catch (err) {
+        this.logger.error(`[Queue] Failed to chain convert job for ${category}/${refNo}:`, err);
+        // Don't rollback - current step still completes
+      }
+
       return job;
     } catch (error) {
       await this.lowdbService.updateQueueJobStatus(job._id, 'failed');
+      await this.workflowService.failStep(refNo, category, 'download', error);
       throw error;
     }
   }
@@ -255,6 +399,9 @@ export class QueueService implements OnModuleInit, OnModuleDestroy {
     });
 
     try {
+      // Track step in workflow
+      await this.workflowService.startStep(refNo, category, 'convert');
+
       const doc = this.lowdbService.getDocument(refNo, category);
       if (!doc) {
         throw new Error(`Document ${refNo} not found in category ${category}`);
@@ -282,7 +429,7 @@ export class QueueService implements OnModuleInit, OnModuleDestroy {
       const year = doc.metadata?.year || new Date().getFullYear();
       const result = await this.contentService.saveMarkdown(category, refNo, markdownContent, { year });
 
-      // Update document with markdown info
+      // Update document with markdown info - set workflow to COMPLETED
       await this.lowdbService.upsertDocument(refNo, category, {
         ...doc,
         content: {
@@ -294,7 +441,7 @@ export class QueueService implements OnModuleInit, OnModuleDestroy {
         },
         workflow: {
           ...doc.workflow,
-          status: 'PROCESSING',
+          status: 'COMPLETED',
         },
       });
 
@@ -314,9 +461,19 @@ export class QueueService implements OnModuleInit, OnModuleDestroy {
       }
 
       await this.lowdbService.updateQueueJobStatus(job._id, 'completed');
+
+      // Complete the workflow
+      await this.workflowService.completeWorkflow(refNo, category);
+
+      // Complete the convert step
+      await this.workflowService.completeStep(refNo, category, 'convert', {
+        markdownPath: result.markdownPath,
+      });
+
       return job;
     } catch (error) {
       await this.lowdbService.updateQueueJobStatus(job._id, 'failed');
+      await this.workflowService.failStep(refNo, category, 'convert', error);
       throw error;
     }
   }
