@@ -95,9 +95,52 @@ curl -s http://localhost:3401/workflows/stats
 | Avg job duration | > 30s | > 120s |
 | Documents in `FAILED` state | > 5% | > 20% |
 
+### Workflow States
+
+The system tracks documents through these workflow states:
+
+| State | Description |
+|-------|-------------|
+| `PENDING` | Document discovered but not yet being processed |
+| `DISCOVERED` | Document found in source, ready to download |
+| `DOWNLOADING` | Raw content being fetched from SFC |
+| `PROCESSING` | Content being converted to markdown |
+| `COMPLETED` | Successfully processed, markdown available |
+| `FAILED` | Error during download or processing |
+| `RETRYING` | Attempting automatic recovery from failure |
+| `RE_RUNNING` | Full reprocessing requested |
+| `STALE` | Source content changed since last processing |
+
+### Step Statuses
+
+Each workflow step (`discover`, `download`, `convert`) tracks its own status:
+
+| Step Status | Description |
+|-------------|-------------|
+| `PENDING` | Not yet started |
+| `RUNNING` | Currently executing |
+| `COMPLETED` | Successfully finished |
+| `FAILED` | Error occurred |
+| `SKIPPED` | Intentionally bypassed |
+
 ---
 
-## 6. Auto-Discovery Schedule
+## 6. Discovery Configuration
+
+| Setting | Default | Description |
+|---------|---------|-------------|
+| `DISCOVERY_ENABLED` | `true` | Enable/disable auto-discovery |
+| `DISCOVERY_SCHEDULE_CRON` | `0 2 * * *` | Cron schedule (daily at 2 AM) |
+| `DISCOVERY_CATEGORIES` | `circulars,consultations,news` | Categories to discover |
+| `DISCOVERY_START_YEAR` | `1990` | Earliest year for circulars |
+| `DISCOVERY_PAGE_SIZE` | `100` | Items per page |
+| `DISCOVERY_REQUEST_INTERVAL_MS` | `500` | Delay between API calls |
+
+**Note:** Guidelines are scraped from the SFC main website, not discovered via API.
+
+---
+
+## 7. Auto-Discovery Schedule
 
 - **Cron:** `0 2 * * *` → Runs daily at 2:00 AM
 
@@ -108,7 +151,7 @@ curl -s http://localhost:3401/workflows?status=PENDING | jq '.count'
 
 ---
 
-## 7. Critical Log Patterns
+## 8. Critical Log Patterns
 
 ### Watch For:
 
@@ -117,13 +160,14 @@ curl -s http://localhost:3401/workflows?status=PENDING | jq '.count'
 | `[Queue] Task completed` | Success | None |
 | `[Queue] Task failed` | Failure | Check retry count |
 | `[Workflow] Completed` | Doc processed | None |
+| `[Queue] Downloading conclusion` | Consultation has conclusion | Verify CC downloaded |
 | `[Error] Connection refused` | SFC API down | Check network |
 | `[Docling] Timeout` | PDF conversion slow | Check docling CLI |
 | `Auto-hydrate: restored X documents` | Data restored from git | Verify counts |
 
 ---
 
-## 8. tmux Session Setup (Optional)
+## 9. tmux Session Setup (Optional)
 
 ### Start with tmux for persistence
 ```bash
@@ -137,7 +181,7 @@ curl -s http://localhost:3401/workflows?status=PENDING | jq '.count'
 
 ---
 
-## 9. Monitoring Checklist (Every 30s)
+## 10. Monitoring Checklist (Every 30s)
 
 ```bash
 #!/bin/bash
