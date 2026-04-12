@@ -345,12 +345,20 @@ curl http://localhost:3000/backup/status
 
 ## Categories
 
-| Category | Document Count | Reference Format |
-|----------|---------------|------------------|
-| circulars | ~700 | YYEC## (e.g., 26EC6) |
-| guidelines | ~50 | UUID |
-| consultations | ~217 | YYCP## / YYCC## |
-| news | ~5,205 | YYPR## |
+| Category | Document Count | Reference Format | Notes |
+|----------|---------------|-------------------|-------|
+| circulars | ~700 | YYEC## (e.g., 26EC6) | PDF for all years (2000+), HTML for 2012+ |
+| guidelines | ~50 | UUID | PDF scraped from main website |
+| consultations | ~217 | YYCP## (paper), YYCC## (conclusion) | CP + optional CC when concluded |
+| news | ~5,205 | YYPR## | HTML only |
+
+### Consultations
+
+Consultations have a two-document lifecycle:
+1. **Consultation Paper (CP)** - The initial consultation document
+2. **Conclusion Paper (CC)** - Published when the consultation concludes (85% of consultations have conclusions)
+
+When a consultation has a conclusion (`hasConclusion: true`), both the consultation paper and the conclusion paper are downloaded automatically.
 
 ## Architecture
 

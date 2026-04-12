@@ -407,6 +407,44 @@ export class QueueService implements OnModuleInit, OnModuleDestroy {
       // Complete the download step
       await this.workflowService.completeStep(refNo, category, 'download', { rawFilePath: rawPath });
 
+      // Download conclusion paper if consultation is concluded
+      // Use cpRefNo (not ccRefNo) with type=conclusion parameter
+      if (category === 'consultations' && assets.hasConclusion) {
+        this.logger.log(`[Queue] Downloading conclusion for ${refNo}`);
+        try {
+          const conclusionBuffer = await this.consultationClient.getConclusionPdf(refNo);
+          if (conclusionBuffer) {
+            const conclusionPath = this.getRawFilePath(category, `${refNo}_conclusion`, 'pdf');
+            await fs.ensureDir(path.dirname(conclusionPath));
+            await fs.writeFile(conclusionPath, conclusionBuffer);
+
+            // Update document with conclusion path
+            const updatedDoc = this.lowdbService.getDocument(refNo, category);
+            await this.lowdbService.upsertDocument(refNo, category, {
+              ...updatedDoc,
+              source: {
+                ...updatedDoc.source,
+                conclusionFilePath: conclusionPath,
+              },
+            });
+            this.logger.log(`[Queue] Conclusion downloaded: ${conclusionPath}`);
+
+            // Chain conclusion convert job
+            await this.submitJob({
+              action: 'convert',
+              category,
+              refNo: `${refNo}_conclusion`,
+              sourceUrl: conclusionPath,
+            });
+          } else {
+            this.logger.warn(`[Queue] Conclusion buffer null for ${refNo} - conclusion may not be published yet`);
+          }
+        } catch (conclusionError) {
+          this.logger.error(`[Queue] Failed to download conclusion for ${refNo}:`, conclusionError);
+          // Don't fail the main download - log and continue
+        }
+      }
+
       // Auto-submit convert job after download succeeds
       // Use try/catch to prevent chain failures from affecting download completion
       this.logger.log(`[Queue] Auto-submitting convert job for ${category}/${refNo} after download`);
