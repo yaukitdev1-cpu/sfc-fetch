@@ -63,7 +63,7 @@ export class DiscoverySchedulerService implements OnModuleInit, OnModuleDestroy 
     } else {
       this.categories = ['circulars', 'consultations', 'news'];
     }
-    this.startYear = this.configService.get<number>('discoveryStartYear') ?? 2020;
+    this.startYear = this.configService.get<number>('discoveryStartYear') ?? 2000;
     this.pageSize = this.configService.get<number>('discoveryPageSize') ?? 100;
     this.requestIntervalMs = this.configService.get<number>('discoveryRequestIntervalMs') ?? 500;
   }
