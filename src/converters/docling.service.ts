@@ -36,14 +36,28 @@ export class DoclingService {
       await this.runDocling(pdfPath, tempDir);
 
       if (!(await fs.pathExists(expectedOutputFile))) {
-        // Fallback: look for any .md file in the output directory
+        // Fallback: look for any .md FILE (not directory) in the output directory
+        // Docling sometimes creates a directory "output.md" instead of a file
         const files = await fs.readdir(tempDir);
-        const mdFile = files.find(f => f.endsWith('.md'));
-        if (!mdFile) {
-          throw new Error(`Docling conversion failed - no output file generated at ${expectedOutputFile}`);
+        for (const f of files) {
+          if (!f.endsWith('.md')) continue;
+          const fullPath = path.join(tempDir, f);
+          const stat = await fs.stat(fullPath);
+          if (stat.isFile()) {
+            const content = await fs.readFile(fullPath, 'utf8');
+            return content as string;
+          }
+          // If it's a directory ending in .md, look inside for .md files (docling quirk)
+          if (stat.isDirectory()) {
+            const subFiles = await fs.readdir(fullPath);
+            const subMdFile = subFiles.find(sf => sf.endsWith('.md'));
+            if (subMdFile) {
+              const content = await fs.readFile(path.join(fullPath, subMdFile), 'utf8');
+              return content as string;
+            }
+          }
         }
-        const content = await fs.readFile(path.join(tempDir, mdFile), 'utf8');
-        return content as string;
+        throw new Error(`Docling conversion failed - no output file generated at ${expectedOutputFile}`);
       }
 
       const content = await fs.readFile(expectedOutputFile, 'utf8');
