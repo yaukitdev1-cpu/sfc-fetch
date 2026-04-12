@@ -97,6 +97,12 @@ export class QueueService implements OnModuleInit, OnModuleDestroy {
       this.logger.error(`[Queue] Task failed: ${taskId}`, error);
     });
 
+    // IMPORTANT: Start the queue consumer BEFORE pushing jobs
+    // better-queue needs the consumer to be active before jobs are pushed
+    const concurrent = this.configService.get<number>('queue.concurrent') || 4;
+    this.queue.process(processor, concurrent);
+    this.logger.log(`[Queue] Queue consumer started with concurrency ${concurrent}`);
+
     // THEN load pending jobs from LowDB
     const pendingJobs = this.lowdbService.getPendingQueueJobs();
     if (pendingJobs.length > 0) {
@@ -106,11 +112,6 @@ export class QueueService implements OnModuleInit, OnModuleDestroy {
         this.queue.push(job);
       });
     }
-
-    // IMPORTANT: Start the queue consumer
-    // Without this, jobs are pushed but never processed!
-    this.queue.process(processor, this.configService.get<number>('queue.concurrent') || 4);
-    this.logger.log('[Queue] Queue consumer started');
 
     // Recovery: Re-submit jobs for documents stuck in intermediate workflow states
     await this.recoverStuckDocuments();
