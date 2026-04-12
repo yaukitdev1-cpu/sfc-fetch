@@ -26,20 +26,31 @@ export class DoclingService {
     const tempDir = path.join(os.tmpdir(), `docling-${Date.now()}`);
     await fs.ensureDir(tempDir);
 
-    const outputPath = path.join(tempDir, 'output.md');
+    // Docling's --output expects a DIRECTORY, not a file path.
+    // It creates a file named after the input PDF inside that directory.
+    // e.g., input.pdf -> outputDir/input.pdf.md
+    const inputBasename = path.basename(pdfPath, path.extname(pdfPath));
+    const expectedOutputFile = path.join(tempDir, `${inputBasename}.md`);
 
     try {
-      await this.runDocling(pdfPath, outputPath);
+      await this.runDocling(pdfPath, tempDir);
 
-      if (!(await fs.pathExists(outputPath))) {
-        throw new Error('Docling conversion failed - no output file generated');
+      if (!(await fs.pathExists(expectedOutputFile))) {
+        // Fallback: look for any .md file in the output directory
+        const files = await fs.readdir(tempDir);
+        const mdFile = files.find(f => f.endsWith('.md'));
+        if (!mdFile) {
+          throw new Error(`Docling conversion failed - no output file generated at ${expectedOutputFile}`);
+        }
+        const content = await fs.readFile(path.join(tempDir, mdFile), 'utf8');
+        return content as string;
       }
 
-      const content = await fs.readFile(outputPath, 'utf8');
+      const content = await fs.readFile(expectedOutputFile, 'utf8');
       return content as string;
     } finally {
       // Cleanup temp directory
-      await fs.remove(tempDir);
+      await fs.remove(tempDir).catch(() => {});
     }
   }
 
