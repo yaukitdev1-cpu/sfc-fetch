@@ -63,17 +63,17 @@ export class QueueService implements OnModuleInit, OnModuleDestroy {
     const maxRetries = this.configService.get<number>('queueMaxRetries') || 5;
     let jobLatencyTracker = new Map<string, number>();
 
-    const processor = async (job: any, cb: (error: any, result?: JobResult) => void) => {
+    const processor = async (job: any): Promise<JobResult> => {
       jobLatencyTracker.set(job.id, Date.now());
       try {
         this.logger.log(`[Queue] Processing job: ${job.id} - ${job.category}/${job.refNo}`);
         const result = await this.processJob(job);
         jobLatencyTracker.delete(job.id);
-        cb(null, { success: true, result });
+        return { success: true, result };
       } catch (error) {
         jobLatencyTracker.delete(job.id);
         this.logger.error(`[Queue] Job failed: ${job.id}`, error);
-        cb(error, { success: false, error: (error as Error).message });
+        throw error; // better-queue v3 handles errors via rejection
       }
     };
 
@@ -97,13 +97,8 @@ export class QueueService implements OnModuleInit, OnModuleDestroy {
       this.logger.error(`[Queue] Task failed: ${taskId}`, error);
     });
 
-    // IMPORTANT: Start the queue consumer BEFORE pushing jobs
-    // better-queue needs the consumer to be active before jobs are pushed
-    const concurrent = this.configService.get<number>('queue.concurrent') || 4;
-    this.queue.process(processor, concurrent);
-    this.logger.log(`[Queue] Queue consumer started with concurrency ${concurrent}`);
-
-    // THEN load pending jobs from LowDB
+    // Load pending jobs from LowDB
+    // Queue consumer is already started via constructor (processor passed to Queue)
     const pendingJobs = this.lowdbService.getPendingQueueJobs();
     if (pendingJobs.length > 0) {
       this.logger.log(`[Queue] Loading ${pendingJobs.length} pending jobs from LowDB`);
