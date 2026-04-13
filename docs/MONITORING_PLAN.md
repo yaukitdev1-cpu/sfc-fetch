@@ -23,7 +23,24 @@
 
 ## 2. Service Startup Monitoring
 
-### Start Command
+### Recommended: Use tmux
+
+Always run the app inside tmux so logs persist and you can reattach to monitor:
+
+```bash
+# Create a new tmux session
+tmux new -s sfc-fetch
+
+# Start the app
+cd /home/openclaw/.openclaw/workspace/sfc-fetch
+bun run dev
+
+# Detach with Ctrl+b, then d
+# Reattach later with
+tmux attach -t sfc-fetch
+```
+
+### Start Command (without tmux)
 ```bash
 cd /home/openclaw/.openclaw/workspace/sfc-fetch
 bun run dev
@@ -275,11 +292,13 @@ curl -s 'http://localhost:3401/workflows?status=FAILED' | jq '.workflows[-5:]'
 
 | Component | Status Check | Frequency |
 |-----------|-------------|-----------|
-| Server running | `curl /health` | Every 30s |
+| Server running | `tmux attach -t sfc-fetch` then `curl /health` | Every 30s |
 | Queue health | `curl /queue/status` | Every 60s |
 | Workflow stats | `curl /workflows/stats` | Every 5min |
-| Log errors | `tail -f` or `grep ERROR` | Real-time |
+| Log errors | `tmux attach -t sfc-fetch` and watch logs | Real-time |
 | Disk space | `df -h` | Every 5min |
+
+> **Always use tmux** when running the app — do not run `bun run dev` directly in a terminal you need to close.
 
 ---
 
