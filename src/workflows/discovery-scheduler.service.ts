@@ -182,11 +182,11 @@ export class DiscoverySchedulerService implements OnModuleInit, OnModuleDestroy 
         result.documentRefs = newsResult.documentRefs;
       } else {
         // Circulars: must iterate year-by-year (no year="all" support)
-        // Iterate backward from current year, stopping when a year returns 0 items
+        // Iterate backward from current year to startYear, stopping when a year returns 0 items
         const currentYear = new Date().getFullYear();
         let year = currentYear;
 
-        while (year >= 1) {
+        while (year >= this.startYear) {
           const yearResults = await this.discoverYear(category, year, result);
           result.totalFound += yearResults.totalFound;
           result.newlyQueued += yearResults.newlyQueued;

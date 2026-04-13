@@ -145,12 +145,13 @@ export class QueueService implements OnModuleInit, OnModuleDestroy {
             this.logger.log(`[Recovery] Re-submitting download job for stuck ${category}/${refNo}`);
             // For circulars, don't use sourceUrl - getCircularPdf uses refNo directly
             // sourceUrl was never set for circulars during discover because SFC API doesn't provide pdfUrl
-            await this.submitJob({
+            // Fire-and-forget: enqueue job without waiting for completion to avoid app.init() timeout
+            this.submitJob({
               action: 'download',
               category,
               refNo,
               sourceUrl: category === 'circulars' ? undefined : (doc.source?.pdfUrl || doc.source?.htmlUrl),
-            });
+            }).catch(err => this.logger.error(`[Recovery] Failed to enqueue download job for ${category}/${refNo}:`, err));
             recoveredCount++;
           } else if (status === 'DOWNLOADING') {
             // Document download was completed but convert wasn't submitted
@@ -162,11 +163,12 @@ export class QueueService implements OnModuleInit, OnModuleDestroy {
               continue;
             }
             this.logger.log(`[Recovery] Re-submitting convert job for stuck ${category}/${refNo}`);
-            await this.submitJob({
+            // Fire-and-forget: enqueue job without waiting for completion to avoid app.init() timeout
+            this.submitJob({
               action: 'convert',
               category,
               refNo,
-            });
+            }).catch(err => this.logger.error(`[Recovery] Failed to enqueue convert job for ${category}/${refNo}:`, err));
             recoveredCount++;
           } else if (status === 'PROCESSING') {
             // If markdownPath exists, conversion finished but workflow wasn't completed
@@ -186,11 +188,12 @@ export class QueueService implements OnModuleInit, OnModuleDestroy {
                 this.logger.debug(`[Recovery] Job already exists for ${category}/${refNo}, skipping`);
               } else {
                 this.logger.log(`[Recovery] Re-submitting convert job for stuck ${category}/${refNo}`);
-                await this.submitJob({
+                // Fire-and-forget: enqueue job without waiting for completion to avoid app.init() timeout
+                this.submitJob({
                   action: 'convert',
                   category,
                   refNo,
-                });
+                }).catch(err => this.logger.error(`[Recovery] Failed to enqueue convert job for ${category}/${refNo}:`, err));
               }
             }
             recoveredCount++;
