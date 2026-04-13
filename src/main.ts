@@ -146,10 +146,10 @@ async function bootstrap() {
   const initPromise = app.init();
   const timeoutPromise = new Promise<void>((resolve) => {
     setTimeout(() => {
-      console.log(`[SFC-Fetch] WARNING: app.init() timeout after 30s`);
-      fileLogger.warn(`app.init() timed out after 30s, forcing continue`, 'Bootstrap');
+      console.log(`[SFC-Fetch] WARNING: app.init() timeout after 300s`);
+      fileLogger.warn(`app.init() timed out after 300s, forcing continue`, 'Bootstrap');
       resolve();
-    }, 30000);
+    }, 300000);
   });
 
   await Promise.race([initPromise, timeoutPromise]);
@@ -179,7 +179,7 @@ async function bootstrap() {
     setTimeout(() => {
       console.log(`[SFC-Fetch] Fastify listen timeout, proceeding anyway`);
       resolve();
-    }, 15000);
+    }, 30000);
   });
 
   fileLogger.log(`Server running on port ${port}`, 'Bootstrap');

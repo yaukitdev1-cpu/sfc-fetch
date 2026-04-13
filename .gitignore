@@ -60,3 +60,9 @@ temp/
 
 # Test artifacts
 tests/output/
+
+# Raw files
+data/raw/
+
+# Generated content
+data/content/

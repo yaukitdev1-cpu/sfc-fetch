@@ -70,7 +70,13 @@ export class DiscoverySchedulerService implements OnModuleInit, OnModuleDestroy 
 
   onModuleInit() {
     if (this.enabled) {
-      this.startScheduler();
+      // Delay discovery start to 5 minutes after server starts
+      // This gives queue time to process initial jobs without discovery interference
+      this.logger.log('Discovery scheduler disabled for first 5 minutes');
+      setTimeout(() => {
+        this.logger.log('Discovery scheduler now starting...');
+        this.startScheduler();
+      }, 300000);
     } else {
       this.logger.log('Discovery scheduler is disabled via DISCOVERY_ENABLED=false');
     }
@@ -496,6 +502,10 @@ export class DiscoverySchedulerService implements OnModuleInit, OnModuleDestroy 
   }
 
   private async throttle(): Promise<void> {
-    await new Promise((resolve) => setTimeout(resolve, this.requestIntervalMs));
+    // Don't actually throttle - let discovery run as fast as possible
+    // The API has its own rate limiting
+    return;
+    // Original throttle code preserved for reference:
+    // await new Promise((resolve) => setTimeout(resolve, this.requestIntervalMs));
   }
 }
