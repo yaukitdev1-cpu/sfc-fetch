@@ -231,10 +231,8 @@ export class QueueService implements OnModuleInit, OnModuleDestroy {
     });
 
     try {
-      // Track step in workflow
-      await this.workflowService.startStep(refNo, category, 'discover');
-
-      // Fetch metadata from appropriate SFC client
+      // Fetch metadata from appropriate SFC client FIRST
+      // (This doesn't require the document to exist yet)
       let metadata: any;
       switch (category) {
         case 'circulars':
@@ -253,7 +251,8 @@ export class QueueService implements OnModuleInit, OnModuleDestroy {
           throw new Error(`Unknown category: ${category}`);
       }
 
-      // Update document with metadata (upsert handles both new and existing documents)
+      // Create or update the document FIRST via upsert
+      // This ensures the document exists before we try to track workflow steps
       const doc = this.lowdbService.getDocument(refNo, category);
       await this.lowdbService.upsertDocument(refNo, category, {
         ...(doc || {}),
@@ -273,6 +272,12 @@ export class QueueService implements OnModuleInit, OnModuleDestroy {
           status: 'DISCOVERED',
         },
       });
+
+      // NOW track step in workflow (document exists after upsert)
+      await this.workflowService.startStep(refNo, category, 'discover');
+
+      // Re-fetch doc after upsert since local doc variable may be stale
+      const updatedDoc = this.lowdbService.getDocument(refNo, category);
 
       await this.lowdbService.updateQueueJobStatus(job._id, 'completed');
 
@@ -295,13 +300,13 @@ export class QueueService implements OnModuleInit, OnModuleDestroy {
 
           // Update document with raw file path and set workflow to DOWNLOADING
           await this.lowdbService.upsertDocument(refNo, category, {
-            ...doc,
+            ...updatedDoc,
             source: {
-              ...doc.source,
+              ...updatedDoc.source,
               rawFilePath: rawPath,
             },
             workflow: {
-              ...doc.workflow,
+              ...updatedDoc.workflow,
               status: 'DOWNLOADING',
             },
           });
@@ -320,7 +325,7 @@ export class QueueService implements OnModuleInit, OnModuleDestroy {
           }
         } catch (pdfError) {
           // If PDF fails, try HTML for modern circulars (2012+)
-          const year = doc.metadata?.year || new Date().getFullYear();
+          const year = updatedDoc.metadata?.year || new Date().getFullYear();
           if (year >= 2012) {
             this.logger.log(`[Queue] PDF not available for circular ${refNo}, trying HTML content`);
             const htmlContent = await this.circularClient.getCircularHtml(refNo);
@@ -331,13 +336,13 @@ export class QueueService implements OnModuleInit, OnModuleDestroy {
 
               // Update document with raw file path and set workflow to DOWNLOADING
               await this.lowdbService.upsertDocument(refNo, category, {
-                ...doc,
+                ...updatedDoc,
                 source: {
-                  ...doc.source,
+                  ...updatedDoc.source,
                   rawFilePath: htmlPath,
                 },
                 workflow: {
-                  ...doc.workflow,
+                  ...updatedDoc.workflow,
                   status: 'DOWNLOADING',
                 },
               });
