@@ -47,10 +47,11 @@ DB_PATH=./data/db/sfc-db.json
 # Git Backup
 GIT_REMOTE=origin
 GIT_BRANCH=main
-GIT_REPO_URL=https://github.com/your-org/sfc-backup.git
-GIT_PAT=your_github_pat
+GIT_REPO_URL=https://github.com/your-org/sfc-fetch.git
+GIT_PAT=your_github_pat_with_repo_access
 GIT_USER_NAME=SFC Bot
 GIT_USER_EMAIL=bot@example.com
+BACKUP_BRANCH=backup/data
 
 # Auto-Backup
 AUTO_HYDRATE=true
@@ -90,16 +91,40 @@ bun run build
 
 The service supports multiple mechanisms to trigger document processing workflows, from individual document operations to large-scale batch processing.
 
-### Auto-Hydrate on Startup
+### Git-Based Backup Strategy
 
-If `AUTO_HYDRATE=true` and no local data exists, the service automatically restores from git backup on startup:
+The service uses a dedicated `backup/data` branch to store compressed backup archives:
 
+**Branch Structure:**
+```
+origin/master          # Source code only (data/ is gitignored)
+origin/feature/*       # Feature branches (data/ is gitignored)
+origin/backup/data     # Backup archives only (no source code)
+```
+
+**How Dehydrate Works:**
+1. Creates `data-backup-{timestamp}.zip` at repo root (outside `data/` folder)
+2. Switches to `backup/data` branch
+3. Commits and pushes the zip file
+4. Returns to original branch
+5. Removes local zip file
+
+**How Hydrate Works:**
+1. Switches to `backup/data` branch
+2. Finds the latest backup zip
+3. Downloads and extracts to `data/` folder
+4. Returns to original branch
+
+**Manual Operations:**
 ```bash
-# Service auto-hydrates if:
-# - DATA_DIR has no existing data
-# - AUTO_HYDRATE=true
-# - GIT_REPO_URL is configured
-bun run src/main.ts
+# Create backup - commits to backup/data branch
+curl -X POST http://localhost:3000/dehydrate
+
+# Restore from backup - pulls from backup/data branch
+curl -X POST http://localhost:3000/hydrate
+
+# Check status
+curl http://localhost:3000/backup/status
 ```
 
 ### Queue Endpoints
