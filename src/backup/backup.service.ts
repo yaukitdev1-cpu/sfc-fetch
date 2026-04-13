@@ -12,7 +12,8 @@ export class BackupService implements OnModuleInit {
   private contentDir: string;
   private dbPath: string;
   private autoHydrate: boolean;
-  private autoDehydrate: boolean;
+  private backupBranch: string;
+  private repoRoot: string;
 
   constructor(
     private configService: ConfigService,
@@ -23,19 +24,21 @@ export class BackupService implements OnModuleInit {
     this.contentDir = this.configService.get<string>('contentDir') || './data/content';
     this.dbPath = this.configService.get<string>('dbPath') || './data/db/sfc-db.json';
     this.autoHydrate = this.configService.get<boolean>('autoHydrate') ?? true;
-    this.autoDehydrate = this.configService.get<boolean>('autoDehydrate') ?? true;
+    this.backupBranch = this.configService.get<string>('backupBranch') || 'backup/data';
+    this.repoRoot = process.cwd();
   }
 
   async onModuleInit() {
+    await this.gitService.checkoutMainBranch();
     await this.ensureDirectories();
 
     if (this.autoHydrate && !(await this.hasLocalData())) {
-      console.log('[SFC-Fetch] No local data found, attempting hydration...');
+      console.log('[BackupService] No local data found, attempting auto-hydration...');
       try {
         await this.hydrate();
-        console.log('[SFC-Fetch] Hydration complete');
+        console.log('[BackupService] Auto-hydration complete');
       } catch (error) {
-        console.error('[SFC-Fetch] Hydration failed:', (error as Error).message);
+        console.warn('[BackupService] Auto-hydration failed:', (error as Error).message);
       }
     }
   }
@@ -69,39 +72,45 @@ export class BackupService implements OnModuleInit {
     commitHash: string;
     totalDocuments: number;
   }> {
-    const backupId = `backup-${Date.now()}`;
-    const zipPath = path.join(this.dataDir, `${backupId}.zip`);
+    const backupId = `data-backup-${Date.now()}.zip`;
+    const zipPath = path.join(this.repoRoot, backupId);
     const zip = new AdmZip();
 
-    // Add database file
+    const filesToBackup: string[] = [];
+
     if (await fs.pathExists(this.dbPath)) {
       zip.addLocalFile(this.dbPath);
+      filesToBackup.push(this.dbPath);
     }
 
-    // Add content directory
     if (await fs.pathExists(this.contentDir)) {
       zip.addLocalFolder(this.contentDir, 'content');
+      filesToBackup.push(this.contentDir);
     }
 
-    // Write zip
-    await fs.ensureDir(this.dataDir);
     zip.writeZip(zipPath);
+    filesToBackup.push(zipPath);
 
     const sizeBytes = await this.getDirectorySize(this.contentDir);
     const compressedSizeBytes = (await fs.stat(zipPath)).size;
     const totalDocuments = this.db.getDocumentCount();
 
-    // Git operations
-    let commitHash: string;
+    let commitHash: string = '';
     try {
-      await this.gitService.addAndCommit(zipPath, `Backup: ${backupId}`);
+      await this.gitService.checkoutBackupBranch();
+      await this.gitService.stageAndCommit([backupId], `Backup: ${backupId} - ${totalDocuments} docs`);
       commitHash = await this.gitService.getLastCommitHash();
+      await this.gitService.pushCurrentBranch();
+      await this.gitService.checkoutMainBranch();
     } catch (error) {
-      console.warn('[Backup] Git commit failed:', (error as Error).message);
-      commitHash = 'uncommitted';
+      console.warn('[BackupService] Git operations failed:', (error as Error).message);
+    } finally {
+      // Always clean up local zip, even on error
+      if (await fs.pathExists(zipPath)) {
+        await fs.remove(zipPath);
+      }
     }
 
-    // Save backup metadata
     await this.db.saveBackupMetadata(backupId, {
       commitHash,
       documentsCount: totalDocuments,
@@ -109,12 +118,9 @@ export class BackupService implements OnModuleInit {
       compressedSizeBytes,
     });
 
-    // Cleanup old backups
-    await this.cleanupOldBackups();
-
     return {
       backupId,
-      filesArchived: 2,
+      filesArchived: filesToBackup.length,
       sizeBytes,
       compressedSizeBytes,
       commitHash,
@@ -122,69 +128,93 @@ export class BackupService implements OnModuleInit {
     };
   }
 
-  async hydrate(backupId?: string): Promise<{
+  async hydrate(backupPath?: string): Promise<{
     restoredFrom: string;
     collectionsRestored: string[];
     documentsRestored: number;
     contentFilesRestored: number;
   }> {
-    // Get the latest backup from git
-    const latestBackup = await this.gitService.getLatestBackupFile();
+    let zipPath = path.join(this.repoRoot, 'temp-restore.zip');
 
-    if (!latestBackup) {
-      throw new Error('No backup found in git repository');
-    }
+    try {
+      let backupInfo: { path: string; commit: string; date: Date } | null;
 
-    const tempZip = path.join(this.dataDir, `temp-${Date.now()}.zip`);
-    await this.gitService.downloadFile(latestBackup.path, tempZip);
+      if (backupPath) {
+        backupInfo = { path: backupPath, commit: '', date: new Date() };
+      } else {
+        backupInfo = await this.gitService.getLatestBackupInfo();
+      }
 
-    const zip = new AdmZip(tempZip);
-    const entries = zip.getEntries();
+      if (!backupInfo) {
+        throw new Error('No backup found in backup branch');
+      }
 
-    let documentsRestored = 0;
-    const collectionsRestored: string[] = [];
+      const success = await this.gitService.downloadBackupFile(backupInfo.path, zipPath);
+      if (!success) {
+        throw new Error(`Failed to download backup: ${backupInfo.path}`);
+      }
 
-    for (const entry of entries) {
-      const entryName = entry.entryName;
+      const zip = new AdmZip(zipPath);
+      const entries = zip.getEntries();
 
-      if (entryName === 'sfc-db.json' || entryName.startsWith('sfc-db')) {
-        // Restore database
-        const destPath = this.dbPath;
-        await fs.ensureDir(path.dirname(destPath));
-        zip.extractEntryTo(entry, path.dirname(destPath), true, true);
-        documentsRestored = this.db.getDocumentCount();
-        collectionsRestored.push('database');
-      } else if (entryName.startsWith('content/')) {
-        // Restore content
-        const destPath = this.contentDir;
-        await fs.ensureDir(destPath);
-        zip.extractEntryTo(entry, destPath, true, true);
-        if (!collectionsRestored.includes('content')) {
-          collectionsRestored.push('content');
+      let documentsRestored = 0;
+      const collectionsRestored: string[] = [];
+
+      await fs.ensureDir(this.dataDir);
+      await fs.ensureDir(this.contentDir);
+
+      for (const entry of entries) {
+        const entryName = entry.entryName;
+
+        if (entryName === 'sfc-db.json' || entryName.startsWith('sfc-db')) {
+          await fs.ensureDir(path.dirname(this.dbPath));
+          zip.extractEntryTo(entry, path.dirname(this.dbPath), true, true);
+          documentsRestored = this.db.getDocumentCount();
+          if (!collectionsRestored.includes('database')) {
+            collectionsRestored.push('database');
+          }
+        } else if (entryName.startsWith('content/')) {
+          zip.extractEntryTo(entry, this.contentDir, true, true);
+          if (!collectionsRestored.includes('content')) {
+            collectionsRestored.push('content');
+          }
         }
       }
+
+      await fs.remove(zipPath);
+      await this.gitService.checkoutMainBranch();
+
+      const contentFilesRestored = await this.countContentFiles();
+
+      return {
+        restoredFrom: backupInfo.path,
+        collectionsRestored,
+        documentsRestored,
+        contentFilesRestored,
+      };
+    } catch (error) {
+      if (await fs.pathExists(zipPath)) {
+        await fs.remove(zipPath);
+      }
+      await this.gitService.checkoutMainBranch();
+      throw error;
     }
-
-    // Cleanup temp file
-    await fs.remove(tempZip);
-
-    const contentFilesRestored = await this.countContentFiles();
-
-    return {
-      restoredFrom: latestBackup.path,
-      collectionsRestored,
-      documentsRestored,
-      contentFilesRestored,
-    };
   }
 
-  getStatus(): {
+  async getStatus(): Promise<{
     lastBackup: any | null;
     hasLocalData: boolean;
-  } {
+    backupBranch: string;
+    isRepo: boolean;
+  }> {
+    const hasLocalData = await this.hasLocalData();
+    const isRepo = await this.gitService.isRepo();
+
     return {
       lastBackup: this.db.getLastBackup(),
-      hasLocalData: false,
+      hasLocalData,
+      backupBranch: this.backupBranch,
+      isRepo,
     };
   }
 
@@ -231,27 +261,5 @@ export class BackupService implements OnModuleInit {
 
     await countDir(this.contentDir);
     return count;
-  }
-
-  private async cleanupOldBackups() {
-    const retention = this.configService.get<number>('backupRetention') || 10;
-    const backupDir = this.dataDir;
-
-    if (!(await fs.pathExists(backupDir))) {
-      return;
-    }
-
-    const files = await fs.readdir(backupDir);
-    const zipFiles = files
-      .filter((f: string) => f.startsWith('backup-') && f.endsWith('.zip'))
-      .sort()
-      .reverse();
-
-    if (zipFiles.length > retention) {
-      const toDelete = zipFiles.slice(retention);
-      for (const file of toDelete) {
-        await fs.remove(path.join(backupDir, file));
-      }
-    }
   }
 }

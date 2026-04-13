@@ -47,22 +47,8 @@ yarn-debug.log*
 yarn-error.log*
 lerna-debug.log*
 
-# Data directories
-data/db/*.db
-!data/db/.gitkeep
-data/db/*.db-shm
-data/db/*.db-wal
+# Data directories - fully ignored (backed up via git-based hydration/dehydration system)
+data/
 
-# Temporary files
-tmp/
-temp/
-*.tmp
-
-# Test artifacts
-tests/output/
-
-# Raw files
-data/raw/
-
-# Generated content
-data/content/
+# Keep db directory structure marker (use: git add -f data/db/.gitkeep to track if needed)
+# !data/db/.gitkeep
