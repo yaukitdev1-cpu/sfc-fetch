@@ -484,6 +484,7 @@ export class DiscoverySchedulerService implements OnModuleInit, OnModuleDestroy 
 
   private async queueDocument(refNo: string, category: string, item: any): Promise<void> {
     try {
+      this.logger.debug(`Attempting to queue document: ${category}/${refNo}`);
       await this.queueService.submitJob({
         category,
         refNo,
@@ -494,9 +495,10 @@ export class DiscoverySchedulerService implements OnModuleInit, OnModuleDestroy 
           year: item.year || item.releaseDate?.split('-')[0] || item.effectiveDate?.split('-')[0] || new Date().getFullYear(),
         },
       });
-      this.logger.debug(`Queued document: ${category}/${refNo}`);
+      this.logger.log(`Successfully queued document: ${category}/${refNo}`);
     } catch (error) {
       this.logger.error(`Failed to queue document ${category}/${refNo}: ${error}`);
+      this.logger.error(`Error details: ${JSON.stringify(error, Object.getOwnPropertyNames(error))}`);
       throw error;
     }
   }
