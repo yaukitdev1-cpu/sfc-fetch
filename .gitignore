@@ -63,3 +63,6 @@ tests/output/
 
 # Raw files
 data/raw/
+
+# Generated content
+data/content/

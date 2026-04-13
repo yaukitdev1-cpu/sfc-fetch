@@ -143,11 +143,13 @@ export class QueueService implements OnModuleInit, OnModuleDestroy {
               continue;
             }
             this.logger.log(`[Recovery] Re-submitting download job for stuck ${category}/${refNo}`);
+            // For circulars, don't use sourceUrl - getCircularPdf uses refNo directly
+            // sourceUrl was never set for circulars during discover because SFC API doesn't provide pdfUrl
             await this.submitJob({
               action: 'download',
               category,
               refNo,
-              sourceUrl: doc.source?.pdfUrl || doc.source?.htmlUrl,
+              sourceUrl: category === 'circulars' ? undefined : (doc.source?.pdfUrl || doc.source?.htmlUrl),
             });
             recoveredCount++;
           } else if (status === 'DOWNLOADING') {
@@ -280,19 +282,99 @@ export class QueueService implements OnModuleInit, OnModuleDestroy {
         htmlUrl: metadata.htmlUrl || metadata.url,
       });
 
-      // Auto-submit download job after discover succeeds
-      // Use try/catch to prevent chain failures from affecting discover completion
-      this.logger.log(`[Queue] Auto-submitting download job for ${category}/${refNo} after discover`);
-      try {
-        await this.submitJob({
-          action: 'download',
-          category,
-          refNo,
-          sourceUrl: metadata.pdfUrl || metadata.pdfLink || metadata.url,
-        });
-      } catch (err) {
-        this.logger.error(`[Queue] Failed to chain download job for ${category}/${refNo}:`, err);
-        // Don't rollback - current step still completes
+      // For circulars, directly fetch the PDF here instead of auto-submitting a download job
+      // This avoids the broken chain where submitJob fails silently (error caught but not propagated)
+      // The circular download uses refNo directly via getCircularPdf, so no sourceUrl is needed
+      if (category === 'circulars') {
+        this.logger.log(`[Queue] Fetching PDF directly for circular ${refNo} after discover`);
+        const rawPath = this.getRawFilePath(category, refNo, 'pdf');
+        try {
+          const content = await this.circularClient.getCircularPdf(refNo);
+          await fs.ensureDir(path.dirname(rawPath));
+          await fs.writeFile(rawPath, content);
+
+          // Update document with raw file path and set workflow to DOWNLOADING
+          await this.lowdbService.upsertDocument(refNo, category, {
+            ...doc,
+            source: {
+              ...doc.source,
+              rawFilePath: rawPath,
+            },
+            workflow: {
+              ...doc.workflow,
+              status: 'DOWNLOADING',
+            },
+          });
+
+          // Auto-submit convert job after download succeeds
+          this.logger.log(`[Queue] Auto-submitting convert job for ${category}/${refNo} after direct PDF fetch`);
+          try {
+            await this.submitJob({
+              action: 'convert',
+              category,
+              refNo,
+            });
+          } catch (err) {
+            this.logger.error(`[Queue] Failed to chain convert job for ${category}/${refNo}:`, err);
+            // Don't rollback - current step still completes
+          }
+        } catch (pdfError) {
+          // If PDF fails, try HTML for modern circulars (2012+)
+          const year = doc.metadata?.year || new Date().getFullYear();
+          if (year >= 2012) {
+            this.logger.log(`[Queue] PDF not available for circular ${refNo}, trying HTML content`);
+            const htmlContent = await this.circularClient.getCircularHtml(refNo);
+            if (htmlContent) {
+              const htmlPath = this.getRawFilePath(category, refNo, 'html');
+              await fs.ensureDir(path.dirname(htmlPath));
+              await fs.writeFile(htmlPath, htmlContent);
+
+              // Update document with raw file path and set workflow to DOWNLOADING
+              await this.lowdbService.upsertDocument(refNo, category, {
+                ...doc,
+                source: {
+                  ...doc.source,
+                  rawFilePath: htmlPath,
+                },
+                workflow: {
+                  ...doc.workflow,
+                  status: 'DOWNLOADING',
+                },
+              });
+
+              // Auto-submit convert job after download succeeds
+              this.logger.log(`[Queue] Auto-submitting convert job for ${category}/${refNo} after HTML fetch`);
+              try {
+                await this.submitJob({
+                  action: 'convert',
+                  category,
+                  refNo,
+                });
+              } catch (err) {
+                this.logger.error(`[Queue] Failed to chain convert job for ${category}/${refNo}:`, err);
+              }
+            } else {
+              throw pdfError;
+            }
+          } else {
+            throw pdfError;
+          }
+        }
+      } else {
+        // Auto-submit download job after discover succeeds for non-circulars
+        // Use try/catch to prevent chain failures from affecting discover completion
+        this.logger.log(`[Queue] Auto-submitting download job for ${category}/${refNo} after discover`);
+        try {
+          await this.submitJob({
+            action: 'download',
+            category,
+            refNo,
+            sourceUrl: metadata.pdfUrl || metadata.pdfLink || metadata.url,
+          });
+        } catch (err) {
+          this.logger.error(`[Queue] Failed to chain download job for ${category}/${refNo}:`, err);
+          // Don't rollback - current step still completes
+        }
       }
 
       return job;
@@ -463,6 +545,19 @@ export class QueueService implements OnModuleInit, OnModuleDestroy {
 
       return job;
     } catch (error) {
+      // Update document workflow status to DISCOVERED so recovery can properly retry download
+      // If we leave it at DOWNLOADING, recovery would incorrectly submit a convert job
+      const doc = this.lowdbService.getDocument(refNo, category);
+      if (doc) {
+        await this.lowdbService.upsertDocument(refNo, category, {
+          ...doc,
+          workflow: {
+            ...doc.workflow,
+            status: 'DISCOVERED',
+            downloadError: error.message,
+          },
+        });
+      }
       await this.lowdbService.updateQueueJobStatus(job._id, 'failed');
       await this.workflowService.failStep(refNo, category, 'download', error);
       throw error;
