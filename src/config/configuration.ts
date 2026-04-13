@@ -52,6 +52,7 @@ export default () => ({
   discoveryRequestIntervalMs: parseInt(process.env.DISCOVERY_REQUEST_INTERVAL_MS || '500', 10),
 
   backupRetention: parseInt(process.env.BACKUP_RETENTION || '10', 10),
+  backupBranch: process.env.BACKUP_BRANCH || 'backup/data',
 
   dbEncryption: process.env.DB_ENCRYPTION === 'true' || false,
 
