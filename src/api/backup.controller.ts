@@ -32,7 +32,7 @@ export class BackupController {
   }
 
   @Get('backup/status')
-  getStatus() {
+  async getStatus() {
     return this.backupService.getStatus();
   }
 }

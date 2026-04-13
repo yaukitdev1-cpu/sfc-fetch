@@ -102,9 +102,13 @@ export class BackupService implements OnModuleInit {
       commitHash = await this.gitService.getLastCommitHash();
       await this.gitService.pushCurrentBranch();
       await this.gitService.checkoutMainBranch();
-      await fs.remove(zipPath);
     } catch (error) {
       console.warn('[BackupService] Git operations failed:', (error as Error).message);
+    } finally {
+      // Always clean up local zip, even on error
+      if (await fs.pathExists(zipPath)) {
+        await fs.remove(zipPath);
+      }
     }
 
     await this.db.saveBackupMetadata(backupId, {
@@ -197,17 +201,20 @@ export class BackupService implements OnModuleInit {
     }
   }
 
-  getStatus(): {
+  async getStatus(): Promise<{
     lastBackup: any | null;
     hasLocalData: boolean;
     backupBranch: string;
     isRepo: boolean;
-  } {
+  }> {
+    const hasLocalData = await this.hasLocalData();
+    const isRepo = await this.gitService.isRepo();
+
     return {
       lastBackup: this.db.getLastBackup(),
-      hasLocalData: false,
+      hasLocalData,
       backupBranch: this.backupBranch,
-      isRepo: false,
+      isRepo,
     };
   }
 
