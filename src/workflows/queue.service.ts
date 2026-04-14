@@ -386,7 +386,75 @@ export class QueueService implements OnModuleInit, OnModuleDestroy {
       }
 
       return job;
-    } catch (error) {
+    } catch (error: any) {
+      // Ensure document exists with FAILED status before calling failStep
+      // This handles the case where getCircular failed BEFORE the document was upserted
+      const errorMessage = error?.message || String(error);
+      const errorType = error?.type || 'UNKNOWN';
+      const errorStack = error?.stack;
+
+      let doc = this.lowdbService.getDocument(refNo, category);
+      if (!doc) {
+        // Document was never created because getCircular failed before upsertDocument
+        // Create a minimal document with FAILED status and the error
+        await this.lowdbService.upsertDocument(refNo, category, {
+          _id: refNo,
+          category,
+          workflow: {
+            status: 'FAILED',
+            currentStep: 'discover',
+            error: errorMessage,
+            startedAt: new Date().toISOString(),
+          },
+          subworkflow: {
+            steps: [{
+              step: 'discover',
+              status: 'FAILED',
+              startedAt: new Date().toISOString(),
+              completedAt: new Date().toISOString(),
+              errors: [{
+                attempt: 1,
+                timestamp: new Date().toISOString(),
+                errorType: errorType,
+                message: errorMessage,
+              }],
+            }],
+          },
+          history: {
+            runs: [],
+            retries: [],
+            errors: [{
+              timestamp: new Date().toISOString(),
+              message: errorMessage,
+              stack: errorStack,
+            }],
+          },
+        });
+        doc = this.lowdbService.getDocument(refNo, category);
+      } else if (!doc.subworkflow?.steps?.find((s: any) => s.step === 'discover')) {
+        // Document exists but discover step was never added (startStep was never called)
+        // Add the discover step with FAILED status and error
+        const now = new Date().toISOString();
+        doc.workflow.status = 'FAILED';
+        doc.workflow.error = errorMessage;
+        if (!doc.subworkflow) doc.subworkflow = { steps: [] };
+        if (!doc.subworkflow.steps) doc.subworkflow.steps = [];
+        doc.subworkflow.steps.push({
+          step: 'discover',
+          status: 'FAILED',
+          startedAt: now,
+          completedAt: now,
+          attempts: 1,
+          errors: [{
+            attempt: 1,
+            timestamp: now,
+            errorType: errorType,
+            message: errorMessage,
+          }],
+        });
+        await this.lowdbService.upsertDocument(refNo, category, doc);
+      }
+
       await this.lowdbService.updateQueueJobStatus(job._id, 'failed');
       await this.workflowService.failStep(refNo, category, 'discover', error);
       throw error;
@@ -552,7 +620,7 @@ export class QueueService implements OnModuleInit, OnModuleDestroy {
       }
 
       return job;
-    } catch (error) {
+    } catch (error: any) {
       // Update document workflow status to DISCOVERED so recovery can properly retry download
       // If we leave it at DOWNLOADING, recovery would incorrectly submit a convert job
       const doc = this.lowdbService.getDocument(refNo, category);
@@ -562,7 +630,7 @@ export class QueueService implements OnModuleInit, OnModuleDestroy {
           workflow: {
             ...doc.workflow,
             status: 'DISCOVERED',
-            downloadError: error.message,
+            downloadError: error?.message || String(error),
           },
         });
       }

@@ -306,7 +306,51 @@ curl -s 'http://localhost:3401/workflows?status=FAILED' | jq '.workflows[-5:]'
 
 ---
 
+---
+
+## 11. Known Failure Patterns
+
+### FAILED documents with error=null
+
+**Symptom:** Documents show `status: FAILED` but `error: null` and `currentStep: discover`.
+
+**Root Cause:** When `getCircular()` (or similar SFC API) fails BEFORE `startStep()` is called in discoverResource:
+1. The document was never created/upserted in the current attempt
+2. `failStep()` is called but finds no document (or finds one without the discover step)
+3. `failStep()` throws "Document not found" before properly recording the error
+4. The workflow status is set to FAILED but the error is never recorded
+
+**Fix:** Modified `discoverResource()` catch block to create a minimal document with FAILED status and error info BEFORE calling `failStep()` if the document doesn't exist. Also modified `failStep()` to:
+- Create a minimal document if none exists
+- Add a discover step with error if the step doesn't exist
+- Always set `doc.workflow.error` for visibility
+
+### DOWNLOADING documents with currentStep=discover (inconsistent state)
+
+**Symptom:** Documents show `status: DOWNLOADING` but `currentStep: discover`.
+
+**Root Cause:** For circulars, after discover succeeds, the PDF fetch might fail. The discover step was already marked COMPLETED, but the workflow status was set to DOWNLOADING. When failStep is called, it finds the step but the error isn't properly recorded.
+
+**Fix:** Retry the document to re-run the discover phase with proper error recording.
+
+### Documents stuck in DISCOVERED state
+
+**Symptom:** Documents remain in `DISCOVERED` state and don't progress.
+
+**Fix:** Use recovery mechanism or manually trigger download:
+```bash
+curl -X POST http://localhost:3401/queue/download -d '{"category":"circulars","refNo":"XX123"}'
+```
+
+---
+
 ## Changelog
+
+### v1.2 (2026-04-14)
+- Fixed error recording bug in discoverResource catch block
+- Modified failStep() to always set doc.workflow.error and handle missing document/step gracefully
+- Fixed retryDocument() to initialize doc.history if it doesn't exist
+- Fixed health.controller.ts to await async getStatus() call
 
 ### v1.1 (2026-04-13)
 - Added startup issue patterns (recoverStuckDocuments delays, app.init timeout fix)
@@ -318,3 +362,6 @@ curl -s 'http://localhost:3401/workflows?status=FAILED' | jq '.workflows[-5:]'
 - Clarified thresholds for RETRYING state documents
 - Added startup delay note for discovery scheduler
 - Clarified that guidelines use separate scrape mechanism
+
+### v1.0
+- Initial monitoring plan
