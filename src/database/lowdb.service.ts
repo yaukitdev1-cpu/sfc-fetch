@@ -95,6 +95,28 @@ export class LowdbService implements OnModuleInit, OnModuleDestroy {
     await this.initialize();
   }
 
+  /**
+   * Safe write wrapper that handles ENOENT errors during LowDB writes.
+   * The steno library (used by LowDB) can fail with ENOENT when the temp file
+   * isn't fully written before rename. This wrapper retries with proper directory
+   * synchronization to prevent data loss.
+   */
+  private async safeWrite(): Promise<void> {
+    const dbDir = path.dirname(this.dbPath);
+    await fs.ensureDir(dbDir);
+    try {
+      await this.db.write();
+    } catch (error: any) {
+      // If ENOENT (file not found during rename), retry once after ensuring directory
+      if (error?.code === 'ENOENT' || error?.message?.includes('rename')) {
+        await fs.ensureDir(dbDir);
+        await this.db.write();
+      } else {
+        throw error;
+      }
+    }
+  }
+
   async onModuleDestroy() {
     await this.close();
   }
@@ -272,7 +294,7 @@ export class LowdbService implements OnModuleInit, OnModuleDestroy {
       this.collectionCache.delete(categoryKey);
     }
 
-    await this.db.write();
+    await this.safeWrite();
 
     // Database profiling - log operation duration
     const duration = Date.now() - start;
@@ -315,7 +337,7 @@ export class LowdbService implements OnModuleInit, OnModuleDestroy {
     }
     doc.workflow.updatedAt = new Date().toISOString();
 
-    await this.db.write();
+    await this.safeWrite();
     return doc;
   }
 
@@ -332,7 +354,7 @@ export class LowdbService implements OnModuleInit, OnModuleDestroy {
     }
 
     doc.subworkflow.steps.push(step);
-    await this.db.write();
+    await this.safeWrite();
     return doc;
   }
 
@@ -350,7 +372,7 @@ export class LowdbService implements OnModuleInit, OnModuleDestroy {
     if (!step) return null;
 
     Object.assign(step, updates);
-    await this.db.write();
+    await this.safeWrite();
     return doc;
   }
 
@@ -370,7 +392,7 @@ export class LowdbService implements OnModuleInit, OnModuleDestroy {
     if (!step.errors) step.errors = [];
     step.errors.push(error);
 
-    await this.db.write();
+    await this.safeWrite();
     return doc;
   }
 
@@ -391,7 +413,7 @@ export class LowdbService implements OnModuleInit, OnModuleDestroy {
       doc.history.reRuns.push(entry.data);
     }
 
-    await this.db.write();
+    await this.safeWrite();
     return doc;
   }
 
@@ -407,7 +429,7 @@ export class LowdbService implements OnModuleInit, OnModuleDestroy {
       createdAt: new Date().toISOString(),
       ...data,
     });
-    await this.db.write();
+    await this.safeWrite();
   }
 
   // Get last backup
@@ -464,7 +486,7 @@ export class LowdbService implements OnModuleInit, OnModuleDestroy {
       collection.forEach(doc => doc._id && this.idIndex.set(doc._id, doc));
     });
 
-    await this.db.write();
+    await this.safeWrite();
   }
 
   // Queue operations for persistent storage
@@ -474,7 +496,7 @@ export class LowdbService implements OnModuleInit, OnModuleDestroy {
     job.updatedAt = new Date().toISOString();
     this.db.data.queue.push(job);
     this.idIndex.set(job._id, job);
-    await this.db.write();
+    await this.safeWrite();
     return job;
   }
 
@@ -485,7 +507,7 @@ export class LowdbService implements OnModuleInit, OnModuleDestroy {
     job.updatedAt = new Date().toISOString();
     if (error) job.error = error;
     this.idIndex.set(jobId, job);
-    await this.db.write();
+    await this.safeWrite();
     return job;
   }
 
@@ -499,7 +521,7 @@ export class LowdbService implements OnModuleInit, OnModuleDestroy {
 
   // Close database
   async close(): Promise<void> {
-    await this.db.write();
+    await this.safeWrite();
     console.log('[DB] Closed');
   }
 }
