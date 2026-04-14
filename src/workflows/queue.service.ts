@@ -137,6 +137,20 @@ export class QueueService implements OnModuleInit, OnModuleDestroy {
 
           if (status === 'DISCOVERED') {
             // Document has been discovered but download hasn't started
+            // Check retry count to prevent infinite retry storms
+            const retryCount = doc.workflow?.retryCount || 0;
+            if (retryCount >= 3) {
+              this.logger.warn(`[Recovery] Skipping ${category}/${refNo} - max retries exceeded (${retryCount}), marking as FAILED`);
+              await this.lowdbService.upsertDocument(refNo, category, {
+                ...doc,
+                workflow: {
+                  ...doc.workflow,
+                  status: 'FAILED',
+                  downloadError: 'Max retries exceeded during recovery',
+                },
+              });
+              continue;
+            }
             // Check for existing pending/in_progress jobs to avoid duplicates
             const existingJobs = this.lowdbService.getPendingQueueJobs()
               .filter(j => j.category === category && j.refNo === refNo);
@@ -625,18 +639,32 @@ export class QueueService implements OnModuleInit, OnModuleDestroy {
 
       return job;
     } catch (error: any) {
-      // Update document workflow status to DISCOVERED so recovery can properly retry download
-      // If we leave it at DOWNLOADING, recovery would incorrectly submit a convert job
+      // Handle retry logic to prevent infinite retry storms
       const doc = this.lowdbService.getDocument(refNo, category);
       if (doc) {
-        await this.lowdbService.upsertDocument(refNo, category, {
-          ...doc,
-          workflow: {
-            ...doc.workflow,
-            status: 'DISCOVERED',
-            downloadError: error?.message || String(error),
-          },
-        });
+        const retryCount = doc.workflow?.retryCount || 0;
+        if (retryCount >= 3) {
+          // Max retries exceeded - mark as FAILED
+          await this.lowdbService.upsertDocument(refNo, category, {
+            ...doc,
+            workflow: {
+              ...doc.workflow,
+              status: 'FAILED',
+              downloadError: error?.message || String(error),
+            },
+          });
+        } else {
+          // Set to RETRYING (not DISCOVERED) and increment retry count
+          await this.lowdbService.upsertDocument(refNo, category, {
+            ...doc,
+            workflow: {
+              ...doc.workflow,
+              status: 'RETRYING',
+              retryCount: retryCount + 1,
+              downloadError: error?.message || String(error),
+            },
+          });
+        }
       }
       await this.lowdbService.updateQueueJobStatus(job._id, 'failed');
       await this.workflowService.failStep(refNo, category, 'download', error);
