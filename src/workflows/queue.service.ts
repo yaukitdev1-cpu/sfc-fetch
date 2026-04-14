@@ -402,6 +402,7 @@ export class QueueService implements OnModuleInit, OnModuleDestroy {
         await this.lowdbService.upsertDocument(refNo, category, {
           _id: refNo,
           category,
+          metadata: {},
           workflow: {
             status: 'FAILED',
             currentStep: 'discover',
@@ -439,6 +440,7 @@ export class QueueService implements OnModuleInit, OnModuleDestroy {
         const now = new Date().toISOString();
         doc.workflow.status = 'FAILED';
         doc.workflow.error = errorMessage;
+        if (!doc.metadata) doc.metadata = {};
         if (!doc.subworkflow) doc.subworkflow = { steps: [] };
         if (!doc.subworkflow.steps) doc.subworkflow.steps = [];
         doc.subworkflow.steps.push({
