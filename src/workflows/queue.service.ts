@@ -32,6 +32,7 @@ export class QueueService implements OnModuleInit, OnModuleDestroy {
   private queuePath: string;
   private logger: Logger;
   private rawFilesDir: string;
+  private jobLatencyTracker = new Map<string, number>();
 
   constructor(
     private configService: ConfigService,
@@ -61,20 +62,20 @@ export class QueueService implements OnModuleInit, OnModuleDestroy {
 
   private async initializeQueue(): Promise<void> {
     const maxRetries = this.configService.get<number>('queueMaxRetries') || 5;
-    let jobLatencyTracker = new Map<string, number>();
 
     // Processor function for better-queue v3
     // Uses callback-style because that's what better-queue v3 expects
     const processor = (job: any, cb: (error: any, result?: JobResult) => void) => {
-      jobLatencyTracker.set(job.id, Date.now());
+      const jobId = job.id || job._id || 'unknown';
+      this.jobLatencyTracker.set(jobId, Date.now());
       this.processJob(job)
         .then(result => {
-          jobLatencyTracker.delete(job.id);
+          this.jobLatencyTracker.delete(jobId);
           cb(null, { success: true, result });
         })
         .catch(error => {
-          jobLatencyTracker.delete(job.id);
-          this.logger.error(`[Queue] Job failed: ${job.id}`, error);
+          this.jobLatencyTracker.delete(jobId);
+          this.logger.error(`[Queue] Job failed: ${jobId}`, error);
           cb(error, { success: false, error: error.message });
         });
     };
@@ -105,7 +106,8 @@ export class QueueService implements OnModuleInit, OnModuleDestroy {
     if (pendingJobs.length > 0) {
       this.logger.log(`[Queue] Loading ${pendingJobs.length} pending jobs from LowDB`);
       pendingJobs.forEach(job => {
-        this.logger.debug(`[Queue] push(): ${job.action}/${job.refNo} id=${job.id}`);
+        const jobId = job.id || job._id;
+        this.logger.debug(`[Queue] push(): ${job.action}/${job.refNo} id=${jobId}`);
         this.queue.push(job);
       });
     }
@@ -840,7 +842,7 @@ export class QueueService implements OnModuleInit, OnModuleDestroy {
   getStats() {
     return {
       length: this.queue.length,
-      running: this.queue.running,
+      running: this.jobLatencyTracker?.size ?? 0,
     };
   }
 
