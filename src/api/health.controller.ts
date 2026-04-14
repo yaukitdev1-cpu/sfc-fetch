@@ -20,7 +20,7 @@ export class HealthController {
   @Get()
   async check() {
     const counts = this.db.getCountsByCategory();
-    const backupStatus = this.backupService.getStatus();
+    const backupStatus = await this.backupService.getStatus();
 
     let totalDocs = 0;
     for (const count of Object.values(counts)) {

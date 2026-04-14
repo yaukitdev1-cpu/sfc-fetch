@@ -69,6 +69,8 @@ export class WorkflowService {
     doc.workflow.retryCount = (doc.workflow.retryCount || 0) + 1;
     doc.workflow.currentStep = fromStep;
 
+    // Initialize history if it doesn't exist
+    if (!doc.history) doc.history = { runs: [], retries: [], errors: [] };
     if (!doc.history.retries) doc.history.retries = [];
     doc.history.retries.push({
       retryId: uuidv4(),
@@ -228,7 +230,42 @@ export class WorkflowService {
 
     const doc = this.db.getDocument(refNo, category);
     if (!doc) {
-      throw new Error('Document not found');
+      // Document doesn't exist - this shouldn't happen if discoverResource creates one before calling failStep
+      // But handle it gracefully by creating a minimal document
+      const minimalDoc = {
+        _id: refNo,
+        category,
+        workflow: {
+          status: this.workflowStates.FAILED,
+          currentStep: stepName,
+          error: error.message || String(error),
+        },
+        subworkflow: {
+          steps: [{
+            step: stepName,
+            status: this.stepStatuses.FAILED,
+            startedAt: now,
+            completedAt: now,
+            attempts: 1,
+            errors: [{
+              attempt: 1,
+              timestamp: now,
+              errorType: error.type || 'UNKNOWN',
+              message: error.message || String(error),
+            }],
+          }],
+        },
+        history: {
+          runs: [],
+          retries: [],
+          errors: [{
+            timestamp: now,
+            message: error.message || String(error),
+          }],
+        },
+      };
+      await this.db.upsertDocument(refNo, category, minimalDoc);
+      return minimalDoc;
     }
 
     const step = doc.subworkflow?.steps?.find((s: any) => s.step === stepName);
@@ -243,8 +280,28 @@ export class WorkflowService {
         errorType: error.type || 'UNKNOWN',
         message: error.message || String(error),
       });
+    } else {
+      // Step doesn't exist in subworkflow - this happens if startStep was never called
+      // Initialize subworkflow and add the failed step
+      if (!doc.subworkflow) doc.subworkflow = { steps: [] };
+      if (!doc.subworkflow.steps) doc.subworkflow.steps = [];
+      doc.subworkflow.steps.push({
+        step: stepName,
+        status: this.stepStatuses.FAILED,
+        startedAt: now,
+        completedAt: now,
+        attempts: 1,
+        errors: [{
+          attempt: 1,
+          timestamp: now,
+          errorType: error.type || 'UNKNOWN',
+          message: error.message || String(error),
+        }],
+      });
     }
 
+    // Always record the error at workflow level for visibility
+    doc.workflow.error = error.message || String(error);
     doc.workflow.status = this.workflowStates.FAILED;
     doc.updatedAt = now;
     await this.db.upsertDocument(refNo, category, doc);
