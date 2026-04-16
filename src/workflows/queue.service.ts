@@ -726,7 +726,17 @@ export class QueueService implements OnModuleInit, OnModuleDestroy {
         throw new Error(`Document ${refNo} not found in category ${category}`);
       }
 
-      const rawFilePath = doc.source?.rawFilePath;
+      let rawFilePath = doc.source?.rawFilePath;
+      // If rawFilePath doesn't exist but metadata.html has inline HTML (e.g., news),
+      // write it to a temp file so conversion can proceed
+      if (!rawFilePath && doc.metadata?.html) {
+        rawFilePath = this.getRawFilePath(category, refNo, 'html');
+        if (!(await fs.pathExists(rawFilePath))) {
+          this.logger.log(`[Queue] No rawFilePath for ${category}/${refNo}, writing inline HTML to ${rawFilePath}`);
+          await fs.ensureDir(path.dirname(rawFilePath));
+          await fs.writeFile(rawFilePath, doc.metadata.html);
+        }
+      }
       if (!rawFilePath) {
         throw new Error(`No raw file path found for ${category}/${refNo}`);
       }
