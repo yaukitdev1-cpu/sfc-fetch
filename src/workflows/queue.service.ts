@@ -384,9 +384,45 @@ export class QueueService implements OnModuleInit, OnModuleDestroy {
             throw pdfError;
           }
         }
+      } else if (category === 'news') {
+        // News: HTML content is embedded inline in metadata.html during discover.
+        // No URL download step needed — write the inline HTML to a raw file
+        // and submit the convert job directly.
+        const htmlContent = updatedDoc.metadata?.html;
+        if (!htmlContent) {
+          this.logger.error(`[Queue] No inline HTML found in metadata for news ${refNo}, cannot convert`);
+          // Let discover complete but don't chain — the convert will fail with proper error
+          return job;
+        }
+        const rawPath = this.getRawFilePath(category, refNo, 'html');
+        await fs.ensureDir(path.dirname(rawPath));
+        await fs.writeFile(rawPath, htmlContent);
+
+        await this.lowdbService.upsertDocument(refNo, category, {
+          ...updatedDoc,
+          source: {
+            ...updatedDoc.source,
+            rawFilePath: rawPath,
+          },
+          workflow: {
+            ...updatedDoc.workflow,
+            status: 'DOWNLOADING', // Skip explicit download step — HTML is already available
+          },
+        });
+
+        this.logger.log(`[Queue] Auto-submitting convert job for ${category}/${refNo} (inline HTML from discover)`);
+        try {
+          await this.submitJob({
+            action: 'convert',
+            category,
+            refNo,
+          });
+        } catch (err) {
+          this.logger.error(`[Queue] Failed to chain convert job for ${category}/${refNo}:`, err);
+          // Don't rollback — current step still completes
+        }
       } else {
-        // Auto-submit download job after discover succeeds for non-circulars
-        // Use try/catch to prevent chain failures from affecting discover completion
+        // Consultations and other categories: URL-based download, then convert
         this.logger.log(`[Queue] Auto-submitting download job for ${category}/${refNo} after discover`);
         try {
           await this.submitJob({
@@ -397,7 +433,7 @@ export class QueueService implements OnModuleInit, OnModuleDestroy {
           });
         } catch (err) {
           this.logger.error(`[Queue] Failed to chain download job for ${category}/${refNo}:`, err);
-          // Don't rollback - current step still completes
+          // Don't rollback — current step still completes
         }
       }
 
@@ -690,7 +726,17 @@ export class QueueService implements OnModuleInit, OnModuleDestroy {
         throw new Error(`Document ${refNo} not found in category ${category}`);
       }
 
-      const rawFilePath = doc.source?.rawFilePath;
+      let rawFilePath = doc.source?.rawFilePath;
+      // If rawFilePath doesn't exist but metadata.html has inline HTML (e.g., news),
+      // write it to a temp file so conversion can proceed
+      if (!rawFilePath && doc.metadata?.html) {
+        rawFilePath = this.getRawFilePath(category, refNo, 'html');
+        if (!(await fs.pathExists(rawFilePath))) {
+          this.logger.log(`[Queue] No rawFilePath for ${category}/${refNo}, writing inline HTML to ${rawFilePath}`);
+          await fs.ensureDir(path.dirname(rawFilePath));
+          await fs.writeFile(rawFilePath, doc.metadata.html);
+        }
+      }
       if (!rawFilePath) {
         throw new Error(`No raw file path found for ${category}/${refNo}`);
       }
