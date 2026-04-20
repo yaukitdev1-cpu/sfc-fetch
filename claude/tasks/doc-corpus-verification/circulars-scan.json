@@ -1,0 +1,5618 @@
+[
+  {
+    "path": "12EC10.md",
+    "size_bytes": 14790,
+    "classification": "valid",
+    "reason": "meaningful content (272 words)"
+  },
+  {
+    "path": "12EC11.md",
+    "size_bytes": 48668,
+    "classification": "valid",
+    "reason": "meaningful content (747 words)"
+  },
+  {
+    "path": "12EC12.md",
+    "size_bytes": 56108,
+    "classification": "valid",
+    "reason": "meaningful content (1122 words)"
+  },
+  {
+    "path": "12EC13.md",
+    "size_bytes": 43348,
+    "classification": "valid",
+    "reason": "meaningful content (217 words)"
+  },
+  {
+    "path": "12EC14.md",
+    "size_bytes": 14310,
+    "classification": "valid",
+    "reason": "meaningful content (206 words)"
+  },
+  {
+    "path": "12EC15.md",
+    "size_bytes": 47457,
+    "classification": "valid",
+    "reason": "meaningful content (193 words)"
+  },
+  {
+    "path": "12EC16.md",
+    "size_bytes": 28489,
+    "classification": "valid",
+    "reason": "meaningful content (1432 words)"
+  },
+  {
+    "path": "12EC3.md",
+    "size_bytes": 15776,
+    "classification": "valid",
+    "reason": "meaningful content (378 words)"
+  },
+  {
+    "path": "12EC4.md",
+    "size_bytes": 19749,
+    "classification": "valid",
+    "reason": "meaningful content (761 words)"
+  },
+  {
+    "path": "12EC5.md",
+    "size_bytes": 14720,
+    "classification": "valid",
+    "reason": "meaningful content (256 words)"
+  },
+  {
+    "path": "12EC6.md",
+    "size_bytes": 5287,
+    "classification": "valid",
+    "reason": "meaningful content (324 words)"
+  },
+  {
+    "path": "12EC8.md",
+    "size_bytes": 15302,
+    "classification": "valid",
+    "reason": "meaningful content (313 words)"
+  },
+  {
+    "path": "13EC1.md",
+    "size_bytes": 19931,
+    "classification": "valid",
+    "reason": "meaningful content (803 words)"
+  },
+  {
+    "path": "13EC11.md",
+    "size_bytes": 1037,
+    "classification": "valid",
+    "reason": "meaningful content (166 words)"
+  },
+  {
+    "path": "13EC12.md",
+    "size_bytes": 19426,
+    "classification": "valid",
+    "reason": "meaningful content (695 words)"
+  },
+  {
+    "path": "13EC16.md",
+    "size_bytes": 14749,
+    "classification": "valid",
+    "reason": "meaningful content (272 words)"
+  },
+  {
+    "path": "13EC17.md",
+    "size_bytes": 18733,
+    "classification": "valid",
+    "reason": "meaningful content (1000 words)"
+  },
+  {
+    "path": "13EC18.md",
+    "size_bytes": 8095,
+    "classification": "valid",
+    "reason": "meaningful content (1263 words)"
+  },
+  {
+    "path": "13EC19.md",
+    "size_bytes": 52760,
+    "classification": "valid",
+    "reason": "meaningful content (1073 words)"
+  },
+  {
+    "path": "13EC21.md",
+    "size_bytes": 14929,
+    "classification": "valid",
+    "reason": "meaningful content (293 words)"
+  },
+  {
+    "path": "13EC22.md",
+    "size_bytes": 26798,
+    "classification": "valid",
+    "reason": "meaningful content (1311 words)"
+  },
+  {
+    "path": "13EC26.md",
+    "size_bytes": 14504,
+    "classification": "valid",
+    "reason": "meaningful content (224 words)"
+  },
+  {
+    "path": "13EC28.md",
+    "size_bytes": 20274,
+    "classification": "valid",
+    "reason": "meaningful content (435 words)"
+  },
+  {
+    "path": "13EC3.md",
+    "size_bytes": 48803,
+    "classification": "valid",
+    "reason": "meaningful content (334 words)"
+  },
+  {
+    "path": "13EC30.md",
+    "size_bytes": 17398,
+    "classification": "valid",
+    "reason": "meaningful content (312 words)"
+  },
+  {
+    "path": "13EC31.md",
+    "size_bytes": 16849,
+    "classification": "valid",
+    "reason": "meaningful content (334 words)"
+  },
+  {
+    "path": "13EC32.md",
+    "size_bytes": 27887,
+    "classification": "valid",
+    "reason": "meaningful content (1458 words)"
+  },
+  {
+    "path": "13EC33.md",
+    "size_bytes": 23626,
+    "classification": "valid",
+    "reason": "meaningful content (1147 words)"
+  },
+  {
+    "path": "13EC34.md",
+    "size_bytes": 54321,
+    "classification": "valid",
+    "reason": "meaningful content (8736 words)"
+  },
+  {
+    "path": "13EC36.md",
+    "size_bytes": 14109,
+    "classification": "valid",
+    "reason": "meaningful content (133 words)"
+  },
+  {
+    "path": "13EC37.md",
+    "size_bytes": 26481,
+    "classification": "valid",
+    "reason": "meaningful content (1154 words)"
+  },
+  {
+    "path": "13EC38.md",
+    "size_bytes": 52526,
+    "classification": "valid",
+    "reason": "meaningful content (721 words)"
+  },
+  {
+    "path": "13EC39.md",
+    "size_bytes": 14171,
+    "classification": "valid",
+    "reason": "meaningful content (169 words)"
+  },
+  {
+    "path": "13EC4.md",
+    "size_bytes": 17244,
+    "classification": "valid",
+    "reason": "meaningful content (433 words)"
+  },
+  {
+    "path": "13EC5.md",
+    "size_bytes": 47391,
+    "classification": "valid",
+    "reason": "meaningful content (188 words)"
+  },
+  {
+    "path": "13EC9.md",
+    "size_bytes": 48556,
+    "classification": "valid",
+    "reason": "meaningful content (731 words)"
+  },
+  {
+    "path": "14EC1.md",
+    "size_bytes": 17862,
+    "classification": "valid",
+    "reason": "meaningful content (490 words)"
+  },
+  {
+    "path": "14EC11.md",
+    "size_bytes": 21704,
+    "classification": "valid",
+    "reason": "meaningful content (591 words)"
+  },
+  {
+    "path": "14EC13.md",
+    "size_bytes": 17616,
+    "classification": "valid",
+    "reason": "meaningful content (392 words)"
+  },
+  {
+    "path": "14EC14.md",
+    "size_bytes": 15404,
+    "classification": "valid",
+    "reason": "meaningful content (308 words)"
+  },
+  {
+    "path": "14EC15.md",
+    "size_bytes": 18995,
+    "classification": "valid",
+    "reason": "meaningful content (661 words)"
+  },
+  {
+    "path": "14EC18.md",
+    "size_bytes": 15678,
+    "classification": "valid",
+    "reason": "meaningful content (364 words)"
+  },
+  {
+    "path": "14EC19.md",
+    "size_bytes": 14380,
+    "classification": "valid",
+    "reason": "meaningful content (214 words)"
+  },
+  {
+    "path": "14EC2.md",
+    "size_bytes": 18319,
+    "classification": "valid",
+    "reason": "meaningful content (518 words)"
+  },
+  {
+    "path": "14EC22.md",
+    "size_bytes": 52117,
+    "classification": "valid",
+    "reason": "meaningful content (1101 words)"
+  },
+  {
+    "path": "14EC24.md",
+    "size_bytes": 13628,
+    "classification": "valid",
+    "reason": "meaningful content (2276 words)"
+  },
+  {
+    "path": "14EC25.md",
+    "size_bytes": 17779,
+    "classification": "valid",
+    "reason": "meaningful content (2523 words)"
+  },
+  {
+    "path": "14EC26.md",
+    "size_bytes": 7929,
+    "classification": "valid",
+    "reason": "meaningful content (1233 words)"
+  },
+  {
+    "path": "14EC27.md",
+    "size_bytes": 13829,
+    "classification": "valid",
+    "reason": "meaningful content (124 words)"
+  },
+  {
+    "path": "14EC29.md",
+    "size_bytes": 15050,
+    "classification": "valid",
+    "reason": "meaningful content (281 words)"
+  },
+  {
+    "path": "14EC31.md",
+    "size_bytes": 15828,
+    "classification": "valid",
+    "reason": "meaningful content (416 words)"
+  },
+  {
+    "path": "14EC32.md",
+    "size_bytes": 22933,
+    "classification": "valid",
+    "reason": "meaningful content (465 words)"
+  },
+  {
+    "path": "14EC33.md",
+    "size_bytes": 42408,
+    "classification": "valid",
+    "reason": "meaningful content (108 words)"
+  },
+  {
+    "path": "14EC35.md",
+    "size_bytes": 27259,
+    "classification": "valid",
+    "reason": "meaningful content (1373 words)"
+  },
+  {
+    "path": "14EC36.md",
+    "size_bytes": 14175,
+    "classification": "valid",
+    "reason": "meaningful content (172 words)"
+  },
+  {
+    "path": "14EC39.md",
+    "size_bytes": 14920,
+    "classification": "valid",
+    "reason": "meaningful content (262 words)"
+  },
+  {
+    "path": "14EC4.md",
+    "size_bytes": 17783,
+    "classification": "valid",
+    "reason": "meaningful content (464 words)"
+  },
+  {
+    "path": "14EC40.md",
+    "size_bytes": 16798,
+    "classification": "valid",
+    "reason": "meaningful content (345 words)"
+  },
+  {
+    "path": "14EC44.md",
+    "size_bytes": 19335,
+    "classification": "valid",
+    "reason": "meaningful content (666 words)"
+  },
+  {
+    "path": "14EC45.md",
+    "size_bytes": 46233,
+    "classification": "valid",
+    "reason": "meaningful content (287 words)"
+  },
+  {
+    "path": "14EC46.md",
+    "size_bytes": 14577,
+    "classification": "valid",
+    "reason": "meaningful content (212 words)"
+  },
+  {
+    "path": "14EC47.md",
+    "size_bytes": 14535,
+    "classification": "valid",
+    "reason": "meaningful content (186 words)"
+  },
+  {
+    "path": "14EC5.md",
+    "size_bytes": 14772,
+    "classification": "valid",
+    "reason": "meaningful content (227 words)"
+  },
+  {
+    "path": "14EC52.md",
+    "size_bytes": 49275,
+    "classification": "valid",
+    "reason": "meaningful content (517 words)"
+  },
+  {
+    "path": "14EC6.md",
+    "size_bytes": 48049,
+    "classification": "valid",
+    "reason": "meaningful content (336 words)"
+  },
+  {
+    "path": "14EC7.md",
+    "size_bytes": 19728,
+    "classification": "valid",
+    "reason": "meaningful content (699 words)"
+  },
+  {
+    "path": "14EC8.md",
+    "size_bytes": 15704,
+    "classification": "valid",
+    "reason": "meaningful content (392 words)"
+  },
+  {
+    "path": "14EC9.md",
+    "size_bytes": 13880,
+    "classification": "valid",
+    "reason": "meaningful content (95 words)"
+  },
+  {
+    "path": "15EC1.md",
+    "size_bytes": 14528,
+    "classification": "valid",
+    "reason": "meaningful content (228 words)"
+  },
+  {
+    "path": "15EC10.md",
+    "size_bytes": 16509,
+    "classification": "valid",
+    "reason": "meaningful content (95 words)"
+  },
+  {
+    "path": "15EC12.md",
+    "size_bytes": 19335,
+    "classification": "valid",
+    "reason": "meaningful content (664 words)"
+  },
+  {
+    "path": "15EC13.md",
+    "size_bytes": 18798,
+    "classification": "valid",
+    "reason": "meaningful content (577 words)"
+  },
+  {
+    "path": "15EC14.md",
+    "size_bytes": 14374,
+    "classification": "valid",
+    "reason": "meaningful content (183 words)"
+  },
+  {
+    "path": "15EC18.md",
+    "size_bytes": 14118,
+    "classification": "valid",
+    "reason": "meaningful content (141 words)"
+  },
+  {
+    "path": "15EC20.md",
+    "size_bytes": 18252,
+    "classification": "valid",
+    "reason": "meaningful content (550 words)"
+  },
+  {
+    "path": "15EC24.md",
+    "size_bytes": 7927,
+    "classification": "valid",
+    "reason": "meaningful content (1232 words)"
+  },
+  {
+    "path": "15EC27.md",
+    "size_bytes": 25503,
+    "classification": "valid",
+    "reason": "meaningful content (932 words)"
+  },
+  {
+    "path": "15EC28.md",
+    "size_bytes": 26008,
+    "classification": "valid",
+    "reason": "meaningful content (975 words)"
+  },
+  {
+    "path": "15EC29.md",
+    "size_bytes": 16137,
+    "classification": "valid",
+    "reason": "meaningful content (2529 words)"
+  },
+  {
+    "path": "15EC3.md",
+    "size_bytes": 2,
+    "classification": "empty",
+    "reason": "file is empty or whitespace only"
+  },
+  {
+    "path": "15EC30.md",
+    "size_bytes": 14742,
+    "classification": "valid",
+    "reason": "meaningful content (250 words)"
+  },
+  {
+    "path": "15EC31.md",
+    "size_bytes": 24390,
+    "classification": "valid",
+    "reason": "meaningful content (1269 words)"
+  },
+  {
+    "path": "15EC34.md",
+    "size_bytes": 19385,
+    "classification": "valid",
+    "reason": "meaningful content (688 words)"
+  },
+  {
+    "path": "15EC35.md",
+    "size_bytes": 15503,
+    "classification": "valid",
+    "reason": "meaningful content (372 words)"
+  },
+  {
+    "path": "15EC37.md",
+    "size_bytes": 14138,
+    "classification": "valid",
+    "reason": "meaningful content (133 words)"
+  },
+  {
+    "path": "15EC38.md",
+    "size_bytes": 14672,
+    "classification": "valid",
+    "reason": "meaningful content (209 words)"
+  },
+  {
+    "path": "15EC39.md",
+    "size_bytes": 23679,
+    "classification": "valid",
+    "reason": "meaningful content (1068 words)"
+  },
+  {
+    "path": "15EC4.md",
+    "size_bytes": 43784,
+    "classification": "valid",
+    "reason": "meaningful content (336 words)"
+  },
+  {
+    "path": "15EC41.md",
+    "size_bytes": 57683,
+    "classification": "valid",
+    "reason": "meaningful content (1295 words)"
+  },
+  {
+    "path": "15EC44.md",
+    "size_bytes": 19107,
+    "classification": "valid",
+    "reason": "meaningful content (682 words)"
+  },
+  {
+    "path": "15EC49.md",
+    "size_bytes": 15150,
+    "classification": "valid",
+    "reason": "meaningful content (2271 words)"
+  },
+  {
+    "path": "15EC5.md",
+    "size_bytes": 51306,
+    "classification": "valid",
+    "reason": "meaningful content (541 words)"
+  },
+  {
+    "path": "15EC50.md",
+    "size_bytes": 55722,
+    "classification": "valid",
+    "reason": "meaningful content (1099 words)"
+  },
+  {
+    "path": "15EC52.md",
+    "size_bytes": 48522,
+    "classification": "valid",
+    "reason": "meaningful content (733 words)"
+  },
+  {
+    "path": "15EC53.md",
+    "size_bytes": 18635,
+    "classification": "valid",
+    "reason": "meaningful content (2866 words)"
+  },
+  {
+    "path": "15EC54.md",
+    "size_bytes": 44734,
+    "classification": "valid",
+    "reason": "meaningful content (316 words)"
+  },
+  {
+    "path": "15EC56.md",
+    "size_bytes": 15142,
+    "classification": "valid",
+    "reason": "meaningful content (307 words)"
+  },
+  {
+    "path": "15EC57.md",
+    "size_bytes": 22889,
+    "classification": "valid",
+    "reason": "meaningful content (957 words)"
+  },
+  {
+    "path": "15EC58.md",
+    "size_bytes": 14511,
+    "classification": "valid",
+    "reason": "meaningful content (203 words)"
+  },
+  {
+    "path": "15EC6.md",
+    "size_bytes": 14324,
+    "classification": "valid",
+    "reason": "meaningful content (182 words)"
+  },
+  {
+    "path": "15EC62.md",
+    "size_bytes": 17003,
+    "classification": "valid",
+    "reason": "meaningful content (347 words)"
+  },
+  {
+    "path": "15EC65.md",
+    "size_bytes": 14492,
+    "classification": "valid",
+    "reason": "meaningful content (214 words)"
+  },
+  {
+    "path": "15EC8.md",
+    "size_bytes": 47942,
+    "classification": "valid",
+    "reason": "meaningful content (335 words)"
+  },
+  {
+    "path": "15EC9.md",
+    "size_bytes": 42641,
+    "classification": "valid",
+    "reason": "meaningful content (184 words)"
+  },
+  {
+    "path": "16EC1.md",
+    "size_bytes": 417101,
+    "classification": "valid",
+    "reason": "meaningful content (1285 words)"
+  },
+  {
+    "path": "16EC11.md",
+    "size_bytes": 18352,
+    "classification": "valid",
+    "reason": "meaningful content (2608 words)"
+  },
+  {
+    "path": "16EC12.md",
+    "size_bytes": 22163,
+    "classification": "valid",
+    "reason": "meaningful content (840 words)"
+  },
+  {
+    "path": "16EC15.md",
+    "size_bytes": 48760,
+    "classification": "valid",
+    "reason": "meaningful content (902 words)"
+  },
+  {
+    "path": "16EC16.md",
+    "size_bytes": 14166,
+    "classification": "valid",
+    "reason": "meaningful content (164 words)"
+  },
+  {
+    "path": "16EC18.md",
+    "size_bytes": 11399,
+    "classification": "valid",
+    "reason": "meaningful content (1777 words)"
+  },
+  {
+    "path": "16EC19.md",
+    "size_bytes": 14723,
+    "classification": "valid",
+    "reason": "meaningful content (273 words)"
+  },
+  {
+    "path": "16EC21.md",
+    "size_bytes": 7923,
+    "classification": "valid",
+    "reason": "meaningful content (1232 words)"
+  },
+  {
+    "path": "16EC22.md",
+    "size_bytes": 3397,
+    "classification": "valid",
+    "reason": "meaningful content (516 words)"
+  },
+  {
+    "path": "16EC23.md",
+    "size_bytes": 25798,
+    "classification": "valid",
+    "reason": "meaningful content (1267 words)"
+  },
+  {
+    "path": "16EC27.md",
+    "size_bytes": 14894,
+    "classification": "valid",
+    "reason": "meaningful content (293 words)"
+  },
+  {
+    "path": "16EC28.md",
+    "size_bytes": 46828,
+    "classification": "valid",
+    "reason": "meaningful content (553 words)"
+  },
+  {
+    "path": "16EC29.md",
+    "size_bytes": 37181,
+    "classification": "valid",
+    "reason": "meaningful content (5702 words)"
+  },
+  {
+    "path": "16EC31.md",
+    "size_bytes": 23141,
+    "classification": "valid",
+    "reason": "meaningful content (992 words)"
+  },
+  {
+    "path": "16EC36.md",
+    "size_bytes": 14436,
+    "classification": "valid",
+    "reason": "meaningful content (208 words)"
+  },
+  {
+    "path": "16EC37.md",
+    "size_bytes": 14126,
+    "classification": "valid",
+    "reason": "meaningful content (144 words)"
+  },
+  {
+    "path": "16EC41.md",
+    "size_bytes": 42836,
+    "classification": "valid",
+    "reason": "meaningful content (220 words)"
+  },
+  {
+    "path": "16EC42.md",
+    "size_bytes": 50057,
+    "classification": "valid",
+    "reason": "meaningful content (318 words)"
+  },
+  {
+    "path": "16EC43.md",
+    "size_bytes": 58548,
+    "classification": "valid",
+    "reason": "meaningful content (1392 words)"
+  },
+  {
+    "path": "16EC46.md",
+    "size_bytes": 22849,
+    "classification": "valid",
+    "reason": "meaningful content (920 words)"
+  },
+  {
+    "path": "16EC48.md",
+    "size_bytes": 20630,
+    "classification": "valid",
+    "reason": "meaningful content (501 words)"
+  },
+  {
+    "path": "16EC5.md",
+    "size_bytes": 14891,
+    "classification": "valid",
+    "reason": "meaningful content (287 words)"
+  },
+  {
+    "path": "16EC50.md",
+    "size_bytes": 32911,
+    "classification": "valid",
+    "reason": "meaningful content (1736 words)"
+  },
+  {
+    "path": "16EC51.md",
+    "size_bytes": 26418,
+    "classification": "valid",
+    "reason": "meaningful content (1258 words)"
+  },
+  {
+    "path": "16EC52.md",
+    "size_bytes": 15384,
+    "classification": "valid",
+    "reason": "meaningful content (330 words)"
+  },
+  {
+    "path": "16EC54.md",
+    "size_bytes": 50915,
+    "classification": "valid",
+    "reason": "meaningful content (608 words)"
+  },
+  {
+    "path": "16EC55.md",
+    "size_bytes": 14376,
+    "classification": "valid",
+    "reason": "meaningful content (169 words)"
+  },
+  {
+    "path": "16EC56.md",
+    "size_bytes": 55790,
+    "classification": "valid",
+    "reason": "meaningful content (1021 words)"
+  },
+  {
+    "path": "16EC57.md",
+    "size_bytes": 14425,
+    "classification": "valid",
+    "reason": "meaningful content (222 words)"
+  },
+  {
+    "path": "16EC58.md",
+    "size_bytes": 15165,
+    "classification": "valid",
+    "reason": "meaningful content (285 words)"
+  },
+  {
+    "path": "16EC59.md",
+    "size_bytes": 3,
+    "classification": "empty",
+    "reason": "file is empty or whitespace only"
+  },
+  {
+    "path": "16EC6.md",
+    "size_bytes": 11655,
+    "classification": "valid",
+    "reason": "meaningful content (1795 words)"
+  },
+  {
+    "path": "16EC61.md",
+    "size_bytes": 14462,
+    "classification": "valid",
+    "reason": "meaningful content (223 words)"
+  },
+  {
+    "path": "16EC62.md",
+    "size_bytes": 37733,
+    "classification": "valid",
+    "reason": "meaningful content (517 words)"
+  },
+  {
+    "path": "16EC63.md",
+    "size_bytes": 23146,
+    "classification": "valid",
+    "reason": "meaningful content (3686 words)"
+  },
+  {
+    "path": "16EC64.md",
+    "size_bytes": 25810,
+    "classification": "valid",
+    "reason": "meaningful content (1269 words)"
+  },
+  {
+    "path": "16EC67.md",
+    "size_bytes": 38996,
+    "classification": "valid",
+    "reason": "meaningful content (459 words)"
+  },
+  {
+    "path": "16EC68.md",
+    "size_bytes": 22708,
+    "classification": "valid",
+    "reason": "meaningful content (3515 words)"
+  },
+  {
+    "path": "16EC69.md",
+    "size_bytes": 14157,
+    "classification": "valid",
+    "reason": "meaningful content (160 words)"
+  },
+  {
+    "path": "16EC7.md",
+    "size_bytes": 43818,
+    "classification": "valid",
+    "reason": "meaningful content (316 words)"
+  },
+  {
+    "path": "16EC70.md",
+    "size_bytes": 13852,
+    "classification": "valid",
+    "reason": "meaningful content (2135 words)"
+  },
+  {
+    "path": "16EC71.md",
+    "size_bytes": 48452,
+    "classification": "valid",
+    "reason": "meaningful content (325 words)"
+  },
+  {
+    "path": "16EC73.md",
+    "size_bytes": 52439,
+    "classification": "valid",
+    "reason": "meaningful content (691 words)"
+  },
+  {
+    "path": "16EC8.md",
+    "size_bytes": 50828,
+    "classification": "valid",
+    "reason": "meaningful content (938 words)"
+  },
+  {
+    "path": "16EC9.md",
+    "size_bytes": 47877,
+    "classification": "valid",
+    "reason": "meaningful content (322 words)"
+  },
+  {
+    "path": "17EC11.md",
+    "size_bytes": 14075,
+    "classification": "valid",
+    "reason": "meaningful content (148 words)"
+  },
+  {
+    "path": "17EC12.md",
+    "size_bytes": 47882,
+    "classification": "valid",
+    "reason": "meaningful content (323 words)"
+  },
+  {
+    "path": "17EC14.md",
+    "size_bytes": 37709,
+    "classification": "valid",
+    "reason": "meaningful content (5873 words)"
+  },
+  {
+    "path": "17EC15.md",
+    "size_bytes": 43261,
+    "classification": "valid",
+    "reason": "meaningful content (211 words)"
+  },
+  {
+    "path": "17EC16.md",
+    "size_bytes": 33419,
+    "classification": "valid",
+    "reason": "meaningful content (151 words)"
+  },
+  {
+    "path": "17EC18.md",
+    "size_bytes": 56159,
+    "classification": "valid",
+    "reason": "meaningful content (1046 words)"
+  },
+  {
+    "path": "17EC19.md",
+    "size_bytes": 14114,
+    "classification": "valid",
+    "reason": "meaningful content (141 words)"
+  },
+  {
+    "path": "17EC2.md",
+    "size_bytes": 34046,
+    "classification": "valid",
+    "reason": "meaningful content (234 words)"
+  },
+  {
+    "path": "17EC21.md",
+    "size_bytes": 34267,
+    "classification": "valid",
+    "reason": "meaningful content (282 words)"
+  },
+  {
+    "path": "17EC22.md",
+    "size_bytes": 8251,
+    "classification": "valid",
+    "reason": "meaningful content (1281 words)"
+  },
+  {
+    "path": "17EC23.md",
+    "size_bytes": 46367,
+    "classification": "valid",
+    "reason": "meaningful content (485 words)"
+  },
+  {
+    "path": "17EC24.md",
+    "size_bytes": 19725,
+    "classification": "valid",
+    "reason": "meaningful content (761 words)"
+  },
+  {
+    "path": "17EC25.md",
+    "size_bytes": 28682,
+    "classification": "valid",
+    "reason": "meaningful content (1728 words)"
+  },
+  {
+    "path": "17EC26.md",
+    "size_bytes": 50708,
+    "classification": "valid",
+    "reason": "meaningful content (505 words)"
+  },
+  {
+    "path": "17EC3.md",
+    "size_bytes": 15010,
+    "classification": "valid",
+    "reason": "meaningful content (285 words)"
+  },
+  {
+    "path": "17EC31.md",
+    "size_bytes": 15768,
+    "classification": "valid",
+    "reason": "meaningful content (375 words)"
+  },
+  {
+    "path": "17EC32.md",
+    "size_bytes": 24298,
+    "classification": "valid",
+    "reason": "meaningful content (1174 words)"
+  },
+  {
+    "path": "17EC35.md",
+    "size_bytes": 14224,
+    "classification": "valid",
+    "reason": "meaningful content (151 words)"
+  },
+  {
+    "path": "17EC36.md",
+    "size_bytes": 23433,
+    "classification": "valid",
+    "reason": "meaningful content (1552 words)"
+  },
+  {
+    "path": "17EC37.md",
+    "size_bytes": 23338,
+    "classification": "valid",
+    "reason": "meaningful content (1047 words)"
+  },
+  {
+    "path": "17EC38.md",
+    "size_bytes": 17181,
+    "classification": "valid",
+    "reason": "meaningful content (371 words)"
+  },
+  {
+    "path": "17EC39.md",
+    "size_bytes": 15308,
+    "classification": "valid",
+    "reason": "meaningful content (2286 words)"
+  },
+  {
+    "path": "17EC40.md",
+    "size_bytes": 14093,
+    "classification": "valid",
+    "reason": "meaningful content (151 words)"
+  },
+  {
+    "path": "17EC41.md",
+    "size_bytes": 56238,
+    "classification": "valid",
+    "reason": "meaningful content (1066 words)"
+  },
+  {
+    "path": "17EC42.md",
+    "size_bytes": 42850,
+    "classification": "valid",
+    "reason": "meaningful content (178 words)"
+  },
+  {
+    "path": "17EC43.md",
+    "size_bytes": 35801,
+    "classification": "valid",
+    "reason": "meaningful content (5744 words)"
+  },
+  {
+    "path": "17EC45.md",
+    "size_bytes": 43559,
+    "classification": "valid",
+    "reason": "meaningful content (280 words)"
+  },
+  {
+    "path": "17EC46.md",
+    "size_bytes": 18405,
+    "classification": "valid",
+    "reason": "meaningful content (530 words)"
+  },
+  {
+    "path": "17EC47.md",
+    "size_bytes": 19639,
+    "classification": "valid",
+    "reason": "meaningful content (717 words)"
+  },
+  {
+    "path": "17EC48.md",
+    "size_bytes": 52181,
+    "classification": "valid",
+    "reason": "meaningful content (1049 words)"
+  },
+  {
+    "path": "17EC5.md",
+    "size_bytes": 15091,
+    "classification": "valid",
+    "reason": "meaningful content (330 words)"
+  },
+  {
+    "path": "17EC51.md",
+    "size_bytes": 42813,
+    "classification": "valid",
+    "reason": "meaningful content (153 words)"
+  },
+  {
+    "path": "17EC52.md",
+    "size_bytes": 50638,
+    "classification": "valid",
+    "reason": "meaningful content (442 words)"
+  },
+  {
+    "path": "17EC53.md",
+    "size_bytes": 15040,
+    "classification": "valid",
+    "reason": "meaningful content (316 words)"
+  },
+  {
+    "path": "17EC55.md",
+    "size_bytes": 3,
+    "classification": "empty",
+    "reason": "file is empty or whitespace only"
+  },
+  {
+    "path": "17EC57.md",
+    "size_bytes": 53092,
+    "classification": "valid",
+    "reason": "meaningful content (806 words)"
+  },
+  {
+    "path": "17EC59.md",
+    "size_bytes": 36578,
+    "classification": "valid",
+    "reason": "meaningful content (447 words)"
+  },
+  {
+    "path": "17EC6.md",
+    "size_bytes": 43696,
+    "classification": "valid",
+    "reason": "meaningful content (326 words)"
+  },
+  {
+    "path": "17EC61.md",
+    "size_bytes": 14819,
+    "classification": "valid",
+    "reason": "meaningful content (241 words)"
+  },
+  {
+    "path": "17EC62.md",
+    "size_bytes": 37778,
+    "classification": "valid",
+    "reason": "meaningful content (580 words)"
+  },
+  {
+    "path": "17EC63.md",
+    "size_bytes": 17493,
+    "classification": "valid",
+    "reason": "meaningful content (905 words)"
+  },
+  {
+    "path": "17EC64.md",
+    "size_bytes": 14096,
+    "classification": "valid",
+    "reason": "meaningful content (171 words)"
+  },
+  {
+    "path": "17EC67.md",
+    "size_bytes": 17655,
+    "classification": "valid",
+    "reason": "meaningful content (846 words)"
+  },
+  {
+    "path": "17EC68.md",
+    "size_bytes": 18417,
+    "classification": "valid",
+    "reason": "meaningful content (558 words)"
+  },
+  {
+    "path": "17EC7.md",
+    "size_bytes": 15100,
+    "classification": "valid",
+    "reason": "meaningful content (318 words)"
+  },
+  {
+    "path": "17EC71.md",
+    "size_bytes": 16916,
+    "classification": "valid",
+    "reason": "meaningful content (337 words)"
+  },
+  {
+    "path": "17EC72.md",
+    "size_bytes": 45570,
+    "classification": "valid",
+    "reason": "meaningful content (325 words)"
+  },
+  {
+    "path": "17EC74.md",
+    "size_bytes": 44627,
+    "classification": "valid",
+    "reason": "meaningful content (384 words)"
+  },
+  {
+    "path": "17EC75.md",
+    "size_bytes": 18812,
+    "classification": "valid",
+    "reason": "meaningful content (625 words)"
+  },
+  {
+    "path": "17EC76.md",
+    "size_bytes": 20830,
+    "classification": "valid",
+    "reason": "meaningful content (517 words)"
+  },
+  {
+    "path": "17EC77.md",
+    "size_bytes": 90639,
+    "classification": "valid",
+    "reason": "meaningful content (644 words)"
+  },
+  {
+    "path": "17EC78.md",
+    "size_bytes": 23944,
+    "classification": "valid",
+    "reason": "meaningful content (1139 words)"
+  },
+  {
+    "path": "17EC79.md",
+    "size_bytes": 40744,
+    "classification": "valid",
+    "reason": "meaningful content (1005 words)"
+  },
+  {
+    "path": "17EC80.md",
+    "size_bytes": 14919,
+    "classification": "valid",
+    "reason": "meaningful content (264 words)"
+  },
+  {
+    "path": "17EC81.md",
+    "size_bytes": 14381,
+    "classification": "valid",
+    "reason": "meaningful content (170 words)"
+  },
+  {
+    "path": "17EC82.md",
+    "size_bytes": 23064,
+    "classification": "valid",
+    "reason": "meaningful content (1052 words)"
+  },
+  {
+    "path": "17EC9.md",
+    "size_bytes": 19411,
+    "classification": "valid",
+    "reason": "meaningful content (692 words)"
+  },
+  {
+    "path": "18EC1.md",
+    "size_bytes": 15455,
+    "classification": "valid",
+    "reason": "meaningful content (349 words)"
+  },
+  {
+    "path": "18EC11.md",
+    "size_bytes": 56799,
+    "classification": "valid",
+    "reason": "meaningful content (866 words)"
+  },
+  {
+    "path": "18EC13.md",
+    "size_bytes": 17851,
+    "classification": "valid",
+    "reason": "meaningful content (435 words)"
+  },
+  {
+    "path": "18EC15.md",
+    "size_bytes": 17428,
+    "classification": "valid",
+    "reason": "meaningful content (315 words)"
+  },
+  {
+    "path": "18EC18.md",
+    "size_bytes": 54121,
+    "classification": "valid",
+    "reason": "meaningful content (352 words)"
+  },
+  {
+    "path": "18EC19.md",
+    "size_bytes": 14034,
+    "classification": "valid",
+    "reason": "meaningful content (134 words)"
+  },
+  {
+    "path": "18EC21.md",
+    "size_bytes": 22589,
+    "classification": "valid",
+    "reason": "meaningful content (928 words)"
+  },
+  {
+    "path": "18EC22.md",
+    "size_bytes": 17916,
+    "classification": "valid",
+    "reason": "meaningful content (458 words)"
+  },
+  {
+    "path": "18EC23.md",
+    "size_bytes": 20862,
+    "classification": "valid",
+    "reason": "meaningful content (3141 words)"
+  },
+  {
+    "path": "18EC25.md",
+    "size_bytes": 56169,
+    "classification": "valid",
+    "reason": "meaningful content (660 words)"
+  },
+  {
+    "path": "18EC28.md",
+    "size_bytes": 7977,
+    "classification": "valid",
+    "reason": "meaningful content (1237 words)"
+  },
+  {
+    "path": "18EC29.md",
+    "size_bytes": 52159,
+    "classification": "valid",
+    "reason": "meaningful content (343 words)"
+  },
+  {
+    "path": "18EC3.md",
+    "size_bytes": 59363,
+    "classification": "valid",
+    "reason": "meaningful content (870 words)"
+  },
+  {
+    "path": "18EC30.md",
+    "size_bytes": 61179,
+    "classification": "valid",
+    "reason": "meaningful content (1280 words)"
+  },
+  {
+    "path": "18EC32.md",
+    "size_bytes": 14046,
+    "classification": "valid",
+    "reason": "meaningful content (159 words)"
+  },
+  {
+    "path": "18EC33.md",
+    "size_bytes": 51944,
+    "classification": "valid",
+    "reason": "meaningful content (315 words)"
+  },
+  {
+    "path": "18EC36.md",
+    "size_bytes": 55267,
+    "classification": "valid",
+    "reason": "meaningful content (534 words)"
+  },
+  {
+    "path": "18EC38.md",
+    "size_bytes": 34496,
+    "classification": "valid",
+    "reason": "meaningful content (286 words)"
+  },
+  {
+    "path": "18EC39.md",
+    "size_bytes": 4243,
+    "classification": "valid",
+    "reason": "meaningful content (645 words)"
+  },
+  {
+    "path": "18EC4.md",
+    "size_bytes": 46263,
+    "classification": "valid",
+    "reason": "meaningful content (397 words)"
+  },
+  {
+    "path": "18EC43.md",
+    "size_bytes": 14691,
+    "classification": "valid",
+    "reason": "meaningful content (235 words)"
+  },
+  {
+    "path": "18EC46.md",
+    "size_bytes": 24346,
+    "classification": "valid",
+    "reason": "meaningful content (695 words)"
+  },
+  {
+    "path": "18EC47.md",
+    "size_bytes": 5133,
+    "classification": "valid",
+    "reason": "meaningful content (805 words)"
+  },
+  {
+    "path": "18EC48.md",
+    "size_bytes": 53183,
+    "classification": "valid",
+    "reason": "meaningful content (748 words)"
+  },
+  {
+    "path": "18EC50.md",
+    "size_bytes": 16788,
+    "classification": "valid",
+    "reason": "meaningful content (160 words)"
+  },
+  {
+    "path": "18EC52.md",
+    "size_bytes": 21582,
+    "classification": "valid",
+    "reason": "meaningful content (638 words)"
+  },
+  {
+    "path": "18EC53.md",
+    "size_bytes": 59596,
+    "classification": "valid",
+    "reason": "meaningful content (932 words)"
+  },
+  {
+    "path": "18EC54.md",
+    "size_bytes": 46908,
+    "classification": "valid",
+    "reason": "meaningful content (414 words)"
+  },
+  {
+    "path": "18EC56.md",
+    "size_bytes": 4177,
+    "classification": "valid",
+    "reason": "meaningful content (639 words)"
+  },
+  {
+    "path": "18EC57.md",
+    "size_bytes": 48472,
+    "classification": "valid",
+    "reason": "meaningful content (779 words)"
+  },
+  {
+    "path": "18EC58.md",
+    "size_bytes": 51166,
+    "classification": "valid",
+    "reason": "meaningful content (603 words)"
+  },
+  {
+    "path": "18EC60.md",
+    "size_bytes": 21822,
+    "classification": "valid",
+    "reason": "meaningful content (634 words)"
+  },
+  {
+    "path": "18EC62.md",
+    "size_bytes": 15106,
+    "classification": "valid",
+    "reason": "meaningful content (281 words)"
+  },
+  {
+    "path": "18EC64.md",
+    "size_bytes": 59448,
+    "classification": "valid",
+    "reason": "meaningful content (1054 words)"
+  },
+  {
+    "path": "18EC65.md",
+    "size_bytes": 53328,
+    "classification": "valid",
+    "reason": "meaningful content (336 words)"
+  },
+  {
+    "path": "18EC66.md",
+    "size_bytes": 14123,
+    "classification": "valid",
+    "reason": "meaningful content (153 words)"
+  },
+  {
+    "path": "18EC67.md",
+    "size_bytes": 20978,
+    "classification": "valid",
+    "reason": "meaningful content (496 words)"
+  },
+  {
+    "path": "18EC7.md",
+    "size_bytes": 59577,
+    "classification": "valid",
+    "reason": "meaningful content (1029 words)"
+  },
+  {
+    "path": "18EC70.md",
+    "size_bytes": 21070,
+    "classification": "valid",
+    "reason": "meaningful content (3462 words)"
+  },
+  {
+    "path": "18EC73.md",
+    "size_bytes": 13911,
+    "classification": "valid",
+    "reason": "meaningful content (2050 words)"
+  },
+  {
+    "path": "18EC74.md",
+    "size_bytes": 58834,
+    "classification": "valid",
+    "reason": "meaningful content (173 words)"
+  },
+  {
+    "path": "18EC76.md",
+    "size_bytes": 106228,
+    "classification": "valid",
+    "reason": "meaningful content (1079 words)"
+  },
+  {
+    "path": "18EC77.md",
+    "size_bytes": 139442,
+    "classification": "valid",
+    "reason": "meaningful content (1708 words)"
+  },
+  {
+    "path": "18EC78.md",
+    "size_bytes": 55554,
+    "classification": "valid",
+    "reason": "meaningful content (152 words)"
+  },
+  {
+    "path": "18EC79.md",
+    "size_bytes": 60663,
+    "classification": "valid",
+    "reason": "meaningful content (350 words)"
+  },
+  {
+    "path": "18EC8.md",
+    "size_bytes": 51371,
+    "classification": "valid",
+    "reason": "meaningful content (194 words)"
+  },
+  {
+    "path": "18EC82.md",
+    "size_bytes": 104067,
+    "classification": "valid",
+    "reason": "meaningful content (986 words)"
+  },
+  {
+    "path": "18EC84.md",
+    "size_bytes": 56252,
+    "classification": "valid",
+    "reason": "meaningful content (243 words)"
+  },
+  {
+    "path": "18EC86.md",
+    "size_bytes": 55677,
+    "classification": "valid",
+    "reason": "meaningful content (177 words)"
+  },
+  {
+    "path": "18EC87.md",
+    "size_bytes": 148820,
+    "classification": "valid",
+    "reason": "meaningful content (1550 words)"
+  },
+  {
+    "path": "18EC88.md",
+    "size_bytes": 60286,
+    "classification": "valid",
+    "reason": "meaningful content (336 words)"
+  },
+  {
+    "path": "18EC89.md",
+    "size_bytes": 78158,
+    "classification": "valid",
+    "reason": "meaningful content (759 words)"
+  },
+  {
+    "path": "18EC9.md",
+    "size_bytes": 57993,
+    "classification": "valid",
+    "reason": "meaningful content (1365 words)"
+  },
+  {
+    "path": "18EC90.md",
+    "size_bytes": 60407,
+    "classification": "valid",
+    "reason": "meaningful content (323 words)"
+  },
+  {
+    "path": "18EC91.md",
+    "size_bytes": 4310,
+    "classification": "valid",
+    "reason": "meaningful content (676 words)"
+  },
+  {
+    "path": "18EC92.md",
+    "size_bytes": 125931,
+    "classification": "valid",
+    "reason": "meaningful content (1286 words)"
+  },
+  {
+    "path": "18EC93.md",
+    "size_bytes": 60751,
+    "classification": "valid",
+    "reason": "meaningful content (343 words)"
+  },
+  {
+    "path": "18EC94.md",
+    "size_bytes": 106222,
+    "classification": "valid",
+    "reason": "meaningful content (1119 words)"
+  },
+  {
+    "path": "19EC1.md",
+    "size_bytes": 76347,
+    "classification": "valid",
+    "reason": "meaningful content (506 words)"
+  },
+  {
+    "path": "19EC11.md",
+    "size_bytes": 229335,
+    "classification": "valid",
+    "reason": "meaningful content (1972 words)"
+  },
+  {
+    "path": "19EC13.md",
+    "size_bytes": 60340,
+    "classification": "valid",
+    "reason": "meaningful content (320 words)"
+  },
+  {
+    "path": "19EC14.md",
+    "size_bytes": 76509,
+    "classification": "valid",
+    "reason": "meaningful content (451 words)"
+  },
+  {
+    "path": "19EC15.md",
+    "size_bytes": 59580,
+    "classification": "valid",
+    "reason": "meaningful content (211 words)"
+  },
+  {
+    "path": "19EC17.md",
+    "size_bytes": 59678,
+    "classification": "valid",
+    "reason": "meaningful content (203 words)"
+  },
+  {
+    "path": "19EC18.md",
+    "size_bytes": 233523,
+    "classification": "valid",
+    "reason": "meaningful content (2354 words)"
+  },
+  {
+    "path": "19EC19.md",
+    "size_bytes": 55286,
+    "classification": "valid",
+    "reason": "meaningful content (121 words)"
+  },
+  {
+    "path": "19EC2.md",
+    "size_bytes": 31976,
+    "classification": "valid",
+    "reason": "meaningful content (4835 words)"
+  },
+  {
+    "path": "19EC20.md",
+    "size_bytes": 60044,
+    "classification": "valid",
+    "reason": "meaningful content (252 words)"
+  },
+  {
+    "path": "19EC23.md",
+    "size_bytes": 56447,
+    "classification": "valid",
+    "reason": "meaningful content (310 words)"
+  },
+  {
+    "path": "19EC24.md",
+    "size_bytes": 60093,
+    "classification": "valid",
+    "reason": "meaningful content (240 words)"
+  },
+  {
+    "path": "19EC28.md",
+    "size_bytes": 5128,
+    "classification": "valid",
+    "reason": "meaningful content (800 words)"
+  },
+  {
+    "path": "19EC3.md",
+    "size_bytes": 59857,
+    "classification": "valid",
+    "reason": "meaningful content (227 words)"
+  },
+  {
+    "path": "19EC30.md",
+    "size_bytes": 127736,
+    "classification": "valid",
+    "reason": "meaningful content (1272 words)"
+  },
+  {
+    "path": "19EC31.md",
+    "size_bytes": 27954,
+    "classification": "valid",
+    "reason": "meaningful content (4340 words)"
+  },
+  {
+    "path": "19EC32.md",
+    "size_bytes": 59763,
+    "classification": "valid",
+    "reason": "meaningful content (217 words)"
+  },
+  {
+    "path": "19EC33.md",
+    "size_bytes": 77009,
+    "classification": "valid",
+    "reason": "meaningful content (619 words)"
+  },
+  {
+    "path": "19EC35.md",
+    "size_bytes": 59612,
+    "classification": "valid",
+    "reason": "meaningful content (160 words)"
+  },
+  {
+    "path": "19EC36.md",
+    "size_bytes": 24554,
+    "classification": "valid",
+    "reason": "meaningful content (3958 words)"
+  },
+  {
+    "path": "19EC38.md",
+    "size_bytes": 201598,
+    "classification": "valid",
+    "reason": "meaningful content (2709 words)"
+  },
+  {
+    "path": "19EC39.md",
+    "size_bytes": 85167,
+    "classification": "valid",
+    "reason": "meaningful content (1006 words)"
+  },
+  {
+    "path": "19EC41.md",
+    "size_bytes": 105505,
+    "classification": "valid",
+    "reason": "meaningful content (1139 words)"
+  },
+  {
+    "path": "19EC42.md",
+    "size_bytes": 82046,
+    "classification": "valid",
+    "reason": "meaningful content (577 words)"
+  },
+  {
+    "path": "19EC43.md",
+    "size_bytes": 79245,
+    "classification": "valid",
+    "reason": "meaningful content (914 words)"
+  },
+  {
+    "path": "19EC45.md",
+    "size_bytes": 60999,
+    "classification": "valid",
+    "reason": "meaningful content (457 words)"
+  },
+  {
+    "path": "19EC46.md",
+    "size_bytes": 149797,
+    "classification": "valid",
+    "reason": "meaningful content (1770 words)"
+  },
+  {
+    "path": "19EC47.md",
+    "size_bytes": 104855,
+    "classification": "valid",
+    "reason": "meaningful content (900 words)"
+  },
+  {
+    "path": "19EC48.md",
+    "size_bytes": 82721,
+    "classification": "valid",
+    "reason": "meaningful content (635 words)"
+  },
+  {
+    "path": "19EC5.md",
+    "size_bytes": 98216,
+    "classification": "valid",
+    "reason": "meaningful content (950 words)"
+  },
+  {
+    "path": "19EC50.md",
+    "size_bytes": 99703,
+    "classification": "valid",
+    "reason": "meaningful content (1182 words)"
+  },
+  {
+    "path": "19EC54.md",
+    "size_bytes": 82371,
+    "classification": "valid",
+    "reason": "meaningful content (749 words)"
+  },
+  {
+    "path": "19EC55.md",
+    "size_bytes": 60239,
+    "classification": "valid",
+    "reason": "meaningful content (372 words)"
+  },
+  {
+    "path": "19EC56.md",
+    "size_bytes": 59227,
+    "classification": "valid",
+    "reason": "meaningful content (213 words)"
+  },
+  {
+    "path": "19EC57.md",
+    "size_bytes": 83235,
+    "classification": "valid",
+    "reason": "meaningful content (754 words)"
+  },
+  {
+    "path": "19EC59.md",
+    "size_bytes": 205964,
+    "classification": "valid",
+    "reason": "meaningful content (3588 words)"
+  },
+  {
+    "path": "19EC60.md",
+    "size_bytes": 24405,
+    "classification": "valid",
+    "reason": "meaningful content (3800 words)"
+  },
+  {
+    "path": "19EC61.md",
+    "size_bytes": 39405,
+    "classification": "valid",
+    "reason": "meaningful content (151 words)"
+  },
+  {
+    "path": "19EC62.md",
+    "size_bytes": 55824,
+    "classification": "valid",
+    "reason": "meaningful content (182 words)"
+  },
+  {
+    "path": "19EC64.md",
+    "size_bytes": 80718,
+    "classification": "valid",
+    "reason": "meaningful content (336 words)"
+  },
+  {
+    "path": "19EC66.md",
+    "size_bytes": 106588,
+    "classification": "valid",
+    "reason": "meaningful content (1135 words)"
+  },
+  {
+    "path": "19EC68.md",
+    "size_bytes": 120097,
+    "classification": "valid",
+    "reason": "meaningful content (1474 words)"
+  },
+  {
+    "path": "19EC69.md",
+    "size_bytes": 60676,
+    "classification": "valid",
+    "reason": "meaningful content (330 words)"
+  },
+  {
+    "path": "19EC7.md",
+    "size_bytes": 56493,
+    "classification": "valid",
+    "reason": "meaningful content (294 words)"
+  },
+  {
+    "path": "19EC71.md",
+    "size_bytes": 59759,
+    "classification": "valid",
+    "reason": "meaningful content (176 words)"
+  },
+  {
+    "path": "19EC72.md",
+    "size_bytes": 117115,
+    "classification": "valid",
+    "reason": "meaningful content (822 words)"
+  },
+  {
+    "path": "19EC73.md",
+    "size_bytes": 77147,
+    "classification": "valid",
+    "reason": "meaningful content (732 words)"
+  },
+  {
+    "path": "19EC8.md",
+    "size_bytes": 59762,
+    "classification": "valid",
+    "reason": "meaningful content (318 words)"
+  },
+  {
+    "path": "19EC9.md",
+    "size_bytes": 105671,
+    "classification": "valid",
+    "reason": "meaningful content (1019 words)"
+  },
+  {
+    "path": "20EC1.md",
+    "size_bytes": 78134,
+    "classification": "valid",
+    "reason": "meaningful content (813 words)"
+  },
+  {
+    "path": "20EC15.md",
+    "size_bytes": 59838,
+    "classification": "valid",
+    "reason": "meaningful content (329 words)"
+  },
+  {
+    "path": "20EC17.md",
+    "size_bytes": 59378,
+    "classification": "valid",
+    "reason": "meaningful content (147 words)"
+  },
+  {
+    "path": "20EC18.md",
+    "size_bytes": 29234,
+    "classification": "valid",
+    "reason": "meaningful content (4409 words)"
+  },
+  {
+    "path": "20EC2.md",
+    "size_bytes": 119455,
+    "classification": "valid",
+    "reason": "meaningful content (1386 words)"
+  },
+  {
+    "path": "20EC20.md",
+    "size_bytes": 104895,
+    "classification": "valid",
+    "reason": "meaningful content (895 words)"
+  },
+  {
+    "path": "20EC22.md",
+    "size_bytes": 78542,
+    "classification": "valid",
+    "reason": "meaningful content (864 words)"
+  },
+  {
+    "path": "20EC24.md",
+    "size_bytes": 55365,
+    "classification": "valid",
+    "reason": "meaningful content (188 words)"
+  },
+  {
+    "path": "20EC25.md",
+    "size_bytes": 82646,
+    "classification": "valid",
+    "reason": "meaningful content (633 words)"
+  },
+  {
+    "path": "20EC26.md",
+    "size_bytes": 100019,
+    "classification": "valid",
+    "reason": "meaningful content (1091 words)"
+  },
+  {
+    "path": "20EC27.md",
+    "size_bytes": 80362,
+    "classification": "valid",
+    "reason": "meaningful content (406 words)"
+  },
+  {
+    "path": "20EC28.md",
+    "size_bytes": 80833,
+    "classification": "valid",
+    "reason": "meaningful content (485 words)"
+  },
+  {
+    "path": "20EC29.md",
+    "size_bytes": 25702,
+    "classification": "valid",
+    "reason": "meaningful content (3975 words)"
+  },
+  {
+    "path": "20EC30.md",
+    "size_bytes": 97406,
+    "classification": "valid",
+    "reason": "meaningful content (939 words)"
+  },
+  {
+    "path": "20EC31.md",
+    "size_bytes": 97406,
+    "classification": "valid",
+    "reason": "meaningful content (939 words)"
+  },
+  {
+    "path": "20EC33.md",
+    "size_bytes": 24269,
+    "classification": "valid",
+    "reason": "meaningful content (3786 words)"
+  },
+  {
+    "path": "20EC34.md",
+    "size_bytes": 81318,
+    "classification": "valid",
+    "reason": "meaningful content (449 words)"
+  },
+  {
+    "path": "20EC35.md",
+    "size_bytes": 81318,
+    "classification": "valid",
+    "reason": "meaningful content (449 words)"
+  },
+  {
+    "path": "20EC36.md",
+    "size_bytes": 104013,
+    "classification": "valid",
+    "reason": "meaningful content (798 words)"
+  },
+  {
+    "path": "20EC37.md",
+    "size_bytes": 105176,
+    "classification": "valid",
+    "reason": "meaningful content (1014 words)"
+  },
+  {
+    "path": "20EC38.md",
+    "size_bytes": 58938,
+    "classification": "valid",
+    "reason": "meaningful content (175 words)"
+  },
+  {
+    "path": "20EC40.md",
+    "size_bytes": 119259,
+    "classification": "valid",
+    "reason": "meaningful content (1273 words)"
+  },
+  {
+    "path": "20EC41.md",
+    "size_bytes": 81654,
+    "classification": "valid",
+    "reason": "meaningful content (505 words)"
+  },
+  {
+    "path": "20EC44.md",
+    "size_bytes": 110272,
+    "classification": "valid",
+    "reason": "meaningful content (510 words)"
+  },
+  {
+    "path": "20EC45.md",
+    "size_bytes": 216267,
+    "classification": "valid",
+    "reason": "meaningful content (1822 words)"
+  },
+  {
+    "path": "20EC47.md",
+    "size_bytes": 59774,
+    "classification": "valid",
+    "reason": "meaningful content (231 words)"
+  },
+  {
+    "path": "20EC48.md",
+    "size_bytes": 58441,
+    "classification": "valid",
+    "reason": "meaningful content (119 words)"
+  },
+  {
+    "path": "20EC49.md",
+    "size_bytes": 84073,
+    "classification": "valid",
+    "reason": "meaningful content (717 words)"
+  },
+  {
+    "path": "20EC55.md",
+    "size_bytes": 60176,
+    "classification": "valid",
+    "reason": "meaningful content (282 words)"
+  },
+  {
+    "path": "20EC56.md",
+    "size_bytes": 80844,
+    "classification": "valid",
+    "reason": "meaningful content (431 words)"
+  },
+  {
+    "path": "20EC58.md",
+    "size_bytes": 173685,
+    "classification": "valid",
+    "reason": "meaningful content (2163 words)"
+  },
+  {
+    "path": "20EC59.md",
+    "size_bytes": 129434,
+    "classification": "valid",
+    "reason": "meaningful content (1616 words)"
+  },
+  {
+    "path": "20EC60.md",
+    "size_bytes": 129434,
+    "classification": "valid",
+    "reason": "meaningful content (1616 words)"
+  },
+  {
+    "path": "20EC61.md",
+    "size_bytes": 80520,
+    "classification": "valid",
+    "reason": "meaningful content (377 words)"
+  },
+  {
+    "path": "20EC62.md",
+    "size_bytes": 3,
+    "classification": "empty",
+    "reason": "file is empty or whitespace only"
+  },
+  {
+    "path": "20EC64.md",
+    "size_bytes": 3,
+    "classification": "empty",
+    "reason": "file is empty or whitespace only"
+  },
+  {
+    "path": "20EC66.md",
+    "size_bytes": 56181,
+    "classification": "valid",
+    "reason": "meaningful content (249 words)"
+  },
+  {
+    "path": "20EC68.md",
+    "size_bytes": 58254,
+    "classification": "valid",
+    "reason": "meaningful content (159 words)"
+  },
+  {
+    "path": "20EC69.md",
+    "size_bytes": 80501,
+    "classification": "valid",
+    "reason": "meaningful content (274 words)"
+  },
+  {
+    "path": "20EC70.md",
+    "size_bytes": 84604,
+    "classification": "valid",
+    "reason": "meaningful content (797 words)"
+  },
+  {
+    "path": "20EC72.md",
+    "size_bytes": 60424,
+    "classification": "valid",
+    "reason": "meaningful content (281 words)"
+  },
+  {
+    "path": "20EC73.md",
+    "size_bytes": 104993,
+    "classification": "valid",
+    "reason": "meaningful content (948 words)"
+  },
+  {
+    "path": "20EC74.md",
+    "size_bytes": 81947,
+    "classification": "valid",
+    "reason": "meaningful content (646 words)"
+  },
+  {
+    "path": "20EC75.md",
+    "size_bytes": 59933,
+    "classification": "valid",
+    "reason": "meaningful content (249 words)"
+  },
+  {
+    "path": "20EC76.md",
+    "size_bytes": 59437,
+    "classification": "valid",
+    "reason": "meaningful content (219 words)"
+  },
+  {
+    "path": "20EC77.md",
+    "size_bytes": 59651,
+    "classification": "valid",
+    "reason": "meaningful content (181 words)"
+  },
+  {
+    "path": "20EC78.md",
+    "size_bytes": 106742,
+    "classification": "valid",
+    "reason": "meaningful content (328 words)"
+  },
+  {
+    "path": "20EC79.md",
+    "size_bytes": 59119,
+    "classification": "valid",
+    "reason": "meaningful content (130 words)"
+  },
+  {
+    "path": "20EC80.md",
+    "size_bytes": 81822,
+    "classification": "valid",
+    "reason": "meaningful content (497 words)"
+  },
+  {
+    "path": "20EC81.md",
+    "size_bytes": 54915,
+    "classification": "valid",
+    "reason": "meaningful content (291 words)"
+  },
+  {
+    "path": "20EC82.md",
+    "size_bytes": 76270,
+    "classification": "valid",
+    "reason": "meaningful content (506 words)"
+  },
+  {
+    "path": "20EC83.md",
+    "size_bytes": 83189,
+    "classification": "valid",
+    "reason": "meaningful content (724 words)"
+  },
+  {
+    "path": "21EC1.md",
+    "size_bytes": 37105,
+    "classification": "valid",
+    "reason": "meaningful content (5946 words)"
+  },
+  {
+    "path": "21EC10.md",
+    "size_bytes": 58551,
+    "classification": "valid",
+    "reason": "meaningful content (109 words)"
+  },
+  {
+    "path": "21EC11.md",
+    "size_bytes": 58488,
+    "classification": "valid",
+    "reason": "meaningful content (125 words)"
+  },
+  {
+    "path": "21EC14.md",
+    "size_bytes": 119081,
+    "classification": "valid",
+    "reason": "meaningful content (1267 words)"
+  },
+  {
+    "path": "21EC15.md",
+    "size_bytes": 81882,
+    "classification": "valid",
+    "reason": "meaningful content (562 words)"
+  },
+  {
+    "path": "21EC18.md",
+    "size_bytes": 119605,
+    "classification": "valid",
+    "reason": "meaningful content (1448 words)"
+  },
+  {
+    "path": "21EC20.md",
+    "size_bytes": 59403,
+    "classification": "valid",
+    "reason": "meaningful content (170 words)"
+  },
+  {
+    "path": "21EC21.md",
+    "size_bytes": 60761,
+    "classification": "valid",
+    "reason": "meaningful content (316 words)"
+  },
+  {
+    "path": "21EC22.md",
+    "size_bytes": 18139,
+    "classification": "valid",
+    "reason": "meaningful content (2805 words)"
+  },
+  {
+    "path": "21EC24.md",
+    "size_bytes": 78267,
+    "classification": "valid",
+    "reason": "meaningful content (882 words)"
+  },
+  {
+    "path": "21EC25.md",
+    "size_bytes": 198198,
+    "classification": "valid",
+    "reason": "meaningful content (3111 words)"
+  },
+  {
+    "path": "21EC26.md",
+    "size_bytes": 149127,
+    "classification": "valid",
+    "reason": "meaningful content (1674 words)"
+  },
+  {
+    "path": "21EC27.md",
+    "size_bytes": 180614,
+    "classification": "valid",
+    "reason": "meaningful content (2645 words)"
+  },
+  {
+    "path": "21EC28.md",
+    "size_bytes": 105973,
+    "classification": "valid",
+    "reason": "meaningful content (878 words)"
+  },
+  {
+    "path": "21EC3.md",
+    "size_bytes": 59829,
+    "classification": "valid",
+    "reason": "meaningful content (328 words)"
+  },
+  {
+    "path": "21EC30.md",
+    "size_bytes": 76617,
+    "classification": "valid",
+    "reason": "meaningful content (563 words)"
+  },
+  {
+    "path": "21EC31.md",
+    "size_bytes": 244037,
+    "classification": "valid",
+    "reason": "meaningful content (2310 words)"
+  },
+  {
+    "path": "21EC32.md",
+    "size_bytes": 58794,
+    "classification": "valid",
+    "reason": "meaningful content (146 words)"
+  },
+  {
+    "path": "21EC33.md",
+    "size_bytes": 60300,
+    "classification": "valid",
+    "reason": "meaningful content (301 words)"
+  },
+  {
+    "path": "21EC35.md",
+    "size_bytes": 83691,
+    "classification": "valid",
+    "reason": "meaningful content (1604 words)"
+  },
+  {
+    "path": "21EC37.md",
+    "size_bytes": 22140,
+    "classification": "valid",
+    "reason": "meaningful content (3450 words)"
+  },
+  {
+    "path": "21EC38.md",
+    "size_bytes": 81335,
+    "classification": "valid",
+    "reason": "meaningful content (548 words)"
+  },
+  {
+    "path": "21EC40.md",
+    "size_bytes": 59708,
+    "classification": "valid",
+    "reason": "meaningful content (216 words)"
+  },
+  {
+    "path": "21EC41.md",
+    "size_bytes": 81572,
+    "classification": "valid",
+    "reason": "meaningful content (446 words)"
+  },
+  {
+    "path": "21EC42.md",
+    "size_bytes": 106960,
+    "classification": "valid",
+    "reason": "meaningful content (1024 words)"
+  },
+  {
+    "path": "21EC43.md",
+    "size_bytes": 82314,
+    "classification": "valid",
+    "reason": "meaningful content (666 words)"
+  },
+  {
+    "path": "21EC45.md",
+    "size_bytes": 59313,
+    "classification": "valid",
+    "reason": "meaningful content (197 words)"
+  },
+  {
+    "path": "21EC46.md",
+    "size_bytes": 59426,
+    "classification": "valid",
+    "reason": "meaningful content (171 words)"
+  },
+  {
+    "path": "21EC48.md",
+    "size_bytes": 8712,
+    "classification": "valid",
+    "reason": "meaningful content (1324 words)"
+  },
+  {
+    "path": "21EC49.md",
+    "size_bytes": 150567,
+    "classification": "valid",
+    "reason": "meaningful content (1963 words)"
+  },
+  {
+    "path": "21EC50.md",
+    "size_bytes": 105734,
+    "classification": "valid",
+    "reason": "meaningful content (1190 words)"
+  },
+  {
+    "path": "21EC51.md",
+    "size_bytes": 55805,
+    "classification": "valid",
+    "reason": "meaningful content (192 words)"
+  },
+  {
+    "path": "21EC52.md",
+    "size_bytes": 84324,
+    "classification": "valid",
+    "reason": "meaningful content (719 words)"
+  },
+  {
+    "path": "21EC53.md",
+    "size_bytes": 58873,
+    "classification": "valid",
+    "reason": "meaningful content (148 words)"
+  },
+  {
+    "path": "21EC54.md",
+    "size_bytes": 56653,
+    "classification": "valid",
+    "reason": "meaningful content (331 words)"
+  },
+  {
+    "path": "21EC55.md",
+    "size_bytes": 69989,
+    "classification": "valid",
+    "reason": "meaningful content (515 words)"
+  },
+  {
+    "path": "21EC57.md",
+    "size_bytes": 80524,
+    "classification": "valid",
+    "reason": "meaningful content (293 words)"
+  },
+  {
+    "path": "21EC58.md",
+    "size_bytes": 58047,
+    "classification": "valid",
+    "reason": "meaningful content (125 words)"
+  },
+  {
+    "path": "21EC59.md",
+    "size_bytes": 55604,
+    "classification": "valid",
+    "reason": "meaningful content (160 words)"
+  },
+  {
+    "path": "21EC62.md",
+    "size_bytes": 59629,
+    "classification": "valid",
+    "reason": "meaningful content (279 words)"
+  },
+  {
+    "path": "21EC63.md",
+    "size_bytes": 100653,
+    "classification": "valid",
+    "reason": "meaningful content (687 words)"
+  },
+  {
+    "path": "21EC65.md",
+    "size_bytes": 82141,
+    "classification": "valid",
+    "reason": "meaningful content (584 words)"
+  },
+  {
+    "path": "21EC66.md",
+    "size_bytes": 56953,
+    "classification": "valid",
+    "reason": "meaningful content (362 words)"
+  },
+  {
+    "path": "21EC67.md",
+    "size_bytes": 59598,
+    "classification": "valid",
+    "reason": "meaningful content (173 words)"
+  },
+  {
+    "path": "21EC68.md",
+    "size_bytes": 81073,
+    "classification": "valid",
+    "reason": "meaningful content (446 words)"
+  },
+  {
+    "path": "21EC8.md",
+    "size_bytes": 82976,
+    "classification": "valid",
+    "reason": "meaningful content (559 words)"
+  },
+  {
+    "path": "22EC10.md",
+    "size_bytes": 24735,
+    "classification": "valid",
+    "reason": "meaningful content (3679 words)"
+  },
+  {
+    "path": "22EC12.md",
+    "size_bytes": 55890,
+    "classification": "valid",
+    "reason": "meaningful content (210 words)"
+  },
+  {
+    "path": "22EC13.md",
+    "size_bytes": 51341,
+    "classification": "valid",
+    "reason": "meaningful content (204 words)"
+  },
+  {
+    "path": "22EC15.md",
+    "size_bytes": 59825,
+    "classification": "valid",
+    "reason": "meaningful content (327 words)"
+  },
+  {
+    "path": "22EC16.md",
+    "size_bytes": 136797,
+    "classification": "valid",
+    "reason": "meaningful content (1022 words)"
+  },
+  {
+    "path": "22EC17.md",
+    "size_bytes": 74787,
+    "classification": "valid",
+    "reason": "meaningful content (276 words)"
+  },
+  {
+    "path": "22EC18.md",
+    "size_bytes": 29552,
+    "classification": "valid",
+    "reason": "meaningful content (4765 words)"
+  },
+  {
+    "path": "22EC19.md",
+    "size_bytes": 60091,
+    "classification": "valid",
+    "reason": "meaningful content (276 words)"
+  },
+  {
+    "path": "22EC21.md",
+    "size_bytes": 76851,
+    "classification": "valid",
+    "reason": "meaningful content (552 words)"
+  },
+  {
+    "path": "22EC23.md",
+    "size_bytes": 50219,
+    "classification": "valid",
+    "reason": "meaningful content (130 words)"
+  },
+  {
+    "path": "22EC24.md",
+    "size_bytes": 62893,
+    "classification": "valid",
+    "reason": "meaningful content (698 words)"
+  },
+  {
+    "path": "22EC25.md",
+    "size_bytes": 89997,
+    "classification": "valid",
+    "reason": "meaningful content (1038 words)"
+  },
+  {
+    "path": "22EC26.md",
+    "size_bytes": 51116,
+    "classification": "valid",
+    "reason": "meaningful content (257 words)"
+  },
+  {
+    "path": "22EC27.md",
+    "size_bytes": 43799,
+    "classification": "valid",
+    "reason": "meaningful content (109 words)"
+  },
+  {
+    "path": "22EC28.md",
+    "size_bytes": 55829,
+    "classification": "valid",
+    "reason": "meaningful content (194 words)"
+  },
+  {
+    "path": "22EC3.md",
+    "size_bytes": 3,
+    "classification": "empty",
+    "reason": "file is empty or whitespace only"
+  },
+  {
+    "path": "22EC30.md",
+    "size_bytes": 65226,
+    "classification": "valid",
+    "reason": "meaningful content (609 words)"
+  },
+  {
+    "path": "22EC31.md",
+    "size_bytes": 50840,
+    "classification": "valid",
+    "reason": "meaningful content (125 words)"
+  },
+  {
+    "path": "22EC32.md",
+    "size_bytes": 38773,
+    "classification": "valid",
+    "reason": "meaningful content (349 words)"
+  },
+  {
+    "path": "22EC33.md",
+    "size_bytes": 69341,
+    "classification": "valid",
+    "reason": "meaningful content (474 words)"
+  },
+  {
+    "path": "22EC36.md",
+    "size_bytes": 77676,
+    "classification": "valid",
+    "reason": "meaningful content (776 words)"
+  },
+  {
+    "path": "22EC37.md",
+    "size_bytes": 59430,
+    "classification": "valid",
+    "reason": "meaningful content (170 words)"
+  },
+  {
+    "path": "22EC38.md",
+    "size_bytes": 119287,
+    "classification": "valid",
+    "reason": "meaningful content (1307 words)"
+  },
+  {
+    "path": "22EC41.md",
+    "size_bytes": 75989,
+    "classification": "valid",
+    "reason": "meaningful content (496 words)"
+  },
+  {
+    "path": "22EC42.md",
+    "size_bytes": 60304,
+    "classification": "valid",
+    "reason": "meaningful content (285 words)"
+  },
+  {
+    "path": "22EC43.md",
+    "size_bytes": 58787,
+    "classification": "valid",
+    "reason": "meaningful content (143 words)"
+  },
+  {
+    "path": "22EC45.md",
+    "size_bytes": 83321,
+    "classification": "valid",
+    "reason": "meaningful content (619 words)"
+  },
+  {
+    "path": "22EC46.md",
+    "size_bytes": 76909,
+    "classification": "valid",
+    "reason": "meaningful content (562 words)"
+  },
+  {
+    "path": "22EC47.md",
+    "size_bytes": 57193,
+    "classification": "valid",
+    "reason": "meaningful content (426 words)"
+  },
+  {
+    "path": "22EC49.md",
+    "size_bytes": 55508,
+    "classification": "valid",
+    "reason": "meaningful content (135 words)"
+  },
+  {
+    "path": "22EC5.md",
+    "size_bytes": 59876,
+    "classification": "valid",
+    "reason": "meaningful content (303 words)"
+  },
+  {
+    "path": "22EC51.md",
+    "size_bytes": 56891,
+    "classification": "valid",
+    "reason": "meaningful content (421 words)"
+  },
+  {
+    "path": "22EC52.md",
+    "size_bytes": 118591,
+    "classification": "valid",
+    "reason": "meaningful content (1303 words)"
+  },
+  {
+    "path": "22EC54.md",
+    "size_bytes": 76891,
+    "classification": "valid",
+    "reason": "meaningful content (476 words)"
+  },
+  {
+    "path": "22EC55.md",
+    "size_bytes": 78030,
+    "classification": "valid",
+    "reason": "meaningful content (796 words)"
+  },
+  {
+    "path": "22EC60.md",
+    "size_bytes": 90822,
+    "classification": "valid",
+    "reason": "meaningful content (1182 words)"
+  },
+  {
+    "path": "22EC61.md",
+    "size_bytes": 69077,
+    "classification": "valid",
+    "reason": "meaningful content (325 words)"
+  },
+  {
+    "path": "22EC62.md",
+    "size_bytes": 55651,
+    "classification": "valid",
+    "reason": "meaningful content (150 words)"
+  },
+  {
+    "path": "22EC63.md",
+    "size_bytes": 88771,
+    "classification": "valid",
+    "reason": "meaningful content (778 words)"
+  },
+  {
+    "path": "22EC64.md",
+    "size_bytes": 38840,
+    "classification": "valid",
+    "reason": "meaningful content (6215 words)"
+  },
+  {
+    "path": "22EC65.md",
+    "size_bytes": 100514,
+    "classification": "valid",
+    "reason": "meaningful content (654 words)"
+  },
+  {
+    "path": "22EC66.md",
+    "size_bytes": 55032,
+    "classification": "valid",
+    "reason": "meaningful content (130 words)"
+  },
+  {
+    "path": "22EC67.md",
+    "size_bytes": 59629,
+    "classification": "valid",
+    "reason": "meaningful content (279 words)"
+  },
+  {
+    "path": "22EC68.md",
+    "size_bytes": 60382,
+    "classification": "valid",
+    "reason": "meaningful content (328 words)"
+  },
+  {
+    "path": "22EC69.md",
+    "size_bytes": 76940,
+    "classification": "valid",
+    "reason": "meaningful content (634 words)"
+  },
+  {
+    "path": "22EC7.md",
+    "size_bytes": 59824,
+    "classification": "valid",
+    "reason": "meaningful content (272 words)"
+  },
+  {
+    "path": "22EC70.md",
+    "size_bytes": 59686,
+    "classification": "valid",
+    "reason": "meaningful content (185 words)"
+  },
+  {
+    "path": "22EC71.md",
+    "size_bytes": 81663,
+    "classification": "valid",
+    "reason": "meaningful content (473 words)"
+  },
+  {
+    "path": "22EC72.md",
+    "size_bytes": 56497,
+    "classification": "valid",
+    "reason": "meaningful content (301 words)"
+  },
+  {
+    "path": "22EC73.md",
+    "size_bytes": 104360,
+    "classification": "valid",
+    "reason": "meaningful content (887 words)"
+  },
+  {
+    "path": "22EC8.md",
+    "size_bytes": 11258,
+    "classification": "valid",
+    "reason": "meaningful content (1681 words)"
+  },
+  {
+    "path": "22EC9.md",
+    "size_bytes": 24735,
+    "classification": "valid",
+    "reason": "meaningful content (3679 words)"
+  },
+  {
+    "path": "23EC10.md",
+    "size_bytes": 105049,
+    "classification": "valid",
+    "reason": "meaningful content (903 words)"
+  },
+  {
+    "path": "23EC13.md",
+    "size_bytes": 55215,
+    "classification": "valid",
+    "reason": "meaningful content (109 words)"
+  },
+  {
+    "path": "23EC14.md",
+    "size_bytes": 149205,
+    "classification": "valid",
+    "reason": "meaningful content (1639 words)"
+  },
+  {
+    "path": "23EC15.md",
+    "size_bytes": 126431,
+    "classification": "valid",
+    "reason": "meaningful content (1232 words)"
+  },
+  {
+    "path": "23EC17.md",
+    "size_bytes": 119163,
+    "classification": "valid",
+    "reason": "meaningful content (1301 words)"
+  },
+  {
+    "path": "23EC2.md",
+    "size_bytes": 56647,
+    "classification": "valid",
+    "reason": "meaningful content (321 words)"
+  },
+  {
+    "path": "23EC20.md",
+    "size_bytes": 60485,
+    "classification": "valid",
+    "reason": "meaningful content (398 words)"
+  },
+  {
+    "path": "23EC21.md",
+    "size_bytes": 105346,
+    "classification": "valid",
+    "reason": "meaningful content (1015 words)"
+  },
+  {
+    "path": "23EC27.md",
+    "size_bytes": 247490,
+    "classification": "valid",
+    "reason": "meaningful content (4471 words)"
+  },
+  {
+    "path": "23EC28.md",
+    "size_bytes": 77119,
+    "classification": "valid",
+    "reason": "meaningful content (591 words)"
+  },
+  {
+    "path": "23EC30.md",
+    "size_bytes": 104666,
+    "classification": "valid",
+    "reason": "meaningful content (796 words)"
+  },
+  {
+    "path": "23EC32.md",
+    "size_bytes": 284331,
+    "classification": "valid",
+    "reason": "meaningful content (1829 words)"
+  },
+  {
+    "path": "23EC34.md",
+    "size_bytes": 56138,
+    "classification": "valid",
+    "reason": "meaningful content (230 words)"
+  },
+  {
+    "path": "23EC35.md",
+    "size_bytes": 89888,
+    "classification": "valid",
+    "reason": "meaningful content (605 words)"
+  },
+  {
+    "path": "23EC37.md",
+    "size_bytes": 58794,
+    "classification": "valid",
+    "reason": "meaningful content (146 words)"
+  },
+  {
+    "path": "23EC38.md",
+    "size_bytes": 54860,
+    "classification": "valid",
+    "reason": "meaningful content (113 words)"
+  },
+  {
+    "path": "23EC39.md",
+    "size_bytes": 3354,
+    "classification": "valid",
+    "reason": "meaningful content (483 words)"
+  },
+  {
+    "path": "23EC40.md",
+    "size_bytes": 70931,
+    "classification": "valid",
+    "reason": "meaningful content (639 words)"
+  },
+  {
+    "path": "23EC42.md",
+    "size_bytes": 80486,
+    "classification": "valid",
+    "reason": "meaningful content (311 words)"
+  },
+  {
+    "path": "23EC44.md",
+    "size_bytes": 29731,
+    "classification": "valid",
+    "reason": "meaningful content (4388 words)"
+  },
+  {
+    "path": "23EC45.md",
+    "size_bytes": 106629,
+    "classification": "valid",
+    "reason": "meaningful content (1291 words)"
+  },
+  {
+    "path": "23EC46.md",
+    "size_bytes": 106629,
+    "classification": "valid",
+    "reason": "meaningful content (1291 words)"
+  },
+  {
+    "path": "23EC47.md",
+    "size_bytes": 29731,
+    "classification": "valid",
+    "reason": "meaningful content (4388 words)"
+  },
+  {
+    "path": "23EC49.md",
+    "size_bytes": 171146,
+    "classification": "valid",
+    "reason": "meaningful content (1911 words)"
+  },
+  {
+    "path": "23EC5.md",
+    "size_bytes": 58795,
+    "classification": "valid",
+    "reason": "meaningful content (146 words)"
+  },
+  {
+    "path": "23EC50.md",
+    "size_bytes": 60165,
+    "classification": "valid",
+    "reason": "meaningful content (258 words)"
+  },
+  {
+    "path": "23EC52.md",
+    "size_bytes": 185947,
+    "classification": "valid",
+    "reason": "meaningful content (3074 words)"
+  },
+  {
+    "path": "23EC53.md",
+    "size_bytes": 107513,
+    "classification": "valid",
+    "reason": "meaningful content (1226 words)"
+  },
+  {
+    "path": "23EC54.md",
+    "size_bytes": 72043,
+    "classification": "valid",
+    "reason": "meaningful content (852 words)"
+  },
+  {
+    "path": "23EC55.md",
+    "size_bytes": 106059,
+    "classification": "valid",
+    "reason": "meaningful content (930 words)"
+  },
+  {
+    "path": "23EC56.md",
+    "size_bytes": 60913,
+    "classification": "valid",
+    "reason": "meaningful content (350 words)"
+  },
+  {
+    "path": "23EC58.md",
+    "size_bytes": 59755,
+    "classification": "valid",
+    "reason": "meaningful content (277 words)"
+  },
+  {
+    "path": "23EC59.md",
+    "size_bytes": 59922,
+    "classification": "valid",
+    "reason": "meaningful content (194 words)"
+  },
+  {
+    "path": "23EC6.md",
+    "size_bytes": 59657,
+    "classification": "valid",
+    "reason": "meaningful content (301 words)"
+  },
+  {
+    "path": "23EC61.md",
+    "size_bytes": 105490,
+    "classification": "valid",
+    "reason": "meaningful content (651 words)"
+  },
+  {
+    "path": "23EC64.md",
+    "size_bytes": 87886,
+    "classification": "valid",
+    "reason": "meaningful content (792 words)"
+  },
+  {
+    "path": "23EC65.md",
+    "size_bytes": 148398,
+    "classification": "valid",
+    "reason": "meaningful content (1529 words)"
+  },
+  {
+    "path": "23EC66.md",
+    "size_bytes": 31174,
+    "classification": "valid",
+    "reason": "meaningful content (4617 words)"
+  },
+  {
+    "path": "23EC67.md",
+    "size_bytes": 31174,
+    "classification": "valid",
+    "reason": "meaningful content (4617 words)"
+  },
+  {
+    "path": "23EC68.md",
+    "size_bytes": 4110,
+    "classification": "valid",
+    "reason": "meaningful content (654 words)"
+  },
+  {
+    "path": "23EC7.md",
+    "size_bytes": 58367,
+    "classification": "valid",
+    "reason": "meaningful content (86 words)"
+  },
+  {
+    "path": "23EC8.md",
+    "size_bytes": 57216,
+    "classification": "valid",
+    "reason": "meaningful content (417 words)"
+  },
+  {
+    "path": "24EC10.md",
+    "size_bytes": 30685,
+    "classification": "valid",
+    "reason": "meaningful content (296 words)"
+  },
+  {
+    "path": "24EC12.md",
+    "size_bytes": 30644,
+    "classification": "valid",
+    "reason": "meaningful content (286 words)"
+  },
+  {
+    "path": "24EC13.md",
+    "size_bytes": 82512,
+    "classification": "valid",
+    "reason": "meaningful content (946 words)"
+  },
+  {
+    "path": "24EC15.md",
+    "size_bytes": 28293,
+    "classification": "valid",
+    "reason": "meaningful content (133 words)"
+  },
+  {
+    "path": "24EC16.md",
+    "size_bytes": 53762,
+    "classification": "valid",
+    "reason": "meaningful content (537 words)"
+  },
+  {
+    "path": "24EC17.md",
+    "size_bytes": 53762,
+    "classification": "valid",
+    "reason": "meaningful content (537 words)"
+  },
+  {
+    "path": "24EC19.md",
+    "size_bytes": 6275,
+    "classification": "valid",
+    "reason": "meaningful content (874 words)"
+  },
+  {
+    "path": "24EC21.md",
+    "size_bytes": 5659,
+    "classification": "valid",
+    "reason": "meaningful content (840 words)"
+  },
+  {
+    "path": "24EC22.md",
+    "size_bytes": 99429,
+    "classification": "valid",
+    "reason": "meaningful content (1284 words)"
+  },
+  {
+    "path": "24EC24.md",
+    "size_bytes": 79884,
+    "classification": "valid",
+    "reason": "meaningful content (767 words)"
+  },
+  {
+    "path": "24EC26.md",
+    "size_bytes": 62974,
+    "classification": "valid",
+    "reason": "meaningful content (832 words)"
+  },
+  {
+    "path": "24EC28.md",
+    "size_bytes": 58433,
+    "classification": "valid",
+    "reason": "meaningful content (485 words)"
+  },
+  {
+    "path": "24EC29.md",
+    "size_bytes": 53217,
+    "classification": "valid",
+    "reason": "meaningful content (515 words)"
+  },
+  {
+    "path": "24EC3.md",
+    "size_bytes": 53572,
+    "classification": "valid",
+    "reason": "meaningful content (457 words)"
+  },
+  {
+    "path": "24EC30.md",
+    "size_bytes": 59006,
+    "classification": "valid",
+    "reason": "meaningful content (558 words)"
+  },
+  {
+    "path": "24EC32.md",
+    "size_bytes": 140833,
+    "classification": "valid",
+    "reason": "meaningful content (2300 words)"
+  },
+  {
+    "path": "24EC33.md",
+    "size_bytes": 27507,
+    "classification": "valid",
+    "reason": "meaningful content (333 words)"
+  },
+  {
+    "path": "24EC34.md",
+    "size_bytes": 94313,
+    "classification": "valid",
+    "reason": "meaningful content (1046 words)"
+  },
+  {
+    "path": "24EC36.md",
+    "size_bytes": 29358,
+    "classification": "valid",
+    "reason": "meaningful content (271 words)"
+  },
+  {
+    "path": "24EC37.md",
+    "size_bytes": 29846,
+    "classification": "valid",
+    "reason": "meaningful content (145 words)"
+  },
+  {
+    "path": "24EC38.md",
+    "size_bytes": 24357,
+    "classification": "valid",
+    "reason": "meaningful content (182 words)"
+  },
+  {
+    "path": "24EC40.md",
+    "size_bytes": 135264,
+    "classification": "valid",
+    "reason": "meaningful content (1539 words)"
+  },
+  {
+    "path": "24EC41.md",
+    "size_bytes": 135264,
+    "classification": "valid",
+    "reason": "meaningful content (1539 words)"
+  },
+  {
+    "path": "24EC44.md",
+    "size_bytes": 61459,
+    "classification": "valid",
+    "reason": "meaningful content (491 words)"
+  },
+  {
+    "path": "24EC46.md",
+    "size_bytes": 139627,
+    "classification": "valid",
+    "reason": "meaningful content (2070 words)"
+  },
+  {
+    "path": "24EC47.md",
+    "size_bytes": 97559,
+    "classification": "valid",
+    "reason": "meaningful content (936 words)"
+  },
+  {
+    "path": "24EC48.md",
+    "size_bytes": 59820,
+    "classification": "valid",
+    "reason": "meaningful content (716 words)"
+  },
+  {
+    "path": "24EC49.md",
+    "size_bytes": 45433,
+    "classification": "valid",
+    "reason": "meaningful content (527 words)"
+  },
+  {
+    "path": "24EC5.md",
+    "size_bytes": 53507,
+    "classification": "valid",
+    "reason": "meaningful content (459 words)"
+  },
+  {
+    "path": "24EC50.md",
+    "size_bytes": 60425,
+    "classification": "valid",
+    "reason": "meaningful content (392 words)"
+  },
+  {
+    "path": "24EC52.md",
+    "size_bytes": 57137,
+    "classification": "valid",
+    "reason": "meaningful content (282 words)"
+  },
+  {
+    "path": "24EC53.md",
+    "size_bytes": 2,
+    "classification": "empty",
+    "reason": "file is empty or whitespace only"
+  },
+  {
+    "path": "24EC54.md",
+    "size_bytes": 90126,
+    "classification": "valid",
+    "reason": "meaningful content (967 words)"
+  },
+  {
+    "path": "24EC55.md",
+    "size_bytes": 251852,
+    "classification": "valid",
+    "reason": "meaningful content (3463 words)"
+  },
+  {
+    "path": "24EC57.md",
+    "size_bytes": 60475,
+    "classification": "valid",
+    "reason": "meaningful content (780 words)"
+  },
+  {
+    "path": "24EC58.md",
+    "size_bytes": 60475,
+    "classification": "valid",
+    "reason": "meaningful content (780 words)"
+  },
+  {
+    "path": "24EC6.md",
+    "size_bytes": 53263,
+    "classification": "valid",
+    "reason": "meaningful content (441 words)"
+  },
+  {
+    "path": "24EC60.md",
+    "size_bytes": 30807,
+    "classification": "valid",
+    "reason": "meaningful content (279 words)"
+  },
+  {
+    "path": "24EC61.md",
+    "size_bytes": 29043,
+    "classification": "valid",
+    "reason": "meaningful content (184 words)"
+  },
+  {
+    "path": "24EC62.md",
+    "size_bytes": 98464,
+    "classification": "valid",
+    "reason": "meaningful content (656 words)"
+  },
+  {
+    "path": "24EC63.md",
+    "size_bytes": 181503,
+    "classification": "valid",
+    "reason": "meaningful content (2526 words)"
+  },
+  {
+    "path": "24EC64.md",
+    "size_bytes": 147846,
+    "classification": "valid",
+    "reason": "meaningful content (1554 words)"
+  },
+  {
+    "path": "24EC65.md",
+    "size_bytes": 89331,
+    "classification": "valid",
+    "reason": "meaningful content (990 words)"
+  },
+  {
+    "path": "24EC66.md",
+    "size_bytes": 24871,
+    "classification": "valid",
+    "reason": "meaningful content (243 words)"
+  },
+  {
+    "path": "24EC68.md",
+    "size_bytes": 27640,
+    "classification": "valid",
+    "reason": "meaningful content (349 words)"
+  },
+  {
+    "path": "25EC10.md",
+    "size_bytes": 59569,
+    "classification": "valid",
+    "reason": "meaningful content (297 words)"
+  },
+  {
+    "path": "25EC11.md",
+    "size_bytes": 51294,
+    "classification": "valid",
+    "reason": "meaningful content (176 words)"
+  },
+  {
+    "path": "25EC14.md",
+    "size_bytes": 58795,
+    "classification": "valid",
+    "reason": "meaningful content (146 words)"
+  },
+  {
+    "path": "25EC15.md",
+    "size_bytes": 100366,
+    "classification": "valid",
+    "reason": "meaningful content (1133 words)"
+  },
+  {
+    "path": "25EC16.md",
+    "size_bytes": 75498,
+    "classification": "valid",
+    "reason": "meaningful content (534 words)"
+  },
+  {
+    "path": "25EC18.md",
+    "size_bytes": 108509,
+    "classification": "valid",
+    "reason": "meaningful content (1381 words)"
+  },
+  {
+    "path": "25EC2.md",
+    "size_bytes": 88998,
+    "classification": "valid",
+    "reason": "meaningful content (1100 words)"
+  },
+  {
+    "path": "25EC20.md",
+    "size_bytes": 79674,
+    "classification": "valid",
+    "reason": "meaningful content (1260 words)"
+  },
+  {
+    "path": "25EC21.md",
+    "size_bytes": 151088,
+    "classification": "valid",
+    "reason": "meaningful content (1946 words)"
+  },
+  {
+    "path": "25EC22.md",
+    "size_bytes": 87926,
+    "classification": "valid",
+    "reason": "meaningful content (790 words)"
+  },
+  {
+    "path": "25EC23.md",
+    "size_bytes": 30238,
+    "classification": "valid",
+    "reason": "meaningful content (4704 words)"
+  },
+  {
+    "path": "25EC24.md",
+    "size_bytes": 51550,
+    "classification": "valid",
+    "reason": "meaningful content (241 words)"
+  },
+  {
+    "path": "25EC25.md",
+    "size_bytes": 7756,
+    "classification": "valid",
+    "reason": "meaningful content (1186 words)"
+  },
+  {
+    "path": "25EC26.md",
+    "size_bytes": 50828,
+    "classification": "valid",
+    "reason": "meaningful content (209 words)"
+  },
+  {
+    "path": "25EC28.md",
+    "size_bytes": 51461,
+    "classification": "valid",
+    "reason": "meaningful content (240 words)"
+  },
+  {
+    "path": "25EC29.md",
+    "size_bytes": 5802,
+    "classification": "valid",
+    "reason": "meaningful content (860 words)"
+  },
+  {
+    "path": "25EC3.md",
+    "size_bytes": 52126,
+    "classification": "valid",
+    "reason": "meaningful content (300 words)"
+  },
+  {
+    "path": "25EC30.md",
+    "size_bytes": 70378,
+    "classification": "valid",
+    "reason": "meaningful content (587 words)"
+  },
+  {
+    "path": "25EC31.md",
+    "size_bytes": 82620,
+    "classification": "valid",
+    "reason": "meaningful content (1054 words)"
+  },
+  {
+    "path": "25EC32.md",
+    "size_bytes": 101437,
+    "classification": "valid",
+    "reason": "meaningful content (1566 words)"
+  },
+  {
+    "path": "25EC33.md",
+    "size_bytes": 115694,
+    "classification": "valid",
+    "reason": "meaningful content (2111 words)"
+  },
+  {
+    "path": "25EC36.md",
+    "size_bytes": 56659,
+    "classification": "valid",
+    "reason": "meaningful content (289 words)"
+  },
+  {
+    "path": "25EC37.md",
+    "size_bytes": 119105,
+    "classification": "valid",
+    "reason": "meaningful content (1186 words)"
+  },
+  {
+    "path": "25EC4.md",
+    "size_bytes": 202965,
+    "classification": "valid",
+    "reason": "meaningful content (2257 words)"
+  },
+  {
+    "path": "25EC40.md",
+    "size_bytes": 51930,
+    "classification": "valid",
+    "reason": "meaningful content (286 words)"
+  },
+  {
+    "path": "25EC41.md",
+    "size_bytes": 56599,
+    "classification": "valid",
+    "reason": "meaningful content (440 words)"
+  },
+  {
+    "path": "25EC43.md",
+    "size_bytes": 51104,
+    "classification": "valid",
+    "reason": "meaningful content (232 words)"
+  },
+  {
+    "path": "25EC44.md",
+    "size_bytes": 168297,
+    "classification": "valid",
+    "reason": "meaningful content (2771 words)"
+  },
+  {
+    "path": "25EC46.md",
+    "size_bytes": 26748,
+    "classification": "valid",
+    "reason": "meaningful content (4197 words)"
+  },
+  {
+    "path": "25EC48.md",
+    "size_bytes": 94069,
+    "classification": "valid",
+    "reason": "meaningful content (260 words)"
+  },
+  {
+    "path": "25EC50.md",
+    "size_bytes": 7756,
+    "classification": "valid",
+    "reason": "meaningful content (1134 words)"
+  },
+  {
+    "path": "25EC51.md",
+    "size_bytes": 56889,
+    "classification": "valid",
+    "reason": "meaningful content (375 words)"
+  },
+  {
+    "path": "25EC53.md",
+    "size_bytes": 75135,
+    "classification": "valid",
+    "reason": "meaningful content (318 words)"
+  },
+  {
+    "path": "25EC56.md",
+    "size_bytes": 110523,
+    "classification": "valid",
+    "reason": "meaningful content (1701 words)"
+  },
+  {
+    "path": "25EC57.md",
+    "size_bytes": 85145,
+    "classification": "valid",
+    "reason": "meaningful content (1627 words)"
+  },
+  {
+    "path": "25EC58.md",
+    "size_bytes": 51226,
+    "classification": "valid",
+    "reason": "meaningful content (199 words)"
+  },
+  {
+    "path": "25EC6.md",
+    "size_bytes": 67946,
+    "classification": "valid",
+    "reason": "meaningful content (249 words)"
+  },
+  {
+    "path": "25EC60.md",
+    "size_bytes": 91413,
+    "classification": "valid",
+    "reason": "meaningful content (1257 words)"
+  },
+  {
+    "path": "25EC61.md",
+    "size_bytes": 99240,
+    "classification": "valid",
+    "reason": "meaningful content (1047 words)"
+  },
+  {
+    "path": "25EC62.md",
+    "size_bytes": 207001,
+    "classification": "valid",
+    "reason": "meaningful content (3397 words)"
+  },
+  {
+    "path": "25EC66.md",
+    "size_bytes": 69543,
+    "classification": "valid",
+    "reason": "meaningful content (442 words)"
+  },
+  {
+    "path": "25EC67.md",
+    "size_bytes": 55906,
+    "classification": "valid",
+    "reason": "meaningful content (168 words)"
+  },
+  {
+    "path": "25EC68.md",
+    "size_bytes": 100182,
+    "classification": "valid",
+    "reason": "meaningful content (653 words)"
+  },
+  {
+    "path": "25EC7.md",
+    "size_bytes": 130477,
+    "classification": "valid",
+    "reason": "meaningful content (2172 words)"
+  },
+  {
+    "path": "25EC70.md",
+    "size_bytes": 51605,
+    "classification": "valid",
+    "reason": "meaningful content (280 words)"
+  },
+  {
+    "path": "25EC71.md",
+    "size_bytes": 52250,
+    "classification": "valid",
+    "reason": "meaningful content (354 words)"
+  },
+  {
+    "path": "25EC8.md",
+    "size_bytes": 52199,
+    "classification": "valid",
+    "reason": "meaningful content (325 words)"
+  },
+  {
+    "path": "25EC9.md",
+    "size_bytes": 173145,
+    "classification": "valid",
+    "reason": "meaningful content (2402 words)"
+  },
+  {
+    "path": "26EC1.md",
+    "size_bytes": 51374,
+    "classification": "valid",
+    "reason": "meaningful content (216 words)"
+  },
+  {
+    "path": "26EC11.md",
+    "size_bytes": 4063,
+    "classification": "valid",
+    "reason": "meaningful content (543 words)"
+  },
+  {
+    "path": "26EC13.md",
+    "size_bytes": 120025,
+    "classification": "valid",
+    "reason": "meaningful content (1343 words)"
+  },
+  {
+    "path": "26EC14.md",
+    "size_bytes": 57049,
+    "classification": "valid",
+    "reason": "meaningful content (355 words)"
+  },
+  {
+    "path": "26EC15.md",
+    "size_bytes": 52147,
+    "classification": "valid",
+    "reason": "meaningful content (314 words)"
+  },
+  {
+    "path": "26EC18.md",
+    "size_bytes": 79666,
+    "classification": "valid",
+    "reason": "meaningful content (1260 words)"
+  },
+  {
+    "path": "26EC19.md",
+    "size_bytes": 50858,
+    "classification": "valid",
+    "reason": "meaningful content (240 words)"
+  },
+  {
+    "path": "26EC2.md",
+    "size_bytes": 76879,
+    "classification": "valid",
+    "reason": "meaningful content (569 words)"
+  },
+  {
+    "path": "26EC3.md",
+    "size_bytes": 96949,
+    "classification": "valid",
+    "reason": "meaningful content (827 words)"
+  },
+  {
+    "path": "26EC4.md",
+    "size_bytes": 168657,
+    "classification": "valid",
+    "reason": "meaningful content (3032 words)"
+  },
+  {
+    "path": "26EC5.md",
+    "size_bytes": 127065,
+    "classification": "valid",
+    "reason": "meaningful content (1807 words)"
+  },
+  {
+    "path": "26EC6.md",
+    "size_bytes": 88006,
+    "classification": "valid",
+    "reason": "meaningful content (845 words)"
+  },
+  {
+    "path": "26EC7.md",
+    "size_bytes": 51785,
+    "classification": "valid",
+    "reason": "meaningful content (294 words)"
+  },
+  {
+    "path": "26EC9.md",
+    "size_bytes": 52753,
+    "classification": "valid",
+    "reason": "meaningful content (395 words)"
+  },
+  {
+    "path": "H001.md",
+    "size_bytes": 8847,
+    "classification": "valid",
+    "reason": "meaningful content (1435 words)"
+  },
+  {
+    "path": "H006.md",
+    "size_bytes": 18227,
+    "classification": "valid",
+    "reason": "meaningful content (639 words)"
+  },
+  {
+    "path": "H019.md",
+    "size_bytes": 18433,
+    "classification": "valid",
+    "reason": "meaningful content (2996 words)"
+  },
+  {
+    "path": "H021.md",
+    "size_bytes": 84394,
+    "classification": "valid",
+    "reason": "meaningful content (1109 words)"
+  },
+  {
+    "path": "H023.md",
+    "size_bytes": 26419,
+    "classification": "valid",
+    "reason": "meaningful content (579 words)"
+  },
+  {
+    "path": "H024.md",
+    "size_bytes": 25462,
+    "classification": "valid",
+    "reason": "meaningful content (316 words)"
+  },
+  {
+    "path": "H034.md",
+    "size_bytes": 2288,
+    "classification": "valid",
+    "reason": "meaningful content (363 words)"
+  },
+  {
+    "path": "H035.md",
+    "size_bytes": 4112,
+    "classification": "valid",
+    "reason": "meaningful content (650 words)"
+  },
+  {
+    "path": "H038.md",
+    "size_bytes": 18569,
+    "classification": "valid",
+    "reason": "meaningful content (2776 words)"
+  },
+  {
+    "path": "H039.md",
+    "size_bytes": 16649,
+    "classification": "valid",
+    "reason": "meaningful content (2480 words)"
+  },
+  {
+    "path": "H046.md",
+    "size_bytes": 2467,
+    "classification": "valid",
+    "reason": "meaningful content (363 words)"
+  },
+  {
+    "path": "H057.md",
+    "size_bytes": 72290,
+    "classification": "valid",
+    "reason": "meaningful content (806 words)"
+  },
+  {
+    "path": "H063.md",
+    "size_bytes": 45613,
+    "classification": "valid",
+    "reason": "meaningful content (7460 words)"
+  },
+  {
+    "path": "H081.md",
+    "size_bytes": 14251,
+    "classification": "valid",
+    "reason": "meaningful content (234 words)"
+  },
+  {
+    "path": "H084.md",
+    "size_bytes": 12326,
+    "classification": "valid",
+    "reason": "meaningful content (278 words)"
+  },
+  {
+    "path": "H087.md",
+    "size_bytes": 18298,
+    "classification": "valid",
+    "reason": "meaningful content (829 words)"
+  },
+  {
+    "path": "H091.md",
+    "size_bytes": 15794,
+    "classification": "valid",
+    "reason": "meaningful content (2237 words)"
+  },
+  {
+    "path": "H097.md",
+    "size_bytes": 4956,
+    "classification": "valid",
+    "reason": "meaningful content (676 words)"
+  },
+  {
+    "path": "H098.md",
+    "size_bytes": 13390,
+    "classification": "valid",
+    "reason": "meaningful content (1873 words)"
+  },
+  {
+    "path": "H099.md",
+    "size_bytes": 3930,
+    "classification": "valid",
+    "reason": "meaningful content (567 words)"
+  },
+  {
+    "path": "H100.md",
+    "size_bytes": 3440,
+    "classification": "valid",
+    "reason": "meaningful content (479 words)"
+  },
+  {
+    "path": "H110.md",
+    "size_bytes": 15130,
+    "classification": "valid",
+    "reason": "meaningful content (365 words)"
+  },
+  {
+    "path": "H111.md",
+    "size_bytes": 18941,
+    "classification": "valid",
+    "reason": "meaningful content (720 words)"
+  },
+  {
+    "path": "H112.md",
+    "size_bytes": 18243,
+    "classification": "valid",
+    "reason": "meaningful content (617 words)"
+  },
+  {
+    "path": "H113.md",
+    "size_bytes": 18875,
+    "classification": "valid",
+    "reason": "meaningful content (2824 words)"
+  },
+  {
+    "path": "H114.md",
+    "size_bytes": 24302,
+    "classification": "valid",
+    "reason": "meaningful content (20 words)"
+  },
+  {
+    "path": "H115.md",
+    "size_bytes": 371702,
+    "classification": "valid",
+    "reason": "meaningful content (56110 words)"
+  },
+  {
+    "path": "H116.md",
+    "size_bytes": 17365,
+    "classification": "valid",
+    "reason": "meaningful content (670 words)"
+  },
+  {
+    "path": "H117.md",
+    "size_bytes": 26753,
+    "classification": "valid",
+    "reason": "meaningful content (2374 words)"
+  },
+  {
+    "path": "H118.md",
+    "size_bytes": 43219,
+    "classification": "valid",
+    "reason": "meaningful content (6240 words)"
+  },
+  {
+    "path": "H120.md",
+    "size_bytes": 12332,
+    "classification": "valid",
+    "reason": "meaningful content (264 words)"
+  },
+  {
+    "path": "H125.md",
+    "size_bytes": 9498,
+    "classification": "valid",
+    "reason": "meaningful content (1619 words)"
+  },
+  {
+    "path": "H130.md",
+    "size_bytes": 30787,
+    "classification": "valid",
+    "reason": "meaningful content (1171 words)"
+  },
+  {
+    "path": "H137.md",
+    "size_bytes": 15032,
+    "classification": "valid",
+    "reason": "meaningful content (394 words)"
+  },
+  {
+    "path": "H138.md",
+    "size_bytes": 14462,
+    "classification": "valid",
+    "reason": "meaningful content (279 words)"
+  },
+  {
+    "path": "H142.md",
+    "size_bytes": 18335,
+    "classification": "valid",
+    "reason": "meaningful content (638 words)"
+  },
+  {
+    "path": "H152.md",
+    "size_bytes": 14311,
+    "classification": "valid",
+    "reason": "meaningful content (362 words)"
+  },
+  {
+    "path": "H154.md",
+    "size_bytes": 15369,
+    "classification": "valid",
+    "reason": "meaningful content (541 words)"
+  },
+  {
+    "path": "H155.md",
+    "size_bytes": 18283,
+    "classification": "valid",
+    "reason": "meaningful content (633 words)"
+  },
+  {
+    "path": "H157.md",
+    "size_bytes": 14816,
+    "classification": "valid",
+    "reason": "meaningful content (2100 words)"
+  },
+  {
+    "path": "H158.md",
+    "size_bytes": 36733,
+    "classification": "valid",
+    "reason": "meaningful content (1298 words)"
+  },
+  {
+    "path": "H159.md",
+    "size_bytes": 36301,
+    "classification": "valid",
+    "reason": "meaningful content (1215 words)"
+  },
+  {
+    "path": "H160.md",
+    "size_bytes": 17519,
+    "classification": "valid",
+    "reason": "meaningful content (2748 words)"
+  },
+  {
+    "path": "H161.md",
+    "size_bytes": 14863,
+    "classification": "valid",
+    "reason": "meaningful content (369 words)"
+  },
+  {
+    "path": "H162.md",
+    "size_bytes": 7073,
+    "classification": "valid",
+    "reason": "meaningful content (1063 words)"
+  },
+  {
+    "path": "H166.md",
+    "size_bytes": 22128,
+    "classification": "valid",
+    "reason": "meaningful content (943 words)"
+  },
+  {
+    "path": "H174.md",
+    "size_bytes": 2983,
+    "classification": "valid",
+    "reason": "meaningful content (463 words)"
+  },
+  {
+    "path": "H182.md",
+    "size_bytes": 14233,
+    "classification": "valid",
+    "reason": "meaningful content (253 words)"
+  },
+  {
+    "path": "H183.md",
+    "size_bytes": 18320,
+    "classification": "valid",
+    "reason": "meaningful content (617 words)"
+  },
+  {
+    "path": "H184.md",
+    "size_bytes": 16069,
+    "classification": "valid",
+    "reason": "meaningful content (524 words)"
+  },
+  {
+    "path": "H185.md",
+    "size_bytes": 15203,
+    "classification": "valid",
+    "reason": "meaningful content (529 words)"
+  },
+  {
+    "path": "H186.md",
+    "size_bytes": 13648,
+    "classification": "valid",
+    "reason": "meaningful content (224 words)"
+  },
+  {
+    "path": "H187.md",
+    "size_bytes": 23082,
+    "classification": "valid",
+    "reason": "meaningful content (1263 words)"
+  },
+  {
+    "path": "H206.md",
+    "size_bytes": 29358,
+    "classification": "valid",
+    "reason": "meaningful content (647 words)"
+  },
+  {
+    "path": "H208.md",
+    "size_bytes": 2978,
+    "classification": "valid",
+    "reason": "meaningful content (462 words)"
+  },
+  {
+    "path": "H219.md",
+    "size_bytes": 4742,
+    "classification": "valid",
+    "reason": "meaningful content (740 words)"
+  },
+  {
+    "path": "H220.md",
+    "size_bytes": 2082,
+    "classification": "valid",
+    "reason": "meaningful content (298 words)"
+  },
+  {
+    "path": "H222.md",
+    "size_bytes": 2085,
+    "classification": "valid",
+    "reason": "meaningful content (312 words)"
+  },
+  {
+    "path": "H223.md",
+    "size_bytes": 14536,
+    "classification": "valid",
+    "reason": "meaningful content (286 words)"
+  },
+  {
+    "path": "H225.md",
+    "size_bytes": 2329,
+    "classification": "valid",
+    "reason": "meaningful content (351 words)"
+  },
+  {
+    "path": "H228.md",
+    "size_bytes": 1776,
+    "classification": "valid",
+    "reason": "meaningful content (236 words)"
+  },
+  {
+    "path": "H229.md",
+    "size_bytes": 1778,
+    "classification": "valid",
+    "reason": "meaningful content (237 words)"
+  },
+  {
+    "path": "H230.md",
+    "size_bytes": 36097,
+    "classification": "valid",
+    "reason": "meaningful content (5372 words)"
+  },
+  {
+    "path": "H231.md",
+    "size_bytes": 47116,
+    "classification": "valid",
+    "reason": "meaningful content (7028 words)"
+  },
+  {
+    "path": "H233.md",
+    "size_bytes": 7722,
+    "classification": "valid",
+    "reason": "meaningful content (1153 words)"
+  },
+  {
+    "path": "H234.md",
+    "size_bytes": 54044,
+    "classification": "valid",
+    "reason": "meaningful content (634 words)"
+  },
+  {
+    "path": "H235.md",
+    "size_bytes": 20875,
+    "classification": "valid",
+    "reason": "meaningful content (788 words)"
+  },
+  {
+    "path": "H236.md",
+    "size_bytes": 10579,
+    "classification": "valid",
+    "reason": "meaningful content (1560 words)"
+  },
+  {
+    "path": "H238.md",
+    "size_bytes": 53673,
+    "classification": "valid",
+    "reason": "meaningful content (613 words)"
+  },
+  {
+    "path": "H239.md",
+    "size_bytes": 6656,
+    "classification": "valid",
+    "reason": "meaningful content (1040 words)"
+  },
+  {
+    "path": "H240.md",
+    "size_bytes": 27252,
+    "classification": "valid",
+    "reason": "meaningful content (571 words)"
+  },
+  {
+    "path": "H249.md",
+    "size_bytes": 27809,
+    "classification": "valid",
+    "reason": "meaningful content (638 words)"
+  },
+  {
+    "path": "H281.md",
+    "size_bytes": 16786,
+    "classification": "valid",
+    "reason": "meaningful content (381 words)"
+  },
+  {
+    "path": "H284.md",
+    "size_bytes": 16834,
+    "classification": "valid",
+    "reason": "meaningful content (425 words)"
+  },
+  {
+    "path": "H287.md",
+    "size_bytes": 4447,
+    "classification": "valid",
+    "reason": "meaningful content (629 words)"
+  },
+  {
+    "path": "H288.md",
+    "size_bytes": 35933,
+    "classification": "valid",
+    "reason": "meaningful content (2026 words)"
+  },
+  {
+    "path": "H289.md",
+    "size_bytes": 26440,
+    "classification": "valid",
+    "reason": "meaningful content (396 words)"
+  },
+  {
+    "path": "H291.md",
+    "size_bytes": 20558,
+    "classification": "valid",
+    "reason": "meaningful content (2956 words)"
+  },
+  {
+    "path": "H292.md",
+    "size_bytes": 22809,
+    "classification": "valid",
+    "reason": "meaningful content (3410 words)"
+  },
+  {
+    "path": "H293.md",
+    "size_bytes": 115318,
+    "classification": "valid",
+    "reason": "meaningful content (2351 words)"
+  },
+  {
+    "path": "H294.md",
+    "size_bytes": 17892,
+    "classification": "valid",
+    "reason": "meaningful content (620 words)"
+  },
+  {
+    "path": "H296.md",
+    "size_bytes": 13196,
+    "classification": "valid",
+    "reason": "meaningful content (232 words)"
+  },
+  {
+    "path": "H297.md",
+    "size_bytes": 14793,
+    "classification": "valid",
+    "reason": "meaningful content (310 words)"
+  },
+  {
+    "path": "H298.md",
+    "size_bytes": 19744,
+    "classification": "valid",
+    "reason": "meaningful content (355 words)"
+  },
+  {
+    "path": "H301.md",
+    "size_bytes": 15057,
+    "classification": "valid",
+    "reason": "meaningful content (280 words)"
+  },
+  {
+    "path": "H304.md",
+    "size_bytes": 29146,
+    "classification": "valid",
+    "reason": "meaningful content (797 words)"
+  },
+  {
+    "path": "H306.md",
+    "size_bytes": 29792,
+    "classification": "valid",
+    "reason": "meaningful content (4506 words)"
+  },
+  {
+    "path": "H308.md",
+    "size_bytes": 18973,
+    "classification": "valid",
+    "reason": "meaningful content (693 words)"
+  },
+  {
+    "path": "H309.md",
+    "size_bytes": 23299,
+    "classification": "valid",
+    "reason": "meaningful content (3789 words)"
+  },
+  {
+    "path": "H310.md",
+    "size_bytes": 12380,
+    "classification": "valid",
+    "reason": "meaningful content (1996 words)"
+  },
+  {
+    "path": "H312.md",
+    "size_bytes": 15578,
+    "classification": "valid",
+    "reason": "meaningful content (2417 words)"
+  },
+  {
+    "path": "H313.md",
+    "size_bytes": 35276,
+    "classification": "valid",
+    "reason": "meaningful content (908 words)"
+  },
+  {
+    "path": "H314.md",
+    "size_bytes": 35254,
+    "classification": "valid",
+    "reason": "meaningful content (909 words)"
+  },
+  {
+    "path": "H319.md",
+    "size_bytes": 18995,
+    "classification": "valid",
+    "reason": "meaningful content (273 words)"
+  },
+  {
+    "path": "H320.md",
+    "size_bytes": 18964,
+    "classification": "valid",
+    "reason": "meaningful content (266 words)"
+  },
+  {
+    "path": "H323.md",
+    "size_bytes": 29316,
+    "classification": "valid",
+    "reason": "meaningful content (293 words)"
+  },
+  {
+    "path": "H324.md",
+    "size_bytes": 17156,
+    "classification": "valid",
+    "reason": "meaningful content (627 words)"
+  },
+  {
+    "path": "H326.md",
+    "size_bytes": 14474,
+    "classification": "valid",
+    "reason": "meaningful content (267 words)"
+  },
+  {
+    "path": "H328.md",
+    "size_bytes": 13657,
+    "classification": "valid",
+    "reason": "meaningful content (218 words)"
+  },
+  {
+    "path": "H329.md",
+    "size_bytes": 20648,
+    "classification": "valid",
+    "reason": "meaningful content (1027 words)"
+  },
+  {
+    "path": "H330.md",
+    "size_bytes": 13191,
+    "classification": "valid",
+    "reason": "meaningful content (204 words)"
+  },
+  {
+    "path": "H332.md",
+    "size_bytes": 13883,
+    "classification": "valid",
+    "reason": "meaningful content (318 words)"
+  },
+  {
+    "path": "H333.md",
+    "size_bytes": 13430,
+    "classification": "valid",
+    "reason": "meaningful content (246 words)"
+  },
+  {
+    "path": "H337.md",
+    "size_bytes": 19685,
+    "classification": "valid",
+    "reason": "meaningful content (331 words)"
+  },
+  {
+    "path": "H338.md",
+    "size_bytes": 19379,
+    "classification": "valid",
+    "reason": "meaningful content (298 words)"
+  },
+  {
+    "path": "H346.md",
+    "size_bytes": 1513,
+    "classification": "valid",
+    "reason": "meaningful content (241 words)"
+  },
+  {
+    "path": "H347.md",
+    "size_bytes": 52731,
+    "classification": "valid",
+    "reason": "meaningful content (824 words)"
+  },
+  {
+    "path": "H348.md",
+    "size_bytes": 19235,
+    "classification": "valid",
+    "reason": "meaningful content (267 words)"
+  },
+  {
+    "path": "H349.md",
+    "size_bytes": 4746,
+    "classification": "valid",
+    "reason": "meaningful content (674 words)"
+  },
+  {
+    "path": "H350.md",
+    "size_bytes": 3360,
+    "classification": "valid",
+    "reason": "meaningful content (488 words)"
+  },
+  {
+    "path": "H351.md",
+    "size_bytes": 89594,
+    "classification": "valid",
+    "reason": "meaningful content (368 words)"
+  },
+  {
+    "path": "H352.md",
+    "size_bytes": 80432,
+    "classification": "valid",
+    "reason": "meaningful content (159 words)"
+  },
+  {
+    "path": "H353.md",
+    "size_bytes": 18819,
+    "classification": "valid",
+    "reason": "meaningful content (204 words)"
+  },
+  {
+    "path": "H355.md",
+    "size_bytes": 25258,
+    "classification": "valid",
+    "reason": "meaningful content (317 words)"
+  },
+  {
+    "path": "H356.md",
+    "size_bytes": 18429,
+    "classification": "valid",
+    "reason": "meaningful content (154 words)"
+  },
+  {
+    "path": "H357.md",
+    "size_bytes": 84,
+    "classification": "valid",
+    "reason": "meaningful content (15 words)"
+  },
+  {
+    "path": "H358.md",
+    "size_bytes": 17456,
+    "classification": "valid",
+    "reason": "meaningful content (681 words)"
+  },
+  {
+    "path": "H359.md",
+    "size_bytes": 16454,
+    "classification": "valid",
+    "reason": "meaningful content (584 words)"
+  },
+  {
+    "path": "H360.md",
+    "size_bytes": 15929,
+    "classification": "valid",
+    "reason": "meaningful content (461 words)"
+  },
+  {
+    "path": "H361.md",
+    "size_bytes": 25811,
+    "classification": "valid",
+    "reason": "meaningful content (297 words)"
+  },
+  {
+    "path": "H362.md",
+    "size_bytes": 53248,
+    "classification": "valid",
+    "reason": "meaningful content (715 words)"
+  },
+  {
+    "path": "H363.md",
+    "size_bytes": 13148,
+    "classification": "valid",
+    "reason": "meaningful content (201 words)"
+  },
+  {
+    "path": "H366.md",
+    "size_bytes": 14114,
+    "classification": "valid",
+    "reason": "meaningful content (370 words)"
+  },
+  {
+    "path": "H368.md",
+    "size_bytes": 14033,
+    "classification": "valid",
+    "reason": "meaningful content (322 words)"
+  },
+  {
+    "path": "H369.md",
+    "size_bytes": 25809,
+    "classification": "valid",
+    "reason": "meaningful content (347 words)"
+  },
+  {
+    "path": "H371.md",
+    "size_bytes": 25180,
+    "classification": "valid",
+    "reason": "meaningful content (234 words)"
+  },
+  {
+    "path": "H373.md",
+    "size_bytes": 16319,
+    "classification": "valid",
+    "reason": "meaningful content (208 words)"
+  },
+  {
+    "path": "H374.md",
+    "size_bytes": 60026,
+    "classification": "valid",
+    "reason": "meaningful content (1022 words)"
+  },
+  {
+    "path": "H376.md",
+    "size_bytes": 25435,
+    "classification": "valid",
+    "reason": "meaningful content (296 words)"
+  },
+  {
+    "path": "H379.md",
+    "size_bytes": 28151,
+    "classification": "valid",
+    "reason": "meaningful content (593 words)"
+  },
+  {
+    "path": "H383.md",
+    "size_bytes": 18906,
+    "classification": "valid",
+    "reason": "meaningful content (249 words)"
+  },
+  {
+    "path": "H384.md",
+    "size_bytes": 19441,
+    "classification": "valid",
+    "reason": "meaningful content (302 words)"
+  },
+  {
+    "path": "H385.md",
+    "size_bytes": 17139,
+    "classification": "valid",
+    "reason": "meaningful content (343 words)"
+  },
+  {
+    "path": "H389.md",
+    "size_bytes": 1075,
+    "classification": "valid",
+    "reason": "meaningful content (158 words)"
+  },
+  {
+    "path": "H390.md",
+    "size_bytes": 993,
+    "classification": "valid",
+    "reason": "meaningful content (137 words)"
+  },
+  {
+    "path": "H398.md",
+    "size_bytes": 3,
+    "classification": "empty",
+    "reason": "file is empty or whitespace only"
+  },
+  {
+    "path": "H400.md",
+    "size_bytes": 14011,
+    "classification": "valid",
+    "reason": "meaningful content (319 words)"
+  },
+  {
+    "path": "H401.md",
+    "size_bytes": 14404,
+    "classification": "valid",
+    "reason": "meaningful content (419 words)"
+  },
+  {
+    "path": "H403.md",
+    "size_bytes": 17129,
+    "classification": "valid",
+    "reason": "meaningful content (599 words)"
+  },
+  {
+    "path": "H404.md",
+    "size_bytes": 20101,
+    "classification": "valid",
+    "reason": "meaningful content (919 words)"
+  },
+  {
+    "path": "H405.md",
+    "size_bytes": 12754,
+    "classification": "valid",
+    "reason": "meaningful content (166 words)"
+  },
+  {
+    "path": "H407.md",
+    "size_bytes": 16630,
+    "classification": "valid",
+    "reason": "meaningful content (573 words)"
+  },
+  {
+    "path": "H409.md",
+    "size_bytes": 3228,
+    "classification": "valid",
+    "reason": "meaningful content (501 words)"
+  },
+  {
+    "path": "H411.md",
+    "size_bytes": 25588,
+    "classification": "valid",
+    "reason": "meaningful content (323 words)"
+  },
+  {
+    "path": "H412.md",
+    "size_bytes": 2682,
+    "classification": "valid",
+    "reason": "meaningful content (423 words)"
+  },
+  {
+    "path": "H414.md",
+    "size_bytes": 5913,
+    "classification": "valid",
+    "reason": "meaningful content (862 words)"
+  },
+  {
+    "path": "H416.md",
+    "size_bytes": 3933,
+    "classification": "valid",
+    "reason": "meaningful content (573 words)"
+  },
+  {
+    "path": "H417.md",
+    "size_bytes": 44629,
+    "classification": "valid",
+    "reason": "meaningful content (1742 words)"
+  },
+  {
+    "path": "H418.md",
+    "size_bytes": 45664,
+    "classification": "valid",
+    "reason": "meaningful content (1403 words)"
+  },
+  {
+    "path": "H420.md",
+    "size_bytes": 16260,
+    "classification": "valid",
+    "reason": "meaningful content (481 words)"
+  },
+  {
+    "path": "H423.md",
+    "size_bytes": 84,
+    "classification": "valid",
+    "reason": "meaningful content (15 words)"
+  },
+  {
+    "path": "H425.md",
+    "size_bytes": 13248,
+    "classification": "valid",
+    "reason": "meaningful content (195 words)"
+  },
+  {
+    "path": "H427.md",
+    "size_bytes": 13863,
+    "classification": "valid",
+    "reason": "meaningful content (311 words)"
+  },
+  {
+    "path": "H428.md",
+    "size_bytes": 84,
+    "classification": "valid",
+    "reason": "meaningful content (15 words)"
+  },
+  {
+    "path": "H429.md",
+    "size_bytes": 179960,
+    "classification": "valid",
+    "reason": "meaningful content (831 words)"
+  },
+  {
+    "path": "H430.md",
+    "size_bytes": 2730,
+    "classification": "valid",
+    "reason": "meaningful content (398 words)"
+  },
+  {
+    "path": "H431.md",
+    "size_bytes": 2764,
+    "classification": "valid",
+    "reason": "meaningful content (389 words)"
+  },
+  {
+    "path": "H432.md",
+    "size_bytes": 2307,
+    "classification": "valid",
+    "reason": "meaningful content (329 words)"
+  },
+  {
+    "path": "H435.md",
+    "size_bytes": 20863,
+    "classification": "valid",
+    "reason": "meaningful content (541 words)"
+  },
+  {
+    "path": "H436.md",
+    "size_bytes": 31104,
+    "classification": "valid",
+    "reason": "meaningful content (1122 words)"
+  },
+  {
+    "path": "H437.md",
+    "size_bytes": 13337,
+    "classification": "valid",
+    "reason": "meaningful content (211 words)"
+  },
+  {
+    "path": "H438.md",
+    "size_bytes": 14103,
+    "classification": "valid",
+    "reason": "meaningful content (335 words)"
+  },
+  {
+    "path": "H439.md",
+    "size_bytes": 22155,
+    "classification": "valid",
+    "reason": "meaningful content (309 words)"
+  },
+  {
+    "path": "H442.md",
+    "size_bytes": 2339,
+    "classification": "valid",
+    "reason": "meaningful content (338 words)"
+  },
+  {
+    "path": "H443.md",
+    "size_bytes": 20779,
+    "classification": "valid",
+    "reason": "meaningful content (309 words)"
+  },
+  {
+    "path": "H444.md",
+    "size_bytes": 84,
+    "classification": "valid",
+    "reason": "meaningful content (15 words)"
+  },
+  {
+    "path": "H445.md",
+    "size_bytes": 21297,
+    "classification": "valid",
+    "reason": "meaningful content (1028 words)"
+  },
+  {
+    "path": "H446.md",
+    "size_bytes": 1738,
+    "classification": "valid",
+    "reason": "meaningful content (236 words)"
+  },
+  {
+    "path": "H447.md",
+    "size_bytes": 13860,
+    "classification": "valid",
+    "reason": "meaningful content (322 words)"
+  },
+  {
+    "path": "H448.md",
+    "size_bytes": 21747,
+    "classification": "valid",
+    "reason": "meaningful content (1005 words)"
+  },
+  {
+    "path": "H449.md",
+    "size_bytes": 12679,
+    "classification": "valid",
+    "reason": "meaningful content (123 words)"
+  },
+  {
+    "path": "H450.md",
+    "size_bytes": 26194,
+    "classification": "valid",
+    "reason": "meaningful content (758 words)"
+  },
+  {
+    "path": "H451.md",
+    "size_bytes": 84,
+    "classification": "valid",
+    "reason": "meaningful content (15 words)"
+  },
+  {
+    "path": "H452.md",
+    "size_bytes": 12371,
+    "classification": "valid",
+    "reason": "meaningful content (321 words)"
+  },
+  {
+    "path": "H455.md",
+    "size_bytes": 55918,
+    "classification": "valid",
+    "reason": "meaningful content (1401 words)"
+  },
+  {
+    "path": "H456.md",
+    "size_bytes": 38170,
+    "classification": "valid",
+    "reason": "meaningful content (161 words)"
+  },
+  {
+    "path": "H457.md",
+    "size_bytes": 28948,
+    "classification": "valid",
+    "reason": "meaningful content (2290 words)"
+  },
+  {
+    "path": "H458.md",
+    "size_bytes": 2159,
+    "classification": "valid",
+    "reason": "meaningful content (318 words)"
+  },
+  {
+    "path": "H460.md",
+    "size_bytes": 18461,
+    "classification": "valid",
+    "reason": "meaningful content (575 words)"
+  },
+  {
+    "path": "H461.md",
+    "size_bytes": 35795,
+    "classification": "valid",
+    "reason": "meaningful content (1842 words)"
+  },
+  {
+    "path": "H463.md",
+    "size_bytes": 84,
+    "classification": "valid",
+    "reason": "meaningful content (15 words)"
+  },
+  {
+    "path": "H464.md",
+    "size_bytes": 11858,
+    "classification": "valid",
+    "reason": "meaningful content (139 words)"
+  },
+  {
+    "path": "H465.md",
+    "size_bytes": 11820,
+    "classification": "valid",
+    "reason": "meaningful content (129 words)"
+  },
+  {
+    "path": "H466.md",
+    "size_bytes": 22395,
+    "classification": "valid",
+    "reason": "meaningful content (349 words)"
+  },
+  {
+    "path": "H467.md",
+    "size_bytes": 11993,
+    "classification": "valid",
+    "reason": "meaningful content (160 words)"
+  },
+  {
+    "path": "H469.md",
+    "size_bytes": 21619,
+    "classification": "valid",
+    "reason": "meaningful content (915 words)"
+  },
+  {
+    "path": "H470.md",
+    "size_bytes": 12063,
+    "classification": "valid",
+    "reason": "meaningful content (169 words)"
+  },
+  {
+    "path": "H471.md",
+    "size_bytes": 15255,
+    "classification": "valid",
+    "reason": "meaningful content (403 words)"
+  },
+  {
+    "path": "H474.md",
+    "size_bytes": 17169,
+    "classification": "valid",
+    "reason": "meaningful content (456 words)"
+  },
+  {
+    "path": "H476.md",
+    "size_bytes": 24364,
+    "classification": "valid",
+    "reason": "meaningful content (1449 words)"
+  },
+  {
+    "path": "H477.md",
+    "size_bytes": 13929,
+    "classification": "valid",
+    "reason": "meaningful content (182 words)"
+  },
+  {
+    "path": "H478.md",
+    "size_bytes": 13144,
+    "classification": "valid",
+    "reason": "meaningful content (346 words)"
+  },
+  {
+    "path": "H479.md",
+    "size_bytes": 14646,
+    "classification": "valid",
+    "reason": "meaningful content (308 words)"
+  },
+  {
+    "path": "H480.md",
+    "size_bytes": 3,
+    "classification": "empty",
+    "reason": "file is empty or whitespace only"
+  },
+  {
+    "path": "H486.md",
+    "size_bytes": 27839,
+    "classification": "valid",
+    "reason": "meaningful content (1504 words)"
+  },
+  {
+    "path": "H487.md",
+    "size_bytes": 14547,
+    "classification": "valid",
+    "reason": "meaningful content (227 words)"
+  },
+  {
+    "path": "H488.md",
+    "size_bytes": 13818,
+    "classification": "valid",
+    "reason": "meaningful content (167 words)"
+  },
+  {
+    "path": "H490.md",
+    "size_bytes": 13001,
+    "classification": "valid",
+    "reason": "meaningful content (329 words)"
+  },
+  {
+    "path": "H491.md",
+    "size_bytes": 21496,
+    "classification": "valid",
+    "reason": "meaningful content (856 words)"
+  },
+  {
+    "path": "H493.md",
+    "size_bytes": 14327,
+    "classification": "valid",
+    "reason": "meaningful content (253 words)"
+  },
+  {
+    "path": "H496.md",
+    "size_bytes": 9714,
+    "classification": "valid",
+    "reason": "meaningful content (1410 words)"
+  },
+  {
+    "path": "H497.md",
+    "size_bytes": 56294,
+    "classification": "valid",
+    "reason": "meaningful content (1365 words)"
+  },
+  {
+    "path": "H498.md",
+    "size_bytes": 14464,
+    "classification": "valid",
+    "reason": "meaningful content (158 words)"
+  },
+  {
+    "path": "H501.md",
+    "size_bytes": 24155,
+    "classification": "valid",
+    "reason": "meaningful content (1562 words)"
+  },
+  {
+    "path": "H502.md",
+    "size_bytes": 20447,
+    "classification": "valid",
+    "reason": "meaningful content (412 words)"
+  },
+  {
+    "path": "H504.md",
+    "size_bytes": 11361,
+    "classification": "valid",
+    "reason": "meaningful content (1794 words)"
+  },
+  {
+    "path": "H512.md",
+    "size_bytes": 19788,
+    "classification": "valid",
+    "reason": "meaningful content (2160 words)"
+  },
+  {
+    "path": "H514.md",
+    "size_bytes": 6073,
+    "classification": "valid",
+    "reason": "meaningful content (915 words)"
+  },
+  {
+    "path": "H516.md",
+    "size_bytes": 16315,
+    "classification": "valid",
+    "reason": "meaningful content (275 words)"
+  },
+  {
+    "path": "H517.md",
+    "size_bytes": 30074,
+    "classification": "valid",
+    "reason": "meaningful content (1526 words)"
+  },
+  {
+    "path": "H518.md",
+    "size_bytes": 48132,
+    "classification": "valid",
+    "reason": "meaningful content (444 words)"
+  },
+  {
+    "path": "H519.md",
+    "size_bytes": 43802,
+    "classification": "valid",
+    "reason": "meaningful content (443 words)"
+  },
+  {
+    "path": "H520.md",
+    "size_bytes": 20349,
+    "classification": "valid",
+    "reason": "meaningful content (2082 words)"
+  },
+  {
+    "path": "H522.md",
+    "size_bytes": 48554,
+    "classification": "valid",
+    "reason": "meaningful content (281 words)"
+  },
+  {
+    "path": "H525.md",
+    "size_bytes": 28076,
+    "classification": "valid",
+    "reason": "meaningful content (1155 words)"
+  },
+  {
+    "path": "H526.md",
+    "size_bytes": 43250,
+    "classification": "valid",
+    "reason": "meaningful content (656 words)"
+  },
+  {
+    "path": "H528.md",
+    "size_bytes": 16899,
+    "classification": "valid",
+    "reason": "meaningful content (282 words)"
+  },
+  {
+    "path": "H531.md",
+    "size_bytes": 24672,
+    "classification": "valid",
+    "reason": "meaningful content (1097 words)"
+  },
+  {
+    "path": "H532.md",
+    "size_bytes": 65335,
+    "classification": "valid",
+    "reason": "meaningful content (1851 words)"
+  },
+  {
+    "path": "H533.md",
+    "size_bytes": 45470,
+    "classification": "valid",
+    "reason": "meaningful content (392 words)"
+  },
+  {
+    "path": "H536.md",
+    "size_bytes": 16262,
+    "classification": "valid",
+    "reason": "meaningful content (155 words)"
+  },
+  {
+    "path": "H537.md",
+    "size_bytes": 48733,
+    "classification": "valid",
+    "reason": "meaningful content (332 words)"
+  },
+  {
+    "path": "H538.md",
+    "size_bytes": 44951,
+    "classification": "valid",
+    "reason": "meaningful content (357 words)"
+  },
+  {
+    "path": "H540.md",
+    "size_bytes": 51824,
+    "classification": "valid",
+    "reason": "meaningful content (475 words)"
+  },
+  {
+    "path": "H542.md",
+    "size_bytes": 37999,
+    "classification": "valid",
+    "reason": "meaningful content (121 words)"
+  },
+  {
+    "path": "H543.md",
+    "size_bytes": 44932,
+    "classification": "valid",
+    "reason": "meaningful content (475 words)"
+  },
+  {
+    "path": "H544.md",
+    "size_bytes": 4500,
+    "classification": "valid",
+    "reason": "meaningful content (693 words)"
+  },
+  {
+    "path": "H545.md",
+    "size_bytes": 43277,
+    "classification": "valid",
+    "reason": "meaningful content (293 words)"
+  },
+  {
+    "path": "H547.md",
+    "size_bytes": 8065,
+    "classification": "valid",
+    "reason": "meaningful content (1252 words)"
+  },
+  {
+    "path": "H548.md",
+    "size_bytes": 43427,
+    "classification": "valid",
+    "reason": "meaningful content (358 words)"
+  },
+  {
+    "path": "H549.md",
+    "size_bytes": 20297,
+    "classification": "valid",
+    "reason": "meaningful content (420 words)"
+  },
+  {
+    "path": "H551.md",
+    "size_bytes": 44188,
+    "classification": "valid",
+    "reason": "meaningful content (386 words)"
+  },
+  {
+    "path": "H552.md",
+    "size_bytes": 16730,
+    "classification": "valid",
+    "reason": "meaningful content (230 words)"
+  },
+  {
+    "path": "H554.md",
+    "size_bytes": 2335,
+    "classification": "valid",
+    "reason": "meaningful content (328 words)"
+  },
+  {
+    "path": "H555.md",
+    "size_bytes": 23639,
+    "classification": "valid",
+    "reason": "meaningful content (895 words)"
+  },
+  {
+    "path": "H556.md",
+    "size_bytes": 34500,
+    "classification": "valid",
+    "reason": "meaningful content (5264 words)"
+  },
+  {
+    "path": "H557.md",
+    "size_bytes": 17134,
+    "classification": "valid",
+    "reason": "meaningful content (2791 words)"
+  },
+  {
+    "path": "H558.md",
+    "size_bytes": 11040,
+    "classification": "valid",
+    "reason": "meaningful content (1602 words)"
+  },
+  {
+    "path": "H560.md",
+    "size_bytes": 2245,
+    "classification": "valid",
+    "reason": "meaningful content (328 words)"
+  },
+  {
+    "path": "H561.md",
+    "size_bytes": 17955,
+    "classification": "valid",
+    "reason": "meaningful content (326 words)"
+  },
+  {
+    "path": "H562.md",
+    "size_bytes": 48257,
+    "classification": "valid",
+    "reason": "meaningful content (281 words)"
+  },
+  {
+    "path": "H563.md",
+    "size_bytes": 8237,
+    "classification": "valid",
+    "reason": "meaningful content (1269 words)"
+  },
+  {
+    "path": "H565.md",
+    "size_bytes": 2335,
+    "classification": "valid",
+    "reason": "meaningful content (328 words)"
+  },
+  {
+    "path": "H566.md",
+    "size_bytes": 15039,
+    "classification": "valid",
+    "reason": "meaningful content (315 words)"
+  },
+  {
+    "path": "H568.md",
+    "size_bytes": 17149,
+    "classification": "valid",
+    "reason": "meaningful content (326 words)"
+  },
+  {
+    "path": "H569.md",
+    "size_bytes": 8840,
+    "classification": "valid",
+    "reason": "meaningful content (1278 words)"
+  },
+  {
+    "path": "H570.md",
+    "size_bytes": 17725,
+    "classification": "valid",
+    "reason": "meaningful content (314 words)"
+  },
+  {
+    "path": "H571.md",
+    "size_bytes": 23530,
+    "classification": "valid",
+    "reason": "meaningful content (967 words)"
+  },
+  {
+    "path": "H572.md",
+    "size_bytes": 3605,
+    "classification": "valid",
+    "reason": "meaningful content (510 words)"
+  },
+  {
+    "path": "H573.md",
+    "size_bytes": 8274,
+    "classification": "valid",
+    "reason": "meaningful content (1291 words)"
+  },
+  {
+    "path": "H574.md",
+    "size_bytes": 14424,
+    "classification": "valid",
+    "reason": "meaningful content (251 words)"
+  },
+  {
+    "path": "H578.md",
+    "size_bytes": 22821,
+    "classification": "valid",
+    "reason": "meaningful content (1035 words)"
+  },
+  {
+    "path": "H580.md",
+    "size_bytes": 23774,
+    "classification": "valid",
+    "reason": "meaningful content (1221 words)"
+  },
+  {
+    "path": "H581.md",
+    "size_bytes": 14944,
+    "classification": "valid",
+    "reason": "meaningful content (268 words)"
+  },
+  {
+    "path": "H585.md",
+    "size_bytes": 15828,
+    "classification": "valid",
+    "reason": "meaningful content (385 words)"
+  },
+  {
+    "path": "H590.md",
+    "size_bytes": 6400,
+    "classification": "valid",
+    "reason": "meaningful content (990 words)"
+  },
+  {
+    "path": "H591.md",
+    "size_bytes": 14850,
+    "classification": "valid",
+    "reason": "meaningful content (247 words)"
+  },
+  {
+    "path": "H592.md",
+    "size_bytes": 12,
+    "classification": "empty",
+    "reason": "file is empty or whitespace only"
+  },
+  {
+    "path": "H593.md",
+    "size_bytes": 4448,
+    "classification": "valid",
+    "reason": "meaningful content (671 words)"
+  },
+  {
+    "path": "H594.md",
+    "size_bytes": 17270,
+    "classification": "valid",
+    "reason": "meaningful content (424 words)"
+  },
+  {
+    "path": "H595.md",
+    "size_bytes": 43392,
+    "classification": "valid",
+    "reason": "meaningful content (208 words)"
+  },
+  {
+    "path": "H596.md",
+    "size_bytes": 15096,
+    "classification": "valid",
+    "reason": "meaningful content (317 words)"
+  },
+  {
+    "path": "H597.md",
+    "size_bytes": 3129,
+    "classification": "valid",
+    "reason": "meaningful content (465 words)"
+  },
+  {
+    "path": "H599.md",
+    "size_bytes": 14022,
+    "classification": "valid",
+    "reason": "meaningful content (158 words)"
+  },
+  {
+    "path": "H600.md",
+    "size_bytes": 691,
+    "classification": "valid",
+    "reason": "meaningful content (100 words)"
+  },
+  {
+    "path": "H601.md",
+    "size_bytes": 47642,
+    "classification": "valid",
+    "reason": "meaningful content (539 words)"
+  },
+  {
+    "path": "H602.md",
+    "size_bytes": 6562,
+    "classification": "valid",
+    "reason": "meaningful content (1015 words)"
+  },
+  {
+    "path": "H603.md",
+    "size_bytes": 5399,
+    "classification": "valid",
+    "reason": "meaningful content (838 words)"
+  },
+  {
+    "path": "H607.md",
+    "size_bytes": 42462,
+    "classification": "valid",
+    "reason": "meaningful content (119 words)"
+  },
+  {
+    "path": "H608.md",
+    "size_bytes": 43657,
+    "classification": "valid",
+    "reason": "meaningful content (221 words)"
+  },
+  {
+    "path": "H609.md",
+    "size_bytes": 13976,
+    "classification": "valid",
+    "reason": "meaningful content (148 words)"
+  },
+  {
+    "path": "H611.md",
+    "size_bytes": 3992,
+    "classification": "valid",
+    "reason": "meaningful content (627 words)"
+  },
+  {
+    "path": "H612.md",
+    "size_bytes": 19126,
+    "classification": "valid",
+    "reason": "meaningful content (659 words)"
+  },
+  {
+    "path": "H613.md",
+    "size_bytes": 30236,
+    "classification": "valid",
+    "reason": "meaningful content (1463 words)"
+  },
+  {
+    "path": "H616.md",
+    "size_bytes": 15360,
+    "classification": "valid",
+    "reason": "meaningful content (2372 words)"
+  },
+  {
+    "path": "H617.md",
+    "size_bytes": 17117,
+    "classification": "valid",
+    "reason": "meaningful content (326 words)"
+  },
+  {
+    "path": "H618.md",
+    "size_bytes": 19114,
+    "classification": "valid",
+    "reason": "meaningful content (2893 words)"
+  },
+  {
+    "path": "H619.md",
+    "size_bytes": 18236,
+    "classification": "valid",
+    "reason": "meaningful content (546 words)"
+  },
+  {
+    "path": "H620.md",
+    "size_bytes": 6879,
+    "classification": "valid",
+    "reason": "meaningful content (1001 words)"
+  },
+  {
+    "path": "H621.md",
+    "size_bytes": 14569,
+    "classification": "valid",
+    "reason": "meaningful content (241 words)"
+  },
+  {
+    "path": "H623.md",
+    "size_bytes": 65603,
+    "classification": "valid",
+    "reason": "meaningful content (10278 words)"
+  },
+  {
+    "path": "H624.md",
+    "size_bytes": 45396,
+    "classification": "valid",
+    "reason": "meaningful content (321 words)"
+  },
+  {
+    "path": "H625.md",
+    "size_bytes": 47879,
+    "classification": "valid",
+    "reason": "meaningful content (408 words)"
+  },
+  {
+    "path": "H627.md",
+    "size_bytes": 7926,
+    "classification": "valid",
+    "reason": "meaningful content (1239 words)"
+  },
+  {
+    "path": "H628.md",
+    "size_bytes": 17792,
+    "classification": "valid",
+    "reason": "meaningful content (451 words)"
+  },
+  {
+    "path": "H629.md",
+    "size_bytes": 7262,
+    "classification": "valid",
+    "reason": "meaningful content (1004 words)"
+  },
+  {
+    "path": "H630.md",
+    "size_bytes": 55986,
+    "classification": "valid",
+    "reason": "meaningful content (1175 words)"
+  },
+  {
+    "path": "H631.md",
+    "size_bytes": 57321,
+    "classification": "valid",
+    "reason": "meaningful content (1138 words)"
+  },
+  {
+    "path": "H633.md",
+    "size_bytes": 14583,
+    "classification": "valid",
+    "reason": "meaningful content (232 words)"
+  },
+  {
+    "path": "H634.md",
+    "size_bytes": 45791,
+    "classification": "valid",
+    "reason": "meaningful content (6698 words)"
+  },
+  {
+    "path": "H639.md",
+    "size_bytes": 4759,
+    "classification": "valid",
+    "reason": "meaningful content (712 words)"
+  },
+  {
+    "path": "H640.md",
+    "size_bytes": 14372,
+    "classification": "valid",
+    "reason": "meaningful content (206 words)"
+  },
+  {
+    "path": "H643.md",
+    "size_bytes": 14537,
+    "classification": "valid",
+    "reason": "meaningful content (214 words)"
+  },
+  {
+    "path": "H644.md",
+    "size_bytes": 84,
+    "classification": "valid",
+    "reason": "meaningful content (15 words)"
+  },
+  {
+    "path": "H645.md",
+    "size_bytes": 18815,
+    "classification": "valid",
+    "reason": "meaningful content (607 words)"
+  },
+  {
+    "path": "H647.md",
+    "size_bytes": 17643,
+    "classification": "valid",
+    "reason": "meaningful content (445 words)"
+  },
+  {
+    "path": "H648.md",
+    "size_bytes": 17646,
+    "classification": "valid",
+    "reason": "meaningful content (468 words)"
+  },
+  {
+    "path": "H650.md",
+    "size_bytes": 15418,
+    "classification": "valid",
+    "reason": "meaningful content (367 words)"
+  },
+  {
+    "path": "H654.md",
+    "size_bytes": 13445,
+    "classification": "valid",
+    "reason": "meaningful content (2054 words)"
+  },
+  {
+    "path": "H655.md",
+    "size_bytes": 27553,
+    "classification": "dummy",
+    "reason": "contains placeholder text ('placeholder')"
+  },
+  {
+    "path": "H656.md",
+    "size_bytes": 5884,
+    "classification": "valid",
+    "reason": "meaningful content (899 words)"
+  },
+  {
+    "path": "H657.md",
+    "size_bytes": 48687,
+    "classification": "valid",
+    "reason": "meaningful content (382 words)"
+  },
+  {
+    "path": "H659.md",
+    "size_bytes": 21761,
+    "classification": "valid",
+    "reason": "meaningful content (829 words)"
+  },
+  {
+    "path": "H660.md",
+    "size_bytes": 48409,
+    "classification": "valid",
+    "reason": "meaningful content (584 words)"
+  },
+  {
+    "path": "H664.md",
+    "size_bytes": 84,
+    "classification": "valid",
+    "reason": "meaningful content (15 words)"
+  },
+  {
+    "path": "H665.md",
+    "size_bytes": 16246,
+    "classification": "valid",
+    "reason": "meaningful content (1083 words)"
+  },
+  {
+    "path": "H669.md",
+    "size_bytes": 17391,
+    "classification": "valid",
+    "reason": "meaningful content (364 words)"
+  },
+  {
+    "path": "H670.md",
+    "size_bytes": 43100,
+    "classification": "valid",
+    "reason": "meaningful content (173 words)"
+  },
+  {
+    "path": "H671.md",
+    "size_bytes": 1938,
+    "classification": "valid",
+    "reason": "meaningful content (288 words)"
+  },
+  {
+    "path": "H672.md",
+    "size_bytes": 22453,
+    "classification": "valid",
+    "reason": "meaningful content (930 words)"
+  },
+  {
+    "path": "H675.md",
+    "size_bytes": 44590,
+    "classification": "valid",
+    "reason": "meaningful content (458 words)"
+  },
+  {
+    "path": "H677.md",
+    "size_bytes": 45836,
+    "classification": "valid",
+    "reason": "meaningful content (311 words)"
+  },
+  {
+    "path": "H679.md",
+    "size_bytes": 84,
+    "classification": "valid",
+    "reason": "meaningful content (15 words)"
+  },
+  {
+    "path": "H681.md",
+    "size_bytes": 8064,
+    "classification": "valid",
+    "reason": "meaningful content (1267 words)"
+  },
+  {
+    "path": "H682.md",
+    "size_bytes": 3820,
+    "classification": "valid",
+    "reason": "meaningful content (563 words)"
+  },
+  {
+    "path": "H683.md",
+    "size_bytes": 15623,
+    "classification": "valid",
+    "reason": "meaningful content (428 words)"
+  },
+  {
+    "path": "H686.md",
+    "size_bytes": 1,
+    "classification": "empty",
+    "reason": "file is empty or whitespace only"
+  },
+  {
+    "path": "H687.md",
+    "size_bytes": 6303,
+    "classification": "valid",
+    "reason": "meaningful content (973 words)"
+  },
+  {
+    "path": "H688.md",
+    "size_bytes": 14874,
+    "classification": "valid",
+    "reason": "meaningful content (256 words)"
+  },
+  {
+    "path": "H692.md",
+    "size_bytes": 6,
+    "classification": "empty",
+    "reason": "file is empty or whitespace only"
+  },
+  {
+    "path": "H693.md",
+    "size_bytes": 43510,
+    "classification": "valid",
+    "reason": "meaningful content (269 words)"
+  },
+  {
+    "path": "H695.md",
+    "size_bytes": 48355,
+    "classification": "valid",
+    "reason": "meaningful content (718 words)"
+  },
+  {
+    "path": "H696.md",
+    "size_bytes": 6196,
+    "classification": "valid",
+    "reason": "meaningful content (913 words)"
+  },
+  {
+    "path": "H698.md",
+    "size_bytes": 22584,
+    "classification": "valid",
+    "reason": "meaningful content (768 words)"
+  }
+]
