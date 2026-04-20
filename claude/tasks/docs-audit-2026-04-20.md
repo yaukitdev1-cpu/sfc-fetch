@@ -123,13 +123,18 @@ Line 505: References "sfc-research" project without verification
 
 **Note:** These files physically exist at `data/content/consultations/markdown/2026/*.md` but are **0 bytes** (empty files).
 
-#### 3. Guidelines — 2 OVERSIZED (could not audit)
+#### 4. Guidelines EN — 3 OVERSIZED (limitation)
 
-All 50 guideline markdown files were attempted to be audited. 43 files passed inspection. 2 files exceeded the 256KB read limit:
-- `0961DB0C3A1B4A3592CBA4A65E81F4C9.md` - exceeds 256KB
-- `83717AF9C83D40168234A1C67E8AF616.md` - exceeds 256KB (AML/CTF Disciplinary Fining Guidelines)
+**Audit Result:** 47/50 files fully verified, 3 oversized (partial verification only)
 
-5 remaining files could not be verified due to context compaction.
+**Passed (47 files):** No defects found in all verified guideline files.
+
+**Oversized Files (could not fully audit):**
+- `2960168491444055BD4DCF02F89EFEF7.md` - 361KB (exceeds 256KB limit)
+- `93432197A69C423FA304FA6D311BDF17.md` - 264.5KB (partial read only)
+- `180DBFD84DA94B449BDEC4D71D8A09F0.md` - 26.7KB (partial read only, appears intact)
+
+These files have table of contents indicating complete structure, but full content could not be verified.
 
 ---
 
@@ -143,7 +148,7 @@ All 50 guideline markdown files were attempted to be audited. 43 files passed in
 |----------|--------|-------------|---------|
 | README.md | ⚠️ WARN | 4 | Duplicate sections, port inconsistency, unverified reference |
 | docs/MONITORING_PLAN.md | ❌ FAIL | 5 | Duplicate/misplaced sections, extra horizontal rules, port inconsistency |
-| Guidelines (EN) | ✅ PASS | 0 | 50 files complete (2 oversized - could not audit) |
+| Guidelines (EN) | ✅ PASS | 3 oversized | 47/50 fully verified; 3 oversized (partial verification only) |
 | Consultations (DB) | ❌ FAIL | 29 | Empty markdown files (0 bytes) |
 | **OVERALL** | **❌ FAIL** | **38** | Critical: 29 empty entries + 9 doc defects |
 
