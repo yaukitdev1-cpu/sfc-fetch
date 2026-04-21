@@ -748,10 +748,20 @@ export class QueueService implements OnModuleInit, OnModuleDestroy {
         // Try Docling first, fall back to basic text extraction
         try {
           markdownContent = await this.doclingService.convertPdfToMarkdown(rawFilePath);
+          // Validate meaningful content
+          const meaningfulChars = markdownContent.replace(/[\x00-\x1f\x7f]/g, '').replace(/\s/g, '').length;
+          if (meaningfulChars < 50) {
+            throw new Error(`Docling produced insufficient content (${meaningfulChars} chars), retrying with pdftotext`);
+          }
         } catch (doclingError) {
           this.logger.warn(`Docling failed for ${category}/${refNo}, using fallback: ${(doclingError as Error).message}`);
           const fileBuffer: Buffer = await fs.readFile(rawFilePath) as Buffer;
           markdownContent = await this.basicPdfFallback(fileBuffer);
+          // Validate fallback output
+          const fallbackMeaningful = markdownContent.replace(/[\x00-\x1f\x7f]/g, '').replace(/\s/g, '').length;
+          if (fallbackMeaningful < 50) {
+            this.logger.warn(`Fallback also produced insufficient content (${fallbackMeaningful} chars) for ${category}/${refNo}`);
+          }
         }
       } else {
         // Read HTML file and convert using Turndown

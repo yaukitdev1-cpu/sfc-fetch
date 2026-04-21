@@ -64,6 +64,9 @@ export class ContentService {
     fileName += '.md';
 
     const filePath = path.join(yearDir, fileName);
+    if (content.length < 100) {
+      throw new Error(`Refusing to write suspiciously small markdown (${content.length} bytes) for ${refNo}`);
+    }
     await fs.writeFile(filePath, content, 'utf8');
 
     const stats = await fs.stat(filePath);

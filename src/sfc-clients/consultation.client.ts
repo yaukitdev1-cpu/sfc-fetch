@@ -82,7 +82,11 @@ export class ConsultationClient {
       throw new Error(`Failed to download consultation PDF: ${response.statusText}`);
     }
 
-    return Buffer.from(await response.arrayBuffer());
+    const buffer = Buffer.from(await response.arrayBuffer());
+    if (buffer.length === 0) {
+      return null;
+    }
+    return buffer;
   }
 
   async getConclusionPdf(refNo: string, lang: string = 'EN'): Promise<Buffer | null> {
@@ -98,7 +102,11 @@ export class ConsultationClient {
       throw new Error(`Failed to download conclusion PDF: ${response.statusText}`);
     }
 
-    return Buffer.from(await response.arrayBuffer());
+    const buffer = Buffer.from(await response.arrayBuffer());
+    if (buffer.length === 0) {
+      return null;
+    }
+    return buffer;
   }
 
   /**
