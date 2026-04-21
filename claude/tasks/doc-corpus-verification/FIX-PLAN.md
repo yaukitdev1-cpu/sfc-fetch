@@ -212,16 +212,68 @@ This prevents false positives on legitimate regulatory text that happens to ment
 
 ---
 
+## FAILURE TYPE 4: Scanner Gap — Form-Feed (0x0c) Characters Not Detected
+
+### Root Cause
+
+**Location:** `claude/tasks/doc-corpus-verification/scan.py`
+
+The scanner's `get_text_lines` strips image lines, but form-feed characters (`\x0c`) are not newlines — they remain as "visible text" and are not filtered by line-stripping logic. This means form-feed-only files could have been **misclassified as valid** by the scanner, since the scanner only flagged files with "placeholder" and "dummy" patterns, not control-character dominance.
+
+### Prevention Steps
+
+**1. Add control-character check in `scan.py`**
+
+In `scan.py`, after getting `visible_text`, add a control character dominance check:
+
+```python
+# In scan.py, add after visible_text is computed
+def is_dummy_file(content: str, visible_text: str) -> bool:
+    # Check for control character dominance (form-feeds, nulls, etc.)
+    control_chars = re.compile(r'[\x00-\x08\x0b\x0c\x0e-\x1f]')
+    control_count = len(control_chars.findall(visible_text))
+    total_chars = len(visible_text.replace(' ', ''))
+
+    if total_chars > 0 and control_count / total_chars > 0.5:
+        return True  # >50% control chars = dummy/garbage file
+
+    # Also check: if after stripping images/whitespace, remaining is mostly control chars
+    stripped = ''.join(c for c in visible_text if c not in ' \t\n\r\x0b')
+    if len(stripped) > 0:
+        control_ratio = len(control_chars.findall(stripped)) / len(stripped)
+        if control_ratio > 0.5:
+            return True
+
+    return False
+```
+
+**2. Integrate into main scan logic**
+
+```python
+if is_dummy_file(content, visible_text):
+    issues.append("Control-character dominant content (form-feeds, garbage)")
+```
+
+### Validation Query
+```bash
+# Find files with high form-feed content
+grep -rl $'\x0c' /home/openclaw/.openclaw/workspace/sfc-fetch/data/content --include="*.md" | wc -l
+# Should return 0 after scanner fix + re-run
+```
+
+---
+
 ## IRRECOVERABLE FILE LIST
 
 **Status: EMPTY**
 
-All 41 failing files (29 + 12) appear to be recoverable via re-run with the fixes above.
+All 42 problem files (29 + 12 + 1 false positive) are either recoverable or not actual failures.
 
-**Reasoning:**
-- Consultation 0-byte files: HTML fallback is available, fix makes download step work correctly
-- Circular form-feed files: pdftotext fallback should extract text from image-only PDFs
-- No file-level corruption or permanent data loss identified
+**Breakdown:**
+- 29 consultation 0-byte: HTML fallback available, fix makes download step work correctly
+- 12 circular form-feed: pdftotext fallback should extract text from image-only PDFs
+- 1 false positive (H655.md): Not a pipeline failure — legitimate SFC regulatory text
+- 1 scanner gap (form-feeds not detected): Scanner fix will catch these on next scan
 
 **If re-run fails for any file**, the specific file should be added to this list with reason.
 
@@ -260,12 +312,17 @@ All in `data/content/circulars/markdown/`
 
 ## APPENDIX B: Implementation Checklist
 
-- [ ] Fix `getConsultationPdf` in `src/sfc-clients/consultation.client.ts` — add 0-byte buffer check
-- [ ] Fix `getConclusionPdf` in `src/sfc-clients/consultation.client.ts` — add 0-byte buffer check
-- [ ] Add content validation after Docling in `src/workflows/queue.service.ts`
-- [ ] Add content validation after `basicPdfFallback` in `src/workflows/queue.service.ts`
-- [ ] Optionally add sanity-check in `src/services/content.service.ts` before writing small files
-- [ ] Update scanner pattern for H655 false positive
-- [ ] Re-run download for 29 consultations (fix verifies HTML fallback)
-- [ ] Re-run convert for 12 circulars (fix uses pdftotext fallback)
-- [ ] Validate all files with validation queries above
+**Status: IMPLEMENTED** (2026-04-21)
+
+- [x] Fix `getConsultationPdf` in `src/sfc-clients/consultation.client.ts` — add 0-byte buffer check
+- [x] Fix `getConclusionPdf` in `src/sfc-clients/consultation.client.ts` — add 0-byte buffer check
+- [x] Add content validation after Docling in `src/workflows/queue.service.ts`
+- [x] Add content validation after `basicPdfFallback` in `src/workflows/queue.service.ts`
+- [x] Add control-character check in `claude/tasks/doc-corpus-verification/scan.py` (form-feed detection)
+- [x] Add sanity-check in `src/services/content.service.ts` before writing small files
+- [x] Update scanner pattern for H655 false positive
+- [ ] Re-run download for 29 consultations (fix verifies HTML fallback) — pending queue processing
+- [ ] Re-run convert for 12 circulars (fix uses pdftotext fallback) — pending queue processing
+- [ ] Validate all files with validation queries above — pending re-processing completion
+
+**Implementation commit:** `impl/corpus-fix-2026-04-21` branch, commit `3d5b9671`
