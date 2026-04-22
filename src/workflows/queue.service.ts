@@ -115,6 +115,12 @@ export class QueueService implements OnModuleInit, OnModuleDestroy {
     // Recovery: Re-submit jobs for documents stuck in intermediate workflow states
     await this.recoverStuckDocuments();
 
+    // Cleanup stale completed/failed entries older than 7 days
+    const cleaned = this.lowdbService.cleanupQueueJobs(7);
+    if (cleaned > 0) {
+      this.logger.log(`[Queue] Cleaned up ${cleaned} stale queue entries`);
+    }
+
     this.logger.log('[Queue] Initialized');
   }
 
@@ -905,9 +911,19 @@ export class QueueService implements OnModuleInit, OnModuleDestroy {
   submitJob(job: JobData): Promise<JobResult> {
     return new Promise(async (resolve, reject) => {
       try {
+        // Check for existing pending/in_progress job for same (category, refNo, action)
+        const existingJobs = this.lowdbService.getPendingQueueJobs()
+          .filter(j => j.category === job.category && j.refNo === job.refNo && j.action === job.action);
+        if (existingJobs.length > 0) {
+          this.logger.debug(`[Queue] Job already exists for ${job.action}/${job.category}/${job.refNo}, reusing existing`);
+          resolve({ success: true, result: existingJobs[0] });
+          return;
+        }
+
         // Persist job to LowDB with pending status before adding to queue
+        const jobId = `${job.action}-${job.category}-${job.refNo}`;
         const persistedJob = await this.lowdbService.addQueueJob({
-          id: `${job.category}-${job.refNo}-${Date.now()}`,
+          id: jobId,
           status: 'pending',
           ...job
         });
@@ -926,8 +942,16 @@ export class QueueService implements OnModuleInit, OnModuleDestroy {
   }
 
   getStats() {
+    const allQueueEntries = this.lowdbService.getAllQueueJobs();
+    const pendingCount = allQueueEntries.filter((j: any) => j.status === 'pending').length;
+    const inProgressCount = allQueueEntries.filter((j: any) => j.status === 'in_progress').length;
     return {
       length: this.queue.length,
+      totalPersisted: allQueueEntries.length,
+      pendingPersisted: pendingCount,
+      inProgressPersisted: inProgressCount,
+      completedPersisted: allQueueEntries.filter((j: any) => j.status === 'completed').length,
+      failedPersisted: allQueueEntries.filter((j: any) => j.status === 'failed').length,
       running: this.jobLatencyTracker?.size ?? 0,
     };
   }
