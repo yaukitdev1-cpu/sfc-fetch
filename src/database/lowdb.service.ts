@@ -491,11 +491,20 @@ export class LowdbService implements OnModuleInit, OnModuleDestroy {
 
   // Queue operations for persistent storage
   async addQueueJob(job: any): Promise<any> {
-    job._id = job.jobId || `${job.action}-${job.category}-${job.refNo}`;
+    const jobId = job.jobId || `${job.action}-${job.category}-${job.refNo}`;
+    job._id = jobId;
     job.createdAt = new Date().toISOString();
     job.updatedAt = new Date().toISOString();
-    this.db.data.queue.push(job);
-    this.idIndex.set(job._id, job);
+
+    // Upsert: find existing entry by _id and update it, otherwise push new entry
+    const existingIndex = this.db.data.queue.findIndex((j: any) => j._id === jobId);
+    if (existingIndex >= 0) {
+      this.db.data.queue[existingIndex] = { ...this.db.data.queue[existingIndex], ...job };
+    } else {
+      this.db.data.queue.push(job);
+    }
+
+    this.idIndex.set(jobId, job);
     await this.safeWrite();
     return job;
   }
@@ -517,6 +526,24 @@ export class LowdbService implements OnModuleInit, OnModuleDestroy {
 
   getPendingQueueJobs(): any[] {
     return this.db.data.queue.filter((j: any) => j.status === 'pending' || j.status === 'in_progress');
+  }
+
+  getAllQueueJobs(): any[] {
+    return this.db.data.queue;
+  }
+
+  cleanupQueueJobs(olderThanDays: number = 7): number {
+    const cutoff = new Date(Date.now() - olderThanDays * 24 * 60 * 60 * 1000);
+    const before = this.db.data.queue.length;
+    this.db.data.queue = this.db.data.queue.filter((j: any) => {
+      if (j.status === 'completed' || j.status === 'failed') {
+        const updated = new Date(j.updatedAt);
+        return updated > cutoff;
+      }
+      return true;
+    });
+    const after = this.db.data.queue.length;
+    return before - after;
   }
 
   // Close database
