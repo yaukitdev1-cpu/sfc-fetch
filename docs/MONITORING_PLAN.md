@@ -342,9 +342,61 @@ curl -s 'http://localhost:3401/workflows?status=FAILED' | jq '.workflows[-5:]'
 curl -X POST http://localhost:3401/queue/download -d '{"category":"circulars","refNo":"XX123"}'
 ```
 
+### Suspiciously Small Markdown (Circulars)
+
+**Symptom:** Circular documents fail with "Refusing to write suspiciously small markdown (N bytes)" where N is 1-84 bytes.
+
+**Root Cause:** PDF is image-based (scanned document) with no extractable text. The PDF contains only images (verified via `pdfimages -list` showing RGB images and CCITT stencils).
+
+**Affected:** Circulars with refNos like 24EC53, 22EC3, H692, H357, etc.
+
+**Fix:** These documents cannot be processed with current text-extraction pipeline. Options:
+1. Implement OCR (Optical Character Recognition) to handle image-based PDFs
+2. Mark as SUPPRESSED with reason "image_only_pdf"
+3. Accept that some legacy circulars cannot be digitized
+
+**Discovery Date:** 2026-04-23 - 21 such failures found in investigation
+
+### Suspiciously Small Markdown (0 bytes) - Consultations
+
+**Symptom:** Consultation documents fail with "Refusing to write suspiciously small markdown (0 bytes)".
+
+**Root Cause:** The HTML source file contains only empty tags (`<p></p>`). The original content is genuinely empty or was not captured.
+
+**Affected:** Consultations from 1990s-2000s era (90CP1, 91CP1, 92CP1, 00CP1, 00CP2, etc.)
+
+**Fix:** These documents have no meaningful content to extract. Options:
+1. Mark as SUPPRESSED with reason "empty_source_content"
+2. Investigate if HTML was supposed to be populated from a different source
+
+**Discovery Date:** 2026-04-23 - 26 such failures found in investigation
+
+### ENOENT Errors on Restored Files
+
+**Symptom:** Documents fail with "ENOENT: no such file or directory, open 'data/raw/category/refNo.html'" even though files exist.
+
+**Root Cause:** Files were genuinely missing at processing time but were later restored (e.g., via git checkout). The workflow status was not updated after restoration.
+
+**Affected:** 62 news documents, 16 consultation documents
+
+**Fix:** After files are restored, retry the documents:
+```bash
+curl -X POST "http://localhost:3401/{category}/{refNo}/workflow/retry" \
+  -H "Content-Type: application/json" \
+  -d '{"reason": "files restored after outage"}'
+```
+
+**Resolution:** 78 such documents were successfully retried on 2026-04-23.
+
 ---
 
 ## Changelog
+
+### v1.3 (2026-04-23)
+- Added "Suspiciously Small Markdown (Circulars)" failure pattern - image-based PDFs cannot be text-extracted
+- Added "Suspiciously Small Markdown (0 bytes) - Consultations" - empty HTML source content
+- Added "ENOENT Errors on Restored Files" - files missing at processing time but later restored
+- Documented investigation findings: 125 failures → 78 retried (fixable) + 47 require design decision
 
 ### v1.2 (2026-04-14)
 - Fixed error recording bug in discoverResource catch block
