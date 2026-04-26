@@ -1,0 +1,515 @@
+- generic [active] [ref=e1]:
+  - banner [ref=e2]:
+    - generic [ref=e3]:
+      - generic [ref=e4]:
+        - link "Securities and Futures Commission" [ref=e6] [cursor=pointer]:
+          - /url: https://www.sfc.hk/en/
+        - text: 
+        - generic [ref=e7]:
+          - generic:
+            - generic:
+              - link "Eng":
+                - /url: https://www.sfc.hk/en/Rules-and-standards/Codes-and-guidelines/Guidelines
+              - link "繁":
+                - /url: https://www.sfc.hk/TC/Rules-and-standards/Codes-and-guidelines/Guidelines
+              - link "簡":
+                - /url: https://sc.sfc.hk/TuniS/www.sfc.hk/TC/Rules-and-standards/Codes-and-guidelines/Guidelines
+          - generic [ref=e8]: 
+          - link "" [ref=e10] [cursor=pointer]:
+            - /url: "#"
+            - generic [ref=e11]: 
+      - generic [ref=e15]:
+        - link "Facebook" [ref=e16] [cursor=pointer]:
+          - /url: https://www.facebook.com/sfchkofficial
+          - img "Facebook" [ref=e17]
+        - link "LinkedIn" [ref=e18] [cursor=pointer]:
+          - /url: https://hk.linkedin.com/company/securities-and-futures-commission
+          - img "LinkedIn" [ref=e19]
+        - link "WeChat" [ref=e20] [cursor=pointer]:
+          - /url: https://www.sfc.hk/en/WeChat
+          - img "WeChat" [ref=e21]
+        - link "YouTube" [ref=e22] [cursor=pointer]:
+          - /url: https://www.youtube.com/@sfchkofficial
+          - img "YouTube" [ref=e23]
+        - link "Instagram" [ref=e24] [cursor=pointer]:
+          - /url: https://www.instagram.com/shuiyufocusgroup/
+          - img "Instagram" [ref=e25]
+        - link "Alert List" [ref=e26] [cursor=pointer]:
+          - /url: https://www.sfc.hk/en/Alert_List
+    - generic:
+      - navigation [ref=e27]:
+        - heading "About the SFC" [level=3] [ref=e29]:
+          - link "About the SFC" [ref=e30] [cursor=pointer]:
+            - /url: https://www.sfc.hk/en/About-the-SFC
+      - navigation [ref=e32]:
+        - heading "Regulatory functions" [level=3] [ref=e34]:
+          - link "Regulatory functions" [ref=e35] [cursor=pointer]:
+            - /url: https://www.sfc.hk/en/Regulatory-functions
+      - navigation [ref=e37]:
+        - heading "Rules and standards" [level=3] [ref=e39]:
+          - link "Rules and standards" [ref=e40] [cursor=pointer]:
+            - /url: https://www.sfc.hk/en/Rules-and-standards
+      - navigation [ref=e42]:
+        - heading "Published resources" [level=3] [ref=e44]:
+          - link "Published resources" [ref=e45] [cursor=pointer]:
+            - /url: https://www.sfc.hk/en/Published-resources
+      - navigation [ref=e47]:
+        - heading "News and announcements" [level=3] [ref=e49]:
+          - link "News and announcements" [ref=e50] [cursor=pointer]:
+            - /url: https://www.sfc.hk/en/News-and-announcements
+      - navigation [ref=e52]:
+        - heading "Career" [level=3] [ref=e54]:
+          - link "Career" [ref=e55] [cursor=pointer]:
+            - /url: https://www.sfc.hk/en/Career
+      - navigation [ref=e60]
+  - generic:
+    - generic:
+      - generic [ref=e61]:
+        - heading "Search" [level=2] [ref=e62]
+        - generic [ref=e63]:
+          - generic: Popup advanced search keywords
+          - generic [ref=e64]: 
+          - textbox "Popup advanced search keywords" [ref=e65]:
+            - /placeholder: Enter keywords here
+        - heading "Advanced search" [level=3] [ref=e66] [cursor=pointer]: Advanced search
+        - button "Search >" [ref=e68] [cursor=pointer]
+      - link [ref=e69] [cursor=pointer]:
+        - /url: "#"
+  - generic [ref=e72]:
+    - list [ref=e73]:
+      - listitem [ref=e74]:
+        - link "Home" [ref=e75] [cursor=pointer]:
+          - /url: https://www.sfc.hk/en/
+        - text: ">"
+      - listitem [ref=e76]:
+        - link "Rules and standards" [ref=e77] [cursor=pointer]:
+          - /url: https://www.sfc.hk/en/Rules-and-standards
+        - text: ">"
+      - listitem [ref=e78]:
+        - link "Codes and guidelines" [ref=e79] [cursor=pointer]:
+          - /url: https://www.sfc.hk/en/Rules-and-standards/Codes-and-guidelines
+        - text: ">"
+      - listitem [ref=e80]:
+        - link "Guidelines" [ref=e81] [cursor=pointer]:
+          - /url: https://www.sfc.hk/en/Rules-and-standards/Codes-and-guidelines/Guidelines
+    - generic [ref=e82]: Guidelines
+    - generic [ref=e83]:
+      - generic [ref=e85]:
+        - strong [ref=e86]: Enter keywords
+        - generic [ref=e87]:
+          - generic [ref=e88]: 
+          - textbox "Enter keywords " [ref=e89]
+      - generic [ref=e91]:
+        - strong [ref=e92]: By topic
+        - combobox
+        - combobox "All" [ref=e95] [cursor=pointer]:
+          - textbox "All" [ref=e96]
+      - generic [ref=e97]:
+        - generic: Reset button
+        - button "Reset >" [ref=e98] [cursor=pointer]
+    - table [ref=e101]:
+      - rowgroup [ref=e102]:
+        - row "Guidelines Latest version Previous versions" [ref=e103]:
+          - columnheader "Guidelines" [ref=e104]
+          - columnheader "Latest version" [ref=e105]
+          - columnheader "Previous versions" [ref=e106]
+      - rowgroup [ref=e107]:
+        - row "Advertising Guidelines Applicable to Collective Investment Schemes Authorized under the Product Codes Apr 2013 One version" [ref=e108]:
+          - cell "Advertising Guidelines Applicable to Collective Investment Schemes Authorized under the Product Codes" [ref=e109]
+          - cell "Apr 2013" [ref=e110]:
+            - link "Apr 2013" [ref=e111] [cursor=pointer]:
+              - /url: https://www.sfc.hk/-/media/EN/assets/components/codes/files-current/web/guidelines/advertising-guidelines-applicable-to-collective-investment-schemes/Advertising-Guidelines--Applicable-to-Collective-Investment-Schemes-Authorized-under-the-Product-Cod.pdf?rev=40ec438171854b829cd6118a0e5cfbd0
+          - cell "One version" [ref=e112]:
+            - link "One version" [ref=e113] [cursor=pointer]:
+              - /url: "#"
+        - row "Client Identity Rule Policy Apr 2003 One version" [ref=e114]:
+          - cell "Client Identity Rule Policy" [ref=e115]
+          - cell "Apr 2003" [ref=e116]:
+            - link "Apr 2003" [ref=e117] [cursor=pointer]:
+              - /url: https://www.sfc.hk/-/media/EN/assets/components/codes/files-current/web/guidelines/client-identity-rule-policy/Client-Identity-Rule-Policy.pdf?rev=ba8e9a8e67504bfb9795597c30620639
+          - cell "One version" [ref=e118]:
+            - link "One version" [ref=e119] [cursor=pointer]:
+              - /url: "#"
+        - row "Core Operational and Financial Risk Management Controls for Over-the-Counter Derivatives Activities of Persons Licensed by or Registered with the Securities and Futures Commission Apr 2003 One version" [ref=e120]:
+          - cell "Core Operational and Financial Risk Management Controls for Over-the-Counter Derivatives Activities of Persons Licensed by or Registered with the Securities and Futures Commission" [ref=e121]
+          - cell "Apr 2003" [ref=e122]:
+            - link "Apr 2003" [ref=e123] [cursor=pointer]:
+              - /url: https://www.sfc.hk/-/media/EN/assets/components/codes/files-current/web/core-operational-and-financial-risk-management/core-operational-and-financial-risk-management.pdf?rev=cd13091273e44fa7bfe5e1696feab243
+          - cell "One version" [ref=e124]:
+            - link "One version" [ref=e125] [cursor=pointer]:
+              - /url: "#"
+        - row "Debt Collection Guidelines for Licensed Corporations Apr 2003 One version" [ref=e126]:
+          - cell "Debt Collection Guidelines for Licensed Corporations" [ref=e127]
+          - cell "Apr 2003" [ref=e128]:
+            - link "Apr 2003" [ref=e129] [cursor=pointer]:
+              - /url: https://www.sfc.hk/-/media/EN/assets/components/codes/files-current/web/guidelines/debt-collection-guidelines-for-licensed-corporations/Debt-Collection-Guidelines-for-Licensed-Corporations.pdf?rev=2cfb0d9efd4748f9b978b80643cf5374
+          - cell "One version" [ref=e130]:
+            - link "One version" [ref=e131] [cursor=pointer]:
+              - /url: "#"
+        - row "Fit and Proper Guidelines 1 Jan 2022 Four versions" [ref=e132]:
+          - cell "Fit and Proper Guidelines" [ref=e133]
+          - cell "1 Jan 2022" [ref=e134]:
+            - link "1 Jan 2022" [ref=e135] [cursor=pointer]:
+              - /url: https://www.sfc.hk/-/media/EN/assets/components/codes/files-current/web/guidelines/fit-and-proper-guidelines/Fit-and-Proper-Guidelines.pdf?rev=d3a9d995e4fa40c89ece44b0fc681e4d
+          - cell "Four versions" [ref=e136]:
+            - link "Four versions" [ref=e137] [cursor=pointer]:
+              - /url: "#"
+        - row "Guidance Note for Persons Advertising or Offering Collective Investment Schemes on the Internet Apr 2013 Two versions" [ref=e138]:
+          - cell "Guidance Note for Persons Advertising or Offering Collective Investment Schemes on the Internet" [ref=e139]
+          - cell "Apr 2013" [ref=e140]:
+            - link "Apr 2013" [ref=e141] [cursor=pointer]:
+              - /url: https://www.sfc.hk/-/media/EN/assets/components/codes/files-current/web/guidelines/guidance-note-for-persons-advertising-or-offering-collective-investment-schemes-on-the-internet/Guidance-Note-for-Persons-Advertising-or-Offering-Collective-Investment-Schemes-on-the-Internet.pdf?rev=65d965fcfb4c41a8ab5842119900fd17
+          - cell "Two versions" [ref=e142]:
+            - link "Two versions" [ref=e143] [cursor=pointer]:
+              - /url: "#"
+        - row "Guidance Note on Cooperation with the SFC 1 Jun 2023 Two versions" [ref=e144]:
+          - cell "Guidance Note on Cooperation with the SFC" [ref=e145]
+          - cell "1 Jun 2023" [ref=e146]:
+            - link "1 Jun 2023" [ref=e147] [cursor=pointer]:
+              - /url: https://www.sfc.hk/-/media/EN/assets/components/codes/files-current/web/guidelines/guidance-note-on-cooperation-with-the-sfc/230524--Guidance-Note-on-Cooperation-with-SFC-Eng.pdf?rev=05c64623bfc948e09597fbbce79044ba
+          - cell "Two versions" [ref=e148]:
+            - link "Two versions" [ref=e149] [cursor=pointer]:
+              - /url: "#"
+        - row "Guidance note on directors’ duties in the context of valuations in corporate transactions 15 May 2017 -" [ref=e150]:
+          - cell "Guidance note on directors’ duties in the context of valuations in corporate transactions" [ref=e151]
+          - cell "15 May 2017" [ref=e152]:
+            - link "15 May 2017" [ref=e153] [cursor=pointer]:
+              - /url: https://www.sfc.hk/-/media/EN/assets/components/codes/files-current/web/guidance-note-on-directors-duties-in-the-conte/guidance-note-on-directors-duties-in-the-context-of-valuations-in-corporate-transactions.pdf?rev=dd1d37881b03471ebfc8d56beebe8887
+          - cell "-" [ref=e154]
+        - row "Statement on the liability of valuers for disclosure of false or misleading information 15 May 2017 -" [ref=e155]:
+          - cell "Statement on the liability of valuers for disclosure of false or misleading information" [ref=e156]
+          - cell "15 May 2017" [ref=e157]:
+            - link "15 May 2017" [ref=e158] [cursor=pointer]:
+              - /url: https://www.sfc.hk/-/media/EN/assets/components/codes/files-current/web/statement-on-the-liability-of-valuers-for-discl/statement-on-the-liability-of-valuers-for-disclosure-of-false-or-misleading-information.pdf?rev=b1eb35d63fad4330935fef9e459ed357
+          - cell "-" [ref=e159]
+        - row "Guidance Note on Position Limits and Large Open Position Reporting Requirements 2 Jul 2025 Three versions" [ref=e160]:
+          - cell "Guidance Note on Position Limits and Large Open Position Reporting Requirements" [ref=e161]
+          - cell "2 Jul 2025" [ref=e162]:
+            - link "2 Jul 2025" [ref=e163] [cursor=pointer]:
+              - /url: https://www.sfc.hk/-/media/EN/assets/components/codes/files-current/web/guidance-note-on-position-limits-and-large-open/Guidance-Note-July-2025Eng.pdf?rev=73c3d2daa21346eb87a9a4b3abe2e40e
+          - cell "Three versions" [ref=e164]:
+            - link "Three versions" [ref=e165] [cursor=pointer]:
+              - /url: "#"
+        - row "Guidance Note on Short Position Reporting 18 Jun 2012 -" [ref=e166]:
+          - cell "Guidance Note on Short Position Reporting" [ref=e167]
+          - cell "18 Jun 2012" [ref=e168]:
+            - link "18 Jun 2012" [ref=e169] [cursor=pointer]:
+              - /url: https://www.sfc.hk/-/media/EN/assets/components/codes/files-current/web/guidelines/guidance-note-on-short-position-reporting/Guidance-Note-on-Short-Position-Reporting.pdf?rev=b0b6a3fee766498dad02354c5809c39f
+          - cell "-" [ref=e170]
+        - row "Guidance Note on Short Selling Reporting and Stock Lending Record Keeping Requirements 6 Jun 2023 One version" [ref=e171]:
+          - cell "Guidance Note on Short Selling Reporting and Stock Lending Record Keeping Requirements" [ref=e172]
+          - cell "6 Jun 2023" [ref=e173]:
+            - link "6 Jun 2023" [ref=e174] [cursor=pointer]:
+              - /url: https://www.sfc.hk/-/media/EN/assets/components/codes/files-current/web/guidance-note-on-short-selling-reporting-and-st/Guidance-Note-on-short-selling-reporting-and-stock-lending-record-keeping-requirementJun-2023-Eng.pdf?rev=bdaf55ce1f034e22a75d48edc1d6e0d2
+          - cell "One version" [ref=e175]:
+            - link "One version" [ref=e176] [cursor=pointer]:
+              - /url: "#"
+        - row "Guideline on Anti-Money Laundering and Counter-Financing of Terrorism (For Licensed Corporations and SFC-licensed Virtual Asset Service Providers) 1 Jun 2023 Seven versions" [ref=e177]:
+          - cell "Guideline on Anti-Money Laundering and Counter-Financing of Terrorism (For Licensed Corporations and SFC-licensed Virtual Asset Service Providers)" [ref=e178]
+          - cell "1 Jun 2023" [ref=e179]:
+            - link "1 Jun 2023" [ref=e180] [cursor=pointer]:
+              - /url: https://www.sfc.hk/-/media/EN/assets/components/codes/files-current/web/guidelines/guideline-on-anti-money-laundering-and-counter-financing-of-terrorism-for-licensed-corporations/AML-Guideline-for-LCs-and-SFC-licensed-VASPs_Eng_1-Jun-2023.pdf?rev=d250206851484229ab949a4698761cb7
+          - cell "Seven versions" [ref=e181]:
+            - link "Seven versions" [ref=e182] [cursor=pointer]:
+              - /url: "#"
+        - row "Guidelines for Electronic Public Offerings Apr 2003 One version" [ref=e183]:
+          - cell "Guidelines for Electronic Public Offerings" [ref=e184]
+          - cell "Apr 2003" [ref=e185]:
+            - link "Apr 2003" [ref=e186] [cursor=pointer]:
+              - /url: https://www.sfc.hk/-/media/EN/assets/components/codes/files-current/web/guidelines/guidelines-for-electronic-public-offerings/Guidelines-for-Electronic-Public-Offerings.pdf?rev=2c75012ecdaf4e40ac112a70df64ceab
+          - cell "One version" [ref=e187]:
+            - link "One version" [ref=e188] [cursor=pointer]:
+              - /url: "#"
+        - 'row "Guidelines for Market Soundings Effective date: 2 May 2025 -" [ref=e189]':
+          - cell "Guidelines for Market Soundings" [ref=e190]
+          - 'cell "Effective date: 2 May 2025" [ref=e191]':
+            - 'link "Effective date: 2 May 2025" [ref=e192] [cursor=pointer]':
+              - /url: https://www.sfc.hk/-/media/EN/assets/components/codes/files-current/web/Guidelines-for-Market-Soundings/Guidelines-for-Market-Soundings_ENG.pdf?rev=-1
+          - cell "-" [ref=e193]
+        - row "Guidelines for Reducing and Mitigating Hacking Risks Associated with Internet Trading 27 Oct 2017 -" [ref=e194]:
+          - cell "Guidelines for Reducing and Mitigating Hacking Risks Associated with Internet Trading" [ref=e195]
+          - cell "27 Oct 2017" [ref=e196]:
+            - link "27 Oct 2017" [ref=e197] [cursor=pointer]:
+              - /url: https://www.sfc.hk/-/media/EN/assets/components/codes/files-current/web/guidelines/guidelines-for-reducing-and-mitigating-hacking-risks-associated-with-internet-trading/guidelines-for-reducing-and-mitigating-hacking-risks-associated-with-internet-trading.pdf?rev=eb44681c436548c1bb37092f2145f45c
+          - cell "-" [ref=e198]
+        - row "Guidelines for the Approval of Corporations as Approved Lending Agents 1 Apr 2003 -" [ref=e199]:
+          - cell "Guidelines for the Approval of Corporations as Approved Lending Agents" [ref=e200]
+          - cell "1 Apr 2003" [ref=e201]:
+            - link "1 Apr 2003" [ref=e202] [cursor=pointer]:
+              - /url: https://www.sfc.hk/-/media/EN/assets/components/codes/files-current/web/guidelines-for-the-approval-of-corporations-as-approved-lending-agents/guidelines-for-the-approval-of-corporations-as-approved-lending-agents.pdf?rev=e576459dcc3d4b15a1f7c6385f91d208
+          - cell "-" [ref=e203]
+        - row "Guidelines for the Exemption of Listed Corporations and Other Persons from Part XV of the Securities and Futures Ordinance (Disclosure of Interests) 5 Sep 2014 Two versions" [ref=e204]:
+          - cell "Guidelines for the Exemption of Listed Corporations and Other Persons from Part XV of the Securities and Futures Ordinance (Disclosure of Interests)" [ref=e205]
+          - cell "5 Sep 2014" [ref=e206]:
+            - link "5 Sep 2014" [ref=e207] [cursor=pointer]:
+              - /url: https://www.sfc.hk/-/media/EN/assets/components/codes/files-current/web/guidelines/guidelines-for-the-exemption-of-listed-corporations/Guidelines-for-the-Exemption-of-Listed-Corporations-and-Other-Persons-from-Part-XV-of--the-Securitie.pdf?rev=d9c2ff21adc74596b509da4a95aff5fa
+          - cell "Two versions" [ref=e208]:
+            - link "Two versions" [ref=e209] [cursor=pointer]:
+              - /url: "#"
+        - row "Guidelines for the Regulation of Automated Trading Services 1 Sep 2016 One version" [ref=e210]:
+          - cell "Guidelines for the Regulation of Automated Trading Services" [ref=e211]
+          - cell "1 Sep 2016" [ref=e212]:
+            - link "1 Sep 2016" [ref=e213] [cursor=pointer]:
+              - /url: https://www.sfc.hk/-/media/EN/assets/components/codes/files-current/web/guidelines-for-the-regulation-of-automated-trading-services/guidelines-for-the-regulation-of-automated-trading-services.pdf?rev=741f3dcb57e9441ca64038e59db66678
+          - cell "One version" [ref=e214]:
+            - link "One version" [ref=e215] [cursor=pointer]:
+              - /url: "#"
+        - row "Guidelines for Securities Margin Financing Activities 4 Apr 2019 -" [ref=e216]:
+          - cell "Guidelines for Securities Margin Financing Activities" [ref=e217]
+          - cell "4 Apr 2019" [ref=e218]:
+            - link "4 Apr 2019" [ref=e219] [cursor=pointer]:
+              - /url: https://www.sfc.hk/-/media/EN/assets/components/codes/files-current/web/guidelines/guidelines-for-securities-margin-financing-activities/guidelines-for-securities-margin-financing-activities.pdf?rev=753d9c64cd484a308ee11dedbc046df5
+          - cell "-" [ref=e220]
+        - row "Guidelines for Virtual Asset Trading Platform Operators 1 Jun 2023 -" [ref=e221]:
+          - cell "Guidelines for Virtual Asset Trading Platform Operators" [ref=e222]
+          - cell "1 Jun 2023" [ref=e223]:
+            - link "1 Jun 2023" [ref=e224] [cursor=pointer]:
+              - /url: https://www.sfc.hk/-/media/EN/assets/components/codes/files-current/web/guidelines/Guidelines-for-Virtual-Asset-Trading-Platform-Operators/Guidelines-for-Virtual-Asset-Trading-Platform-Operators.pdf?rev=f6152ff73d2b4e8a8ce9dc025030c3b8
+          - cell "-" [ref=e225]
+        - row "Guidelines on Competence 2 Oct 2024 Three versions" [ref=e226]:
+          - cell "Guidelines on Competence" [ref=e227]
+          - cell "2 Oct 2024" [ref=e228]:
+            - link "2 Oct 2024" [ref=e229] [cursor=pointer]:
+              - /url: https://www.sfc.hk/-/media/EN/assets/components/codes/files-current/web/guidelines/guidelines-on-competence/Guidelines-on-Competence_EN_Oct-2024.pdf?rev=63f04816d15545c2955435a864f3af40
+          - cell "Three versions" [ref=e230]:
+            - link "Three versions" [ref=e231] [cursor=pointer]:
+              - /url: "#"
+        - row "- Appendix C Jun 2011 -" [ref=e232]:
+          - cell "- Appendix C" [ref=e233]
+          - cell "Jun 2011" [ref=e234]:
+            - link "Jun 2011" [ref=e235] [cursor=pointer]:
+              - /url: https://www.sfc.hk/-/media/EN/assets/components/codes/files-current/web/guidelines/appendix-c/appendix-c.pdf?rev=c9bbe32e505d41ca80171409f3cfbd65
+          - cell "-" [ref=e236]
+        - row "Guidelines on Continuous Professional Training 1 Jan 2022 Two versions" [ref=e237]:
+          - cell "Guidelines on Continuous Professional Training" [ref=e238]
+          - cell "1 Jan 2022" [ref=e239]:
+            - link "1 Jan 2022" [ref=e240] [cursor=pointer]:
+              - /url: https://www.sfc.hk/-/media/EN/assets/components/codes/files-current/web/guidelines/guidelines-on-continuous-professional-training/Guidelines-on-Continuous-Professional-Training.pdf?rev=50728987dec448b0a2ae9e9e7f658354
+          - cell "Two versions" [ref=e241]:
+            - link "Two versions" [ref=e242] [cursor=pointer]:
+              - /url: "#"
+        - row "Guidelines on Disclosure of Fees and Charges Relating to Securities Services 1 Jan 2005 -" [ref=e243]:
+          - cell "Guidelines on Disclosure of Fees and Charges Relating to Securities Services" [ref=e244]
+          - cell "1 Jan 2005" [ref=e245]:
+            - link "1 Jan 2005" [ref=e246] [cursor=pointer]:
+              - /url: https://www.sfc.hk/-/media/EN/assets/components/codes/files-current/web/guidelines/guidelines-on-disclosure-of-fees-and-charges-re/Guidelines-on-Disclosure-of-Fees-and-Charges-Relating-to-Securities-Services.pdf?rev=74744fe9955246bab35db550adc5a2cd
+          - cell "-" [ref=e247]
+        - row "Guidelines on Disclosure of Inside Information Jun 2012 -" [ref=e248]:
+          - cell "Guidelines on Disclosure of Inside Information" [ref=e249]
+          - cell "Jun 2012" [ref=e250]:
+            - link "Jun 2012" [ref=e251] [cursor=pointer]:
+              - /url: https://www.sfc.hk/-/media/EN/assets/components/codes/files-current/web/guidelines/guidelines-on-disclosure-of-inside-information/Guidelines-on-Disclosure-of-Inside-Information.pdf?rev=a9602836548943cb80a3fbecd5727a51
+          - cell "-" [ref=e252]
+        - row "Guidelines on Exempt Fund Manager (\"EFM\") Status Under the Code on Takeovers and Mergers (the \"Code\") 10 Apr 2001(Revised on 30 Sep 2010) -" [ref=e253]:
+          - cell "Guidelines on Exempt Fund Manager (\"EFM\") Status Under the Code on Takeovers and Mergers (the \"Code\")" [ref=e254]
+          - cell "10 Apr 2001(Revised on 30 Sep 2010)" [ref=e255]:
+            - link "10 Apr 2001(Revised on 30 Sep 2010)" [ref=e256] [cursor=pointer]:
+              - /url: https://www.sfc.hk/-/media/EN/assets/components/codes/files-current/web/guidelines/guidelines-on-exempt-fund-manager-efm-status-under-the-code-on-takeovers-and-mergers-the-code/guidelinesonexemptfundmanagerefmstatusunderthecodeontakeoversandmergersthecode.pdf?rev=3745e51df6ae43e287d0cb4f73294224
+          - cell "-" [ref=e257]
+        - row "Guidelines on Exempt Principal Trader (EPT) Status Under the Code on Takeovers and Mergers (the Code) 10 Apr 2001(Revised on 30 Sep 2010) -" [ref=e258]:
+          - cell "Guidelines on Exempt Principal Trader (EPT) Status Under the Code on Takeovers and Mergers (the Code)" [ref=e259]
+          - cell "10 Apr 2001(Revised on 30 Sep 2010)" [ref=e260]:
+            - link "10 Apr 2001(Revised on 30 Sep 2010)" [ref=e261] [cursor=pointer]:
+              - /url: https://www.sfc.hk/-/media/EN/assets/components/codes/files-current/web/guidelines/guidelines-on-exempt-principalt/Guidelines-on-Exempt-Principal-Trader-EPT-Status--Under-the-Code-on-Takeovers-and-Mergers-the-Code.pdf?rev=abca13d8737449f5b65e3b67ca46a6f0
+          - cell "-" [ref=e262]
+        - row "Guidelines on Marketing Materials for Listed Structured Products Sep 2006 -" [ref=e263]:
+          - cell "Guidelines on Marketing Materials for Listed Structured Products" [ref=e264]
+          - cell "Sep 2006" [ref=e265]:
+            - link "Sep 2006" [ref=e266] [cursor=pointer]:
+              - /url: https://www.sfc.hk/-/media/EN/assets/components/codes/files-current/web/guidelines/guidelines-on-marketing-materials-for-listed-structured-products/Guidelines-on-Marketing-Materials-for-Listed-Structured-Products.pdf?rev=2211f3ae3ec04f2ca3287d8440add30f
+          - cell "-" [ref=e267]
+        - 'row "Guidelines on Online Distribution and Advisory Platforms Effective date: 6 Jul 2019 (3-month extension from original effective date i.e. 6 April 2019) -" [ref=e268]':
+          - cell "Guidelines on Online Distribution and Advisory Platforms" [ref=e269]
+          - 'cell "Effective date: 6 Jul 2019 (3-month extension from original effective date i.e. 6 April 2019)" [ref=e270]':
+            - 'link "Effective date: 6 Jul 2019 (3-month extension from original effective date i.e. 6 April 2019)" [ref=e271] [cursor=pointer]':
+              - /url: https://www.sfc.hk/-/media/EN/assets/components/codes/files-current/web/guidelines/guidelines-on-online-distribution-and-advisory-platforms/guidelines-on-online-distribution-and-advisory-platforms.pdf?rev=689af636b3ad4077929d46a94631e458
+          - cell "-" [ref=e272]
+        - row "Guidelines on Waivers of Certain Licensing Fees Mar 2003 -" [ref=e273]:
+          - cell "Guidelines on Waivers of Certain Licensing Fees" [ref=e274]
+          - cell "Mar 2003" [ref=e275]:
+            - link "Mar 2003" [ref=e276] [cursor=pointer]:
+              - /url: https://www.sfc.hk/-/media/EN/assets/components/codes/files-current/web/guidelines/guidelines-on-waivers-of-certain-licensing-fees/Guidelines-on-Waivers-of-Certain-Licensing-Fees.pdf?rev=333bb0a3320c4f3b97d3d7553f532b6d
+          - cell "-" [ref=e277]
+        - row "Guidelines on applying for a relaxation from the procedural formalities to be fulfilled upon registration of a prospectus under the Companies Ordinance (Cap.32) 21 Feb 2003 -" [ref=e278]:
+          - cell "Guidelines on applying for a relaxation from the procedural formalities to be fulfilled upon registration of a prospectus under the Companies Ordinance (Cap.32)" [ref=e279]
+          - cell "21 Feb 2003" [ref=e280]:
+            - link "21 Feb 2003" [ref=e281] [cursor=pointer]:
+              - /url: https://www.sfc.hk/-/media/EN/assets/components/codes/files-current/web/guidelines/guidelines-on-applying-for-a-relaxation/Guidelines-on-applying-for-a-relaxation-from-the-procedural-formalities-to-be-fulfilled--upon-regist.pdf?rev=83bb25f1c5d34c1e85fd3280dd85b191
+          - cell "-" [ref=e282]
+        - row "Guidelines on revised procedures for applications for Exempt Principal Trader (EPT) status under the Code on Takeovers and Mergers (Code) by principal traders that form part of complex international financial groups 5 Jul 2013 Two versions" [ref=e283]:
+          - cell "Guidelines on revised procedures for applications for Exempt Principal Trader (EPT) status under the Code on Takeovers and Mergers (Code) by principal traders that form part of complex international financial groups" [ref=e284]
+          - cell "5 Jul 2013" [ref=e285]:
+            - link "5 Jul 2013" [ref=e286] [cursor=pointer]:
+              - /url: https://www.sfc.hk/-/media/EN/assets/components/codes/files-current/web/guidelines/revised-ept/Guidelines-on-revised-procedures-for-applications---for-Exempt-Principal-Trader-EPT-status-under-the.pdf?rev=9dc5ea4811c1491cb4afc8f7d26b60b6
+          - cell "Two versions" [ref=e287]:
+            - link "Two versions" [ref=e288] [cursor=pointer]:
+              - /url: "#"
+        - row "Guidelines on revised procedures for applications for Exempt Fund Manager (EFM) status under the Code on Takeovers and Mergers (Code) by fund managers that form part of complex international financial groups 5 Jul 2013 Two versions" [ref=e289]:
+          - cell "Guidelines on revised procedures for applications for Exempt Fund Manager (EFM) status under the Code on Takeovers and Mergers (Code) by fund managers that form part of complex international financial groups" [ref=e290]
+          - cell "5 Jul 2013" [ref=e291]:
+            - link "5 Jul 2013" [ref=e292] [cursor=pointer]:
+              - /url: https://www.sfc.hk/-/media/EN/assets/components/codes/files-current/web/guidelines/revised-efm/Guidelines-on-revised-procedures-for-applications-for-Exempt-Fund-Manager-EFM-status-under-the-Code.pdf?rev=2c56f878d1944e44bbd32bd3e51f6a73
+          - cell "Two versions" [ref=e293]:
+            - link "Two versions" [ref=e294] [cursor=pointer]:
+              - /url: "#"
+        - row "Guidelines on the application of the CPMI-IOSCO Principles for Financial Market Infrastructures 27 May 2016 One version" [ref=e295]:
+          - cell "Guidelines on the application of the CPMI-IOSCO Principles for Financial Market Infrastructures" [ref=e296]
+          - cell "27 May 2016" [ref=e297]:
+            - link "27 May 2016" [ref=e298] [cursor=pointer]:
+              - /url: https://www.sfc.hk/-/media/EN/assets/components/codes/files-current/web/guidelines/guidelines-on-the-application-of-the-cpss-iosco-principles-for-financial-market-infrastructures/Guidelines-on-the-Application-of-the-CPMIIOSCO-Principles-for-Financial-Market-Infrastructures-May-2.pdf?rev=5497b3825e8f4fddbed45e48f91b4eab
+          - cell "One version" [ref=e299]:
+            - link "One version" [ref=e300] [cursor=pointer]:
+              - /url: "#"
+        - row "Guidelines on use of offer awareness and summary disclosure materials in offerings of shares and debentures under the Companies Ordinance Mar 2003 One version" [ref=e301]:
+          - cell "Guidelines on use of offer awareness and summary disclosure materials in offerings of shares and debentures under the Companies Ordinance" [ref=e302]
+          - cell "Mar 2003" [ref=e303]:
+            - link "Mar 2003" [ref=e304] [cursor=pointer]:
+              - /url: https://www.sfc.hk/-/media/EN/assets/components/codes/files-current/web/guidelines/guidelines-on-use-of-offer-awareness/Guidelines-on-use-of-offer-awareness-and-summary-disclosure-materials-in-offerings-of-shares-and-deb.pdf?rev=3fc76c7bfe4b4c32b960b9c05c1213c3
+          - cell "One version" [ref=e305]:
+            - link "One version" [ref=e306] [cursor=pointer]:
+              - /url: "#"
+        - row "Guidelines on using a \"dual prospectus\" structure to conduct programme offers of shares or debentures requiring a prospectus under the Companies Ordinance (Cap. 32) 21 Feb 2003 -" [ref=e307]:
+          - cell "Guidelines on using a \"dual prospectus\" structure to conduct programme offers of shares or debentures requiring a prospectus under the Companies Ordinance (Cap. 32)" [ref=e308]
+          - cell "21 Feb 2003" [ref=e309]:
+            - link "21 Feb 2003" [ref=e310] [cursor=pointer]:
+              - /url: https://www.sfc.hk/-/media/EN/assets/components/codes/files-current/web/guidelines/guidelines-on-using-a-dual-prospectus/Guidelines-on-using-a-dual-prospectus-structure-to-conduct-programme-offers-of-shares-or-debentures.pdf?rev=ece13caaac244ae2be3036ac6e775564
+          - cell "-" [ref=e311]
+        - row "Guidelines to fund managers on dealing disclosure obligations under Rule 22 of the Code on Takeovers and Mergers (Takeovers Code) 12 Jan 2017 One version" [ref=e312]:
+          - cell "Guidelines to fund managers on dealing disclosure obligations under Rule 22 of the Code on Takeovers and Mergers (Takeovers Code)" [ref=e313]
+          - cell "12 Jan 2017" [ref=e314]:
+            - link "12 Jan 2017" [ref=e315] [cursor=pointer]:
+              - /url: https://www.sfc.hk/-/media/EN/assets/components/codes/files-current/web/guidelines-to-fund-managers-on/guidelines-to-fund-managers-on.pdf?rev=6395708b8af8486d9fe4a070dfc7b07f
+          - cell "One version" [ref=e316]:
+            - link "One version" [ref=e317] [cursor=pointer]:
+              - /url: "#"
+        - row "Guidelines to capital market intermediaries involved in placing activities for GEM stocks 5 Aug 2022 One version" [ref=e318]:
+          - cell "Guidelines to capital market intermediaries involved in placing activities for GEM stocks" [ref=e319]
+          - cell "5 Aug 2022" [ref=e320]:
+            - link "5 Aug 2022" [ref=e321] [cursor=pointer]:
+              - /url: https://www.sfc.hk/-/media/EN/assets/components/Guidelines/File-current/Guideline-n-placing-activities-for-GEM-stocks_05082022_eng.pdf?rev=132b6f7bcae740b1ac46d78a323bd624
+          - cell "One version" [ref=e322]:
+            - link "One version" [ref=e323] [cursor=pointer]:
+              - /url: "#"
+        - row "Licensing Handbook 15 Jul 2025 Five versions" [ref=e324]:
+          - cell "Licensing Handbook" [ref=e325]
+          - cell "15 Jul 2025" [ref=e326]:
+            - link "15 Jul 2025" [ref=e327] [cursor=pointer]:
+              - /url: https://www.sfc.hk/-/media/EN/assets/components/codes/files-current/web/licensing-handbook/LIC-Handbook-2025-Eng.pdf?rev=77b73d8a0caf4663a2c8e8c2aeab6d47
+          - cell "Five versions" [ref=e328]:
+            - link "Five versions" [ref=e329] [cursor=pointer]:
+              - /url: "#"
+        - row "Licensing Handbook for Virtual Asset Trading Platform Operators 15 Jul 2025 One version" [ref=e330]:
+          - cell "Licensing Handbook for Virtual Asset Trading Platform Operators" [ref=e331]
+          - cell "15 Jul 2025" [ref=e332]:
+            - link "15 Jul 2025" [ref=e333] [cursor=pointer]:
+              - /url: https://www.sfc.hk/-/media/EN/assets/components/Guidelines/File-current/Licensing-Handbook-for-VATPs_July-2025.pdf?rev=6eb9635a78a74b7585deb7cbe02f14e6
+          - cell "One version" [ref=e334]:
+            - link "One version" [ref=e335] [cursor=pointer]:
+              - /url: "#"
+        - row "Management, Supervision and Internal Control Guidelines for Persons Licensed by or Registered with the Securities and Futures Commission 1 Apr 2003 One version" [ref=e336]:
+          - cell "Management, Supervision and Internal Control Guidelines for Persons Licensed by or Registered with the Securities and Futures Commission" [ref=e337]
+          - cell "1 Apr 2003" [ref=e338]:
+            - link "1 Apr 2003" [ref=e339] [cursor=pointer]:
+              - /url: https://www.sfc.hk/-/media/EN/assets/components/codes/files-current/web/guidelines/management-supervision-and-internal-control-gu/management-supervision-and-internal-control-guidelines-for-persons-licensed.pdf?rev=79c3e8bc574f4de6bd01a8d1c783bb3d
+          - cell "One version" [ref=e340]:
+            - link "One version" [ref=e341] [cursor=pointer]:
+              - /url: "#"
+        - row "Outline of Part XV of the Securities and Futures Ordinance (Cap.571) - Disclosure of Interests 24 May 2024 Four versions" [ref=e342]:
+          - cell "Outline of Part XV of the Securities and Futures Ordinance (Cap.571) - Disclosure of Interests" [ref=e343]
+          - cell "24 May 2024" [ref=e344]:
+            - link "24 May 2024" [ref=e345] [cursor=pointer]:
+              - /url: https://www.sfc.hk/-/media/EN/assets/components/codes/files-current/web/outline-of-part-xv-of-the-securities-and-futures-ordinance-cap571-disclosure-of-interests/Part-XV-Outline-24-May-2024-English.pdf?rev=69a798836ed149358df52da6387ede93
+          - cell "Four versions" [ref=e346]:
+            - link "Four versions" [ref=e347] [cursor=pointer]:
+              - /url: "#"
+        - row "Prevention of Money Laundering and Terrorist Financing Guideline issued by the Securities and Futures Commission for Associated Entities of Licensed Corporations and SFC-licensed Virtual Asset Service Providers 1 Jun 2023 Four versions" [ref=e348]:
+          - cell "Prevention of Money Laundering and Terrorist Financing Guideline issued by the Securities and Futures Commission for Associated Entities of Licensed Corporations and SFC-licensed Virtual Asset Service Providers" [ref=e349]
+          - cell "1 Jun 2023" [ref=e350]:
+            - link "1 Jun 2023" [ref=e351] [cursor=pointer]:
+              - /url: https://www.sfc.hk/-/media/EN/assets/components/codes/files-current/web/guidelines/prevention-of-money-laundering-and-terrorist-fi/AML-Guideline-for-AEs_Eng_1-Jun-2023.pdf?rev=243299fe5b11413495afee886891aa05
+          - cell "Four versions" [ref=e352]:
+            - link "Four versions" [ref=e353] [cursor=pointer]:
+              - /url: "#"
+        - row "Project on the Use of Plain Language - How to Create a Clear Prospectus [English version only] Jan 1998 -" [ref=e354]:
+          - cell "Project on the Use of Plain Language - How to Create a Clear Prospectus [English version only]" [ref=e355]
+          - cell "Jan 1998" [ref=e356]:
+            - link "Jan 1998" [ref=e357] [cursor=pointer]:
+              - /url: https://www.sfc.hk/-/media/EN/assets/components/codes/files-current/web/project-on-the-use-of-plain-language-how-to-create-a-clear-prospectus/project-on-the-use-of-plain-language-how-to-create-a-clear-prospectus.pdf?rev=6e74a8f5a15c4bf3a7b8664f5c2d6bad
+          - cell "-" [ref=e358]
+        - row "Project on the Use of Plain Language — How to Create Clear Announcements Jul 1997 -" [ref=e359]:
+          - cell "Project on the Use of Plain Language — How to Create Clear Announcements" [ref=e360]
+          - cell "Jul 1997" [ref=e361]:
+            - link "Jul 1997" [ref=e362] [cursor=pointer]:
+              - /url: https://www.sfc.hk/-/media/EN/assets/components/codes/files-current/web/project-on-the-use-of-plain-language-how-to-create-clear-announcements/Project-on-the-Use-of-Plain-Language-How-to-Create-Clear-Announcements.pdf?rev=60c79fba43f54b669431b07bf84b9203
+          - cell "-" [ref=e363]
+        - row "Risk Management Guidelines for Licensed Persons Dealing in Futures Contracts 25 Aug 2023 -" [ref=e364]:
+          - cell "Risk Management Guidelines for Licensed Persons Dealing in Futures Contracts" [ref=e365]
+          - cell "25 Aug 2023" [ref=e366]:
+            - link "25 Aug 2023" [ref=e367] [cursor=pointer]:
+              - /url: https://www.sfc.hk/-/media/EN/files/ER/PDF/Risk-Management-Guidelines-for-Licensed-Persons-Dealing-in-Futures-Contracts_EN.pdf?rev=6f0129f3f53646b6aa051e0d0a23a6eb
+          - cell "-" [ref=e368]
+        - row "SFC Disciplinary Fining Guidelines (for regulated persons under Part 5B of the Anti-Money Laundering and Counter-Terrorist Financing Ordinance) 1 Jun 2023 -" [ref=e369]:
+          - cell "SFC Disciplinary Fining Guidelines (for regulated persons under Part 5B of the Anti-Money Laundering and Counter-Terrorist Financing Ordinance)" [ref=e370]
+          - cell "1 Jun 2023" [ref=e371]:
+            - link "1 Jun 2023" [ref=e372] [cursor=pointer]:
+              - /url: https://www.sfc.hk/-/media/EN/assets/components/codes/files-current/web/guidelines/SFC-Disciplinary-Fining-Guidelines_Part-5B/230524--SFC-Disciplinary-Fining-Guidelines-Eng.pdf?rev=9a355f946ff74c7892a921ab73461314
+          - cell "-" [ref=e373]
+        - row "SFC Disciplinary Fining Guidelines (for regulated persons under the Securities and Futures Ordinance) 10 Aug 2018 Two versions" [ref=e374]:
+          - cell "SFC Disciplinary Fining Guidelines (for regulated persons under the Securities and Futures Ordinance)" [ref=e375]
+          - cell "10 Aug 2018" [ref=e376]:
+            - link "10 Aug 2018" [ref=e377] [cursor=pointer]:
+              - /url: https://www.sfc.hk/-/media/EN/assets/components/codes/files-current/web/guidelines/disciplinary-fining-guidelines/disciplinary-fining-guidelines.pdf?rev=ba7fb3bfe69c47458a7d3fc77cda9625
+          - cell "Two versions" [ref=e378]:
+            - link "Two versions" [ref=e379] [cursor=pointer]:
+              - /url: "#"
+        - row "Suggested Control Techniques and Procedures for Enhancing a Firm's Ability to Comply with the Securities and Futures (Client Securities) Rules and the Securities and Futures (Client Money) Rules Apr 2003 -" [ref=e380]:
+          - cell "Suggested Control Techniques and Procedures for Enhancing a Firm's Ability to Comply with the Securities and Futures (Client Securities) Rules and the Securities and Futures (Client Money) Rules" [ref=e381]
+          - cell "Apr 2003" [ref=e382]:
+            - link "Apr 2003" [ref=e383] [cursor=pointer]:
+              - /url: https://www.sfc.hk/-/media/EN/assets/components/codes/files-current/web/guidelines/suggested-control-techniques-and-procedures-for-enhancing-a-firms-ability-to-comply/Suggested-Control-Techniques-and-Procedures-for-Enhancing-a-Firms-Ability-to-Comply-with--the-Securi.pdf?rev=d28ac6f8e5864cee944274a65c57be22
+          - cell "-" [ref=e384]
+    - text: 
+  - contentinfo [ref=e385]:
+    - generic [ref=e388]:
+      - generic [ref=e389]:
+        - heading "Quick access" [level=2] [ref=e390]
+        - generic [ref=e391]:
+          - link "RSS" [ref=e392] [cursor=pointer]:
+            - /url: https://www.sfc.hk/en/RSS-Feeds
+          - link "Performance pledges" [ref=e393] [cursor=pointer]:
+            - /url: https://www.sfc.hk/en/About-the-SFC/Corporate-governance/Performance-pledges
+          - link "Openings" [ref=e394] [cursor=pointer]:
+            - /url: https://www.sfc.hk/en/Career/Why-the-SFC/Join-us-as-an-experienced-professional
+          - link "Corporate policies and notices" [ref=e395] [cursor=pointer]:
+            - /url: https://www.sfc.hk/en/Quick-links/Others/Corporate-policies-and-notices
+          - link "Invitations to tender" [ref=e396] [cursor=pointer]:
+            - /url: https://www.sfc.hk/en/Quick-links/Others/Invitations-to-tender
+      - generic [ref=e397]:
+        - heading "Useful links" [level=2] [ref=e398]
+        - generic [ref=e399]:
+          - link "Investor and Financial Education Council" [ref=e400] [cursor=pointer]:
+            - /url: https://www.ifec.org.hk/web/en/index.page
+          - link "The Investor Compensation Company Limited" [ref=e401] [cursor=pointer]:
+            - /url: https://www.sfc.hk/en/Quick-links/related-sites/investor-compensation-co
+          - link "Other regulators and related agencies" [ref=e402] [cursor=pointer]:
+            - /url: https://www.sfc.hk/en/Quick-links/related-sites/Other-regulators-and-related-agencies
+    - generic [ref=e405]:
+      - generic [ref=e406]:
+        - link "Maintenance schedule" [ref=e407] [cursor=pointer]:
+          - /url: https://www.sfc.hk/en/System-maintenance-schedule
+        - text: Copyright 2020 Securities and Futures Commission. All rights reserved.
+      - generic [ref=e408]:
+        - link "PFA_logo_Gold_2025" [ref=e409] [cursor=pointer]:
+          - /url: https://www.pcpd.org.hk/privacyfriendlyawards/en/index.html
+          - img "PFA_logo_Gold_2025" [ref=e410]
+        - img "Good MPF Employer" [ref=e411]
+        - img "Manpower Developer Award" [ref=e412]
+        - img "Caring Organisation" [ref=e413]
+  - generic [ref=e415]:
+    - generic [ref=e416]:
+      - text: We use cookies to improve the website performance and user experience. If you continue to use this website, you are agreeing to their uses. Learn more about our
+      - link "privacy policy" [ref=e417] [cursor=pointer]:
+        - /url: https://www.sfc.hk/en/Quick-links/Others/Privacy-policy-statement
+      - text: .
+    - button "close cookies alert" [ref=e418] [cursor=pointer]:
+      - paragraph: close cookies alert
