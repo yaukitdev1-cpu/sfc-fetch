@@ -6,6 +6,9 @@ import * as fs from 'fs-extra';
 import { LowdbService } from '../database/lowdb.service';
 import { ContentService } from '../services/content.service';
 import { DoclingService } from '../converters/docling.service';
+import { FormatDetector, FileFormat } from '../converters/format-detector';
+import { Ole2Converter } from '../converters/ole2.converter';
+import { ZipBundleConverter } from '../converters/zip-bundle.converter';
 import { CircularClient } from '../sfc-clients/circular.client';
 import { ConsultationClient } from '../sfc-clients/consultation.client';
 import { NewsClient } from '../sfc-clients/news.client';
@@ -39,6 +42,9 @@ export class QueueService implements OnModuleInit, OnModuleDestroy {
     private lowdbService: LowdbService,
     private contentService: ContentService,
     private doclingService: DoclingService,
+    private formatDetector: FormatDetector,
+    private ole2Converter: Ole2Converter,
+    private zipBundleConverter: ZipBundleConverter,
     private circularClient: CircularClient,
     private consultationClient: ConsultationClient,
     private newsClient: NewsClient,
@@ -750,11 +756,31 @@ export class QueueService implements OnModuleInit, OnModuleDestroy {
       let markdownPath: string;
       let markdownContent: string;
 
-      if (rawFilePath.endsWith('.pdf')) {
-        // Try Docling first, fall back to basic text extraction
+      // Detect actual file format using magic bytes
+      const format = await this.formatDetector.detectFormat(rawFilePath);
+      this.logger.log(`[Queue] Detected format for ${category}/${refNo}: ${format} (path: ${rawFilePath})`);
+
+      if (format === FileFormat.OLE2) {
+        // OLE2 .doc — use antiword
+        try {
+          markdownContent = await this.ole2Converter.convertToMarkdown(rawFilePath);
+        } catch (ole2Error) {
+          this.logger.warn(`OLE2 antiword failed for ${category}/${refNo}: ${(ole2Error as Error).message}, falling back to hex dump`);
+          markdownContent = this.hexDumpFallback(rawFilePath);
+        }
+      } else if (format === FileFormat.ZIP) {
+        // ZIP bundle — unzip and find main PDF for Docling
+        try {
+          markdownContent = await this.zipBundleConverter.convertToMarkdown(rawFilePath);
+        } catch (zipError) {
+          this.logger.warn(`ZIP bundle failed for ${category}/${refNo}: ${(zipError as Error).message}, falling back to pdftotext`);
+          const fileBuffer: Buffer = await fs.readFile(rawFilePath) as Buffer;
+          markdownContent = await this.basicPdfFallback(fileBuffer);
+        }
+      } else if (format === FileFormat.PDF) {
+        // PDF — Docling with fallback
         try {
           markdownContent = await this.doclingService.convertPdfToMarkdown(rawFilePath);
-          // Validate meaningful content
           const meaningfulChars = markdownContent.replace(/[\x00-\x1f\x7f]/g, '').replace(/\s/g, '').length;
           if (meaningfulChars < 50) {
             throw new Error(`Docling produced insufficient content (${meaningfulChars} chars), retrying with pdftotext`);
@@ -763,17 +789,11 @@ export class QueueService implements OnModuleInit, OnModuleDestroy {
           this.logger.warn(`Docling failed for ${category}/${refNo}, using fallback: ${(doclingError as Error).message}`);
           const fileBuffer: Buffer = await fs.readFile(rawFilePath) as Buffer;
           markdownContent = await this.basicPdfFallback(fileBuffer);
-          // Validate fallback output
-          const fallbackMeaningful = markdownContent.replace(/[\x00-\x1f\x7f]/g, '').replace(/\s/g, '').length;
-          if (fallbackMeaningful < 50) {
-            this.logger.warn(`Fallback also produced insufficient content (${fallbackMeaningful} chars) for ${category}/${refNo}`);
-          }
         }
       } else {
-        // Read HTML file and convert using Turndown
-        const htmlContent = (await fs.readFile(rawFilePath, 'utf8')).toString();
-        // Use basic HTML to markdown conversion
-        markdownContent = this.basicHtmlToMarkdown(htmlContent);
+        // HTML or unknown — read as text and basic HTML-to-markdown
+        const rawContent: string = (await fs.readFile(rawFilePath, 'utf8')).toString();
+        markdownContent = this.basicHtmlToMarkdown(rawContent);
       }
 
       // Save markdown
@@ -849,6 +869,22 @@ export class QueueService implements OnModuleInit, OnModuleDestroy {
       .replace(/&lt;/g, '<')
       .replace(/&gt;/g, '>')
       .trim();
+  }
+
+  private hexDumpFallback(filePath: string): string {
+    // Last-resort hex dump of the OLE2 file for manual inspection
+    try {
+      const buffer: Buffer = fs.readFileSync(filePath);
+      const lines: string[] = ['# OLE2 file — hex dump fallback\n', 'Raw hex (first 1KB):'];
+      for (let i = 0; i < Math.min(buffer.length, 1024); i += 16) {
+        const hex = buffer.slice(i, i + 16).toString('hex').match(/.{1,2}/g)?.join(' ') || '';
+        const ascii = buffer.slice(i, i + 16).toString('utf8').replace(/[^\x20-\x7e]/g, '.');
+        lines.push(`${i.toString(16).padStart(8, '0')}  ${hex.padEnd(48)}  ${ascii}`);
+      }
+      return lines.join('\n');
+    } catch {
+      return '# OLE2 file — could not read file for hex dump\n';
+    }
   }
 
   private async basicPdfFallback(buffer: Buffer): Promise<string> {
