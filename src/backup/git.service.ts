@@ -158,6 +158,32 @@ export class GitService {
     }, null, 'Failed to get latest backup info');
   }
 
+  // Wrapper for backward compatibility
+  async addAndCommit(filePath: string, message: string): Promise<string> {
+    return this.stageAndCommit([filePath], message);
+  }
+
+  // Wrapper for backward compatibility
+  async push(): Promise<boolean> {
+    return this.pushCurrentBranch();
+  }
+
+  // Wrapper for backward compatibility (syncWithRemote only fetches, no pull)
+  async pull(): Promise<boolean> {
+    return this.syncWithRemote();
+  }
+
+  // Wrapper for backward compatibility (returns path string instead of object)
+  async getLatestBackupFile(): Promise<string | null> {
+    const info = await this.getLatestBackupInfo();
+    return info?.path || null;
+  }
+
+  // Wrapper for backward compatibility
+  async downloadFile(remotePath: string, localPath: string): Promise<boolean> {
+    return this.downloadBackupFile(remotePath, localPath);
+  }
+
   async stageAndCommit(files: string[], message: string): Promise<string> {
     return this.safeGitOperation(async () => {
       for (const file of files) {

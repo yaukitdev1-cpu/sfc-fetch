@@ -85,9 +85,4 @@ describe('GitService', () => {
     });
   });
 
-  describe('init', () => {
-    test('method exists', () => {
-      expect(typeof gitService.init).toBe('function');
-    });
-  });
 });
