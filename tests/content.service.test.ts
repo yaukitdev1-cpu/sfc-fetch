@@ -59,7 +59,7 @@ describe('ContentService', () => {
 
   describe('saveMarkdown', () => {
     test('saves markdown file for circulars with year', async () => {
-      const content = '# Test Circular\n\nTest content';
+      const content = '# Test Circular\n\nThis is test content for a circular document that exceeds the minimum 100 byte threshold required by the content service.';
       const result = await contentService.saveMarkdown('circulars', '26EC01', content, { year: 2026 });
 
       expect(result.markdownPath).toContain('circulars');
@@ -71,7 +71,7 @@ describe('ContentService', () => {
     });
 
     test('saves markdown file for guidelines with language', async () => {
-      const content = '# Test Guideline\n\nTest content';
+      const content = '# Test Guideline\n\nThis is test guideline content that exceeds the minimum 100 byte threshold requirement for the content service.';
       const result = await contentService.saveMarkdown('guidelines', 'GL01', content, { language: 'EN' });
 
       expect(result.markdownPath).toContain('guidelines');
@@ -79,21 +79,21 @@ describe('ContentService', () => {
     });
 
     test('saves markdown file with appendix index', async () => {
-      const content = '# Appendix A';
+      const content = '# Appendix A\n\nThis is appendix content that exceeds the minimum 100 byte threshold for the content service.';
       const result = await contentService.saveMarkdown('circulars', '26EC01', content, { year: 2026, appendixIndex: 0 });
 
       expect(result.markdownPath).toContain('appendix_0');
     });
 
     test('saves markdown file with conclusion flag', async () => {
-      const content = '# Conclusion';
+      const content = '# Conclusion\n\nThis is the conclusion section that exceeds the minimum 100 byte threshold requirement for content service validation.';
       const result = await contentService.saveMarkdown('circulars', '26EC01', content, { year: 2026, isConclusion: true });
 
       expect(result.markdownPath).toContain('conclusion');
     });
 
     test('creates directory structure if not exists', async () => {
-      const content = '# Test';
+      const content = '# Test\n\nThis is test content that exceeds the 100 byte minimum requirement for content service validation checks.';
       await contentService.saveMarkdown('circulars', 'TEST01', content, { year: 2026 });
 
       const dirExists = await fs.pathExists(path.join(testContentDir, 'circulars', 'markdown', '2026'));
@@ -101,10 +101,10 @@ describe('ContentService', () => {
     });
 
     test('calculates correct word count', async () => {
-      const content = 'One two three four five';
+      const content = 'One two three four five six seven eight nine ten eleven twelve thirteen fourteen fifteen sixteen seventeen eighteen';
       const result = await contentService.saveMarkdown('circulars', 'TEST02', content, { year: 2026 });
 
-      expect(result.wordCount).toBe(5);
+      expect(result.wordCount).toBe(18);
     });
   });
 
@@ -115,7 +115,7 @@ describe('ContentService', () => {
     });
 
     test('returns content for existing file', async () => {
-      const content = '# Test Content';
+      const content = '# Test Content\n\nThis is test content for the getMarkdown test that exceeds the 100 byte minimum requirement.';
       await contentService.saveMarkdown('circulars', 'TEST03', content, { year: 2026 });
 
       const result = contentService.getMarkdown('circulars/markdown/2026/TEST03.md');
@@ -130,7 +130,7 @@ describe('ContentService', () => {
     });
 
     test('returns content with metadata for existing file', async () => {
-      const content = '# Test\nContent here';
+      const content = '# Test Content\n\nThis is test content for getMarkdownWithMeta that exceeds the 100 byte minimum threshold.';
       await contentService.saveMarkdown('circulars', 'TEST04', content, { year: 2026 });
 
       const result = await contentService.getMarkdownWithMeta('circulars', 'TEST04', { year: 2026 });
@@ -150,7 +150,7 @@ describe('ContentService', () => {
     });
 
     test('archives existing file', async () => {
-      const content = '# Test to Archive';
+      const content = '# Test to Archive\n\nThis is test content for archiving that exceeds the 100 byte minimum threshold for content validation.';
       await contentService.saveMarkdown('circulars', 'TEST05', content, { year: 2026 });
 
       const result = await contentService.archiveMarkdown('circulars/markdown/2026/TEST05.md');
@@ -167,7 +167,7 @@ describe('ContentService', () => {
     });
 
     test('deletes existing file', async () => {
-      const content = '# Test';
+      const content = '# Test\n\nThis is test content for deletion testing that exceeds the 100 byte minimum threshold for validation.';
       await contentService.saveMarkdown('circulars', 'TEST06', content, { year: 2026 });
 
       const result = await contentService.deleteMarkdown('circulars/markdown/2026/TEST06.md');
@@ -186,8 +186,8 @@ describe('ContentService', () => {
     });
 
     test('returns correct stats with files', async () => {
-      await contentService.saveMarkdown('circulars', 'TEST07', 'content 1', { year: 2026 });
-      await contentService.saveMarkdown('guidelines', 'TEST08', 'content 2', { language: 'EN' });
+      await contentService.saveMarkdown('circulars', 'TEST07', 'content one for stats testing here exceeds the 100 bytes minimum threshold requirement for the service to pass validation', { year: 2026 });
+      await contentService.saveMarkdown('guidelines', 'TEST08', 'content two for stats testing here exceeds the 100 bytes minimum threshold requirement for the service to pass validation', { language: 'EN' });
 
       const stats = contentService.getStats();
       expect(stats.files).toBe(2);
