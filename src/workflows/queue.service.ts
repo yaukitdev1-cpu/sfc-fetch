@@ -6,6 +6,9 @@ import * as fs from 'fs-extra';
 import { LowdbService } from '../database/lowdb.service';
 import { ContentService } from '../services/content.service';
 import { DoclingService } from '../converters/docling.service';
+import { FormatDetectorService, FileFormat } from '../converters/format-detector.service';
+import { OleDocConverter } from '../converters/ole-doc.converter';
+import { ZipBundleConverter } from '../converters/zip-bundle.converter';
 import { CircularClient } from '../sfc-clients/circular.client';
 import { ConsultationClient } from '../sfc-clients/consultation.client';
 import { NewsClient } from '../sfc-clients/news.client';
@@ -39,6 +42,9 @@ export class QueueService implements OnModuleInit, OnModuleDestroy {
     private lowdbService: LowdbService,
     private contentService: ContentService,
     private doclingService: DoclingService,
+    private formatDetectorService: FormatDetectorService,
+    private oleDocConverter: OleDocConverter,
+    private zipBundleConverter: ZipBundleConverter,
     private circularClient: CircularClient,
     private consultationClient: ConsultationClient,
     private newsClient: NewsClient,
@@ -750,11 +756,20 @@ export class QueueService implements OnModuleInit, OnModuleDestroy {
       let markdownPath: string;
       let markdownContent: string;
 
-      if (rawFilePath.endsWith('.pdf')) {
-        // Try Docling first, fall back to basic text extraction
+      // Detect actual file format via magic bytes, not extension
+      const detectedFormat = await this.formatDetectorService.detectFormat(rawFilePath);
+      this.logger.debug(`[Queue] Format detected for ${refNo}: ${detectedFormat} (path: ${rawFilePath})`);
+
+      if (detectedFormat === FileFormat.ZIP) {
+        // ZIP bundle — extract and convert the main circular PDF
+        markdownContent = await this.zipBundleConverter.convert(rawFilePath, refNo);
+      } else if (detectedFormat === FileFormat.OLE2) {
+        // Legacy .doc (OLE2) — extract text via antiword
+        markdownContent = await this.oleDocConverter.convert(rawFilePath);
+      } else if (detectedFormat === FileFormat.PDF) {
+        // Standard PDF — try Docling first, fall back to pdftotext
         try {
           markdownContent = await this.doclingService.convertPdfToMarkdown(rawFilePath);
-          // Validate meaningful content
           const meaningfulChars = markdownContent.replace(/[\x00-\x1f\x7f]/g, '').replace(/\s/g, '').length;
           if (meaningfulChars < 50) {
             throw new Error(`Docling produced insufficient content (${meaningfulChars} chars), retrying with pdftotext`);
@@ -763,17 +778,20 @@ export class QueueService implements OnModuleInit, OnModuleDestroy {
           this.logger.warn(`Docling failed for ${category}/${refNo}, using fallback: ${(doclingError as Error).message}`);
           const fileBuffer: Buffer = await fs.readFile(rawFilePath) as Buffer;
           markdownContent = await this.basicPdfFallback(fileBuffer);
-          // Validate fallback output
           const fallbackMeaningful = markdownContent.replace(/[\x00-\x1f\x7f]/g, '').replace(/\s/g, '').length;
           if (fallbackMeaningful < 50) {
             this.logger.warn(`Fallback also produced insufficient content (${fallbackMeaningful} chars) for ${category}/${refNo}`);
           }
         }
       } else {
-        // Read HTML file and convert using Turndown
-        const htmlContent = (await fs.readFile(rawFilePath, 'utf8')).toString();
-        // Use basic HTML to markdown conversion
-        markdownContent = this.basicHtmlToMarkdown(htmlContent);
+        // Fallback: treat as HTML / plain text
+        const fileContent = (await fs.readFile(rawFilePath)).toString();
+        const firstBytes = fileContent.slice(0, 10).trim();
+        if (firstBytes.startsWith('<') || firstBytes.includes('<!DOCTYPE') || firstBytes.includes('<html')) {
+          markdownContent = this.basicHtmlToMarkdown(fileContent);
+        } else {
+          markdownContent = fileContent;
+        }
       }
 
       // Save markdown

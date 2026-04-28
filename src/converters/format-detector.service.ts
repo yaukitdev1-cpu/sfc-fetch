@@ -83,10 +83,8 @@ export class FormatDetectorService {
    */
   private async readFileHeader(filePath: string, length: number = 8): Promise<Buffer | null> {
     try {
-      const fd = await fs.open(filePath, 'r');
-      const { buffer } = await fd.read(Buffer.alloc(length), 0, length, 0);
-      await fd.close();
-      return buffer;
+      const buffer = await fs.readFile(filePath);
+      return buffer.slice(0, length);
     } catch {
       return null;
     }
