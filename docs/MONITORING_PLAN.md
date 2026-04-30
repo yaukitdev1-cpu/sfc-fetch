@@ -9,21 +9,21 @@
 
 ## 1. Configuration Overview
 
-| Setting | Value | Source |
-|---------|-------|--------|
-| **Port** | `3401` | `.env` |
-| Node Env | `development` | `.env` |
-| Data Dir | `./data` | `.env` |
-| DB Path | `./data/db/sfc-db.json` | `.env` |
-| Git Branch | `master` | `.env` |
-| Auto-Hydrate | `true` | `.env` |
-| Auto-Dehydrate | `true` | `.env` |
-| Discovery | Enabled | `.env` (cron: `0 2 * * *`) |
-| SFC Base URL | `https://apps.sfc.hk/edistributionWeb` | `.env` |
-| SFC Rate Limit | 2 req/s | `.env` |
-| Queue Max Retries | 5 | `.env` |
-| Docling Path | `/home/openclaw/.local/bin/docling` | `.env` |
-| Docling Timeout | 30000ms | `.env` |
+| Setting | Default | Actual (`.env`) | Source |
+|---------|---------|----------------|--------|
+| **Port** | `3000` | `3401` | `.env` |
+| Node Env | `development` | `development` | `.env` |
+| Data Dir | `./data` | `./data` | `.env` |
+| DB Path | `./data/db/sfc-db.json` | `./data/db/sfc-db.json` | `.env` |
+| Git Branch | `main` | `master` | `.env` |
+| Auto-Hydrate | `true` | `true` | `.env` |
+| Auto-Dehydrate | `true` | `true` | `.env` |
+| Discovery | Enabled | Enabled (cron: `0 2 * * *`) | `.env` |
+| SFC Base URL | `https://apps.sfc.hk/edistributionWeb` | `https://apps.sfc.hk/edistributionWeb` | `.env` |
+| SFC Rate Limit | 2 req/s | 2 req/s | `.env` |
+| Queue Max Retries | 5 | 5 | `.env` |
+| Docling Path | `/usr/local/bin/docling` | `/home/openclaw/.local/bin/docling` | `.env` override |
+| Docling Timeout | 30000ms | 30000ms | `.env` |
 
 > `.env` is the source of truth — this table is a summary. Always cross-check against `.env` for production.
 
@@ -88,8 +88,8 @@ curl -s http://localhost:3401/health | jq .
 }
 ```
 
-### Note on `activeWorkflows`
-> ⚠️ **Currently hardcoded to `0`** — the health controller always returns `activeWorkflows: 0`. The description "counts documents in non-terminal states" is the intended behavior but not yet implemented. Use `/queue/status` → `running` field as a proxy for in-flight work.
+### About `activeWorkflows`
+> `activeWorkflows` reflects `queueService.getStats().running` — the number of jobs currently being tracked via a latency map (jobs that have started but not yet completed/failed). This is the count of in-flight work, not all non-terminal documents.
 
 ### Production Response
 In non-development `NODE_ENV`, `collections` and `activeWorkflows` are redacted for security.
@@ -456,19 +456,9 @@ curl -X POST "http://localhost:3401/{category}/{refNo}/workflow/retry" \
 
 **Resolution:** 78 such documents were successfully retried on 2026-04-23.
 
-### `activeWorkflows` Always Returns 0
+### `activeWorkflows` Always Returns 0 ~~(Known Bug)~~ ✅ FIXED
 
-**Symptom:** Health endpoint shows `activeWorkflows: 0` even when queue is actively processing documents.
-
-**Root Cause:** The health controller hardcodes `activeWorkflows: 0`. The intended behavior (count documents in non-terminal states) was never implemented.
-
-**Fix:** Replace `activeWorkflows: 0` with a computed value from `queueService.getStats()`:
-```typescript
-// In health.controller.ts — replace the hardcoded 0:
-response.activeWorkflows = this.queueService.getStats().running;
-```
-
-**Tracking:** Filed as a bug to fix.
+> **Fixed in commit a58a7358 (2026-04-30)** — previously hardcoded to 0, now returns `queueService.getStats().running`.
 
 ---
 
@@ -476,16 +466,17 @@ response.activeWorkflows = this.queueService.getStats().running;
 
 ### v1.4 (2026-04-30)
 - **Fixed path**: Startup path updated from `/home/openclaw/.openclaw/workspace/sfc-fetch` → `~/sfc-fetch`
-- **Clarified `activeWorkflows`**: Documented that it's hardcoded to 0 (not implemented); use `queue.status.running` as proxy
+- **Fixed `activeWorkflows` bug**: Now returns `queueService.getStats().running` (was hardcoded to 0) — commit a58a7358
 - **Added Section 4**: Documented `/queue/status` endpoint and all manual intervention endpoints
 - **Fixed Section 5**: Queue status returns 7 fields, not 2; updated table
 - **Fixed Section 7**: Added guidelines discovery to category list; corrected circulars iteration logic
 - **Fixed Section 9**: Corrected download curl from path-based to JSON body
 - **Added Section 10**: Manual Intervention Commands — all retry/queue/convert operations
 - **Deduplicated changelog**: Removed duplicate v1.1 entry
-- **Added `activeWorkflows` bug**: Known failure pattern for the hardcoded 0
+- **Added `activeWorkflows` bug fix**: Known failure pattern documented as fixed
 - **Added SFC_BASE_URL / SFC_RATE_LIMIT**: Added to config overview
 - **Added discovery order**: Documented the 4-category discovery sequence
+- **Fixed config table**: Now shows Default + Actual columns; port defaults 3000 (not 3401), gitBranch defaults `main` (not `master`), doclingPath defaults `/usr/local/bin/docling` (not the `.env` value)
 
 ### v1.3 (2026-04-23)
 - Added "Suspiciously Small Markdown (Circulars)" failure pattern — image-based PDFs cannot be text-extracted
