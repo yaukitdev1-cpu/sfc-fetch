@@ -6,8 +6,8 @@ import * as fs from 'fs-extra';
 import { LowdbService } from '../database/lowdb.service';
 import { ContentService } from '../services/content.service';
 import { DoclingService } from '../converters/docling.service';
-import { FormatDetector, FileFormat } from '../converters/format-detector';
-import { Ole2Converter } from '../converters/ole2.converter';
+import { FormatDetectorService, FileFormat } from '../converters/format-detector.service';
+import { OleDocConverter } from '../converters/ole-doc.converter';
 import { ZipBundleConverter } from '../converters/zip-bundle.converter';
 import { CircularClient } from '../sfc-clients/circular.client';
 import { ConsultationClient } from '../sfc-clients/consultation.client';
@@ -42,8 +42,8 @@ export class QueueService implements OnModuleInit, OnModuleDestroy {
     private lowdbService: LowdbService,
     private contentService: ContentService,
     private doclingService: DoclingService,
-    private formatDetector: FormatDetector,
-    private ole2Converter: Ole2Converter,
+    private formatDetectorService: FormatDetectorService,
+    private oleDocConverter: OleDocConverter,
     private zipBundleConverter: ZipBundleConverter,
     private circularClient: CircularClient,
     private consultationClient: ConsultationClient,
@@ -756,29 +756,18 @@ export class QueueService implements OnModuleInit, OnModuleDestroy {
       let markdownPath: string;
       let markdownContent: string;
 
-      // Detect actual file format using magic bytes
-      const format = await this.formatDetector.detectFormat(rawFilePath);
-      this.logger.log(`[Queue] Detected format for ${category}/${refNo}: ${format} (path: ${rawFilePath})`);
+      // Detect actual file format via magic bytes, not extension
+      const detectedFormat = await this.formatDetectorService.detectFormat(rawFilePath);
+      this.logger.debug(`[Queue] Format detected for ${refNo}: ${detectedFormat} (path: ${rawFilePath})`);
 
-      if (format === FileFormat.OLE2) {
-        // OLE2 .doc — use antiword
-        try {
-          markdownContent = await this.ole2Converter.convertToMarkdown(rawFilePath);
-        } catch (ole2Error) {
-          this.logger.warn(`OLE2 antiword failed for ${category}/${refNo}: ${(ole2Error as Error).message}, falling back to hex dump`);
-          markdownContent = this.hexDumpFallback(rawFilePath);
-        }
-      } else if (format === FileFormat.ZIP) {
-        // ZIP bundle — unzip and find main PDF for Docling
-        try {
-          markdownContent = await this.zipBundleConverter.convertToMarkdown(rawFilePath);
-        } catch (zipError) {
-          this.logger.warn(`ZIP bundle failed for ${category}/${refNo}: ${(zipError as Error).message}, falling back to pdftotext`);
-          const fileBuffer: Buffer = await fs.readFile(rawFilePath) as Buffer;
-          markdownContent = await this.basicPdfFallback(fileBuffer);
-        }
-      } else if (format === FileFormat.PDF) {
-        // PDF — Docling with fallback
+      if (detectedFormat === FileFormat.ZIP) {
+        // ZIP bundle — extract and convert the main circular PDF
+        markdownContent = await this.zipBundleConverter.convert(rawFilePath, refNo);
+      } else if (detectedFormat === FileFormat.OLE2) {
+        // Legacy .doc (OLE2) — extract text via antiword
+        markdownContent = await this.oleDocConverter.convert(rawFilePath);
+      } else if (detectedFormat === FileFormat.PDF) {
+        // Standard PDF — try Docling first, fall back to pdftotext
         try {
           markdownContent = await this.doclingService.convertPdfToMarkdown(rawFilePath);
           const meaningfulChars = markdownContent.replace(/[\x00-\x1f\x7f]/g, '').replace(/\s/g, '').length;
@@ -789,11 +778,20 @@ export class QueueService implements OnModuleInit, OnModuleDestroy {
           this.logger.warn(`Docling failed for ${category}/${refNo}, using fallback: ${(doclingError as Error).message}`);
           const fileBuffer: Buffer = await fs.readFile(rawFilePath) as Buffer;
           markdownContent = await this.basicPdfFallback(fileBuffer);
+          const fallbackMeaningful = markdownContent.replace(/[\x00-\x1f\x7f]/g, '').replace(/\s/g, '').length;
+          if (fallbackMeaningful < 50) {
+            this.logger.warn(`Fallback also produced insufficient content (${fallbackMeaningful} chars) for ${category}/${refNo}`);
+          }
         }
       } else {
-        // HTML or unknown — read as text and basic HTML-to-markdown
-        const rawContent: string = (await fs.readFile(rawFilePath, 'utf8')).toString();
-        markdownContent = this.basicHtmlToMarkdown(rawContent);
+        // Fallback: treat as HTML / plain text
+        const fileContent = (await fs.readFile(rawFilePath)).toString();
+        const firstBytes = fileContent.slice(0, 10).trim();
+        if (firstBytes.startsWith('<') || firstBytes.includes('<!DOCTYPE') || firstBytes.includes('<html')) {
+          markdownContent = this.basicHtmlToMarkdown(fileContent);
+        } else {
+          markdownContent = fileContent;
+        }
       }
 
       // Save markdown
