@@ -6,7 +6,19 @@ import { Ole2Converter } from './ole2.converter';
 import { ZipBundleConverter } from './zip-bundle.converter';
 
 @Module({
-  providers: [TurndownServiceImpl, DoclingService, FormatDetector, Ole2Converter, ZipBundleConverter],
-  exports: [TurndownServiceImpl, DoclingService, FormatDetector, Ole2Converter, ZipBundleConverter],
+  providers: [
+    TurndownServiceImpl,
+    DoclingService,
+    FormatDetector,
+    Ole2Converter,
+    ZipBundleConverter,
+  ],
+  exports: [
+    TurndownServiceImpl,
+    DoclingService,
+    FormatDetector,
+    Ole2Converter,
+    ZipBundleConverter,
+  ],
 })
 export class ConvertersModule {}

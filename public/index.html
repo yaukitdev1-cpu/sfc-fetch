@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SFC-Fetch Dashboard</title>
+  <style>
+    :root {
+      --bg: #0f1117;
+      --card: #1a1d27;
+      --card-hover: #22263a;
+      --border: #2a2f45;
+      --text: #e2e8f0;
+      --text-dim: #8892b0;
+      --accent: #6366f1;
+      --accent-dim: #4338ca;
+      --green: #22c55e;
+      --yellow: #eab308;
+      --red: #ef4444;
+      --blue: #3b82f6;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      padding: 24px;
+    }
+    h1 { font-size: 1.5rem; font-weight: 600; margin-bottom: 4px; }
+    h2 { font-size: 0.875rem; font-weight: 500; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 12px; }
+
+    .header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 28px; }
+    .header-left { display: flex; align-items: center; gap: 12px; }
+    .badge {
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 4px 10px; border-radius: 20px; font-size: 0.75rem; font-weight: 500;
+    }
+    .badge-ok { background: rgba(34,197,94,0.15); color: var(--green); }
+    .badge-err { background: rgba(239,68,68,0.15); color: var(--red); }
+    .badge-err::before { content: ''; width: 6px; height: 6px; border-radius: 50%; background: var(--red); display: inline-block; }
+    .badge-ok::before { content: ''; width: 6px; height: 6px; border-radius: 50%; background: var(--green); display: inline-block; }
+    .refresh-info { font-size: 0.75rem; color: var(--text-dim); }
+    .last-updated { color: var(--accent); }
+
+    /* Cards grid */
+    .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 16px; margin-bottom: 24px; }
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 20px;
+      transition: background 0.15s;
+    }
+    .card:hover { background: var(--card-hover); }
+    .card-label { font-size: 0.75rem; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 8px; }
+    .card-value { font-size: 2rem; font-weight: 700; color: var(--text); line-height: 1; }
+    .card-sub { font-size: 0.75rem; color: var(--text-dim); margin-top: 6px; }
+
+    /* Section */
+    .section { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 20px; margin-bottom: 24px; }
+    .section-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; }
+    .section-title { font-size: 0.875rem; font-weight: 500; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.05em; }
+
+    /* Workflow status bar */
+    .status-bar { display: flex; height: 28px; border-radius: 8px; overflow: hidden; background: var(--border); margin-bottom: 12px; }
+    .status-segment { display: flex; align-items: center; justify-content: center; font-size: 0.7rem; font-weight: 600; color: #fff; min-width: 0; overflow: hidden; white-space: nowrap; padding: 0 6px; transition: width 0.4s ease; }
+    .seg-completed { background: var(--green); }
+    .seg-failed { background: var(--red); }
+    .seg-retrying { background: var(--yellow); }
+    .seg-pending { background: var(--blue); }
+    .seg-other { background: var(--text-dim); }
+
+    .status-legend { display: flex; flex-wrap: wrap; gap: 16px; font-size: 0.75rem; }
+    .legend-item { display: flex; align-items: center; gap: 6px; }
+    .legend-dot { width: 8px; height: 8px; border-radius: 50%; }
+
+    /* Queue */
+    .queue-row { display: flex; justify-content: space-between; align-items: center; padding: 8px 0; border-bottom: 1px solid var(--border); }
+    .queue-row:last-child { border-bottom: none; }
+    .queue-label { color: var(--text-dim); font-size: 0.875rem; }
+    .queue-value { font-weight: 600; }
+    .queue-value.warn { color: var(--yellow); }
+    .queue-value.crit { color: var(--red); }
+
+    /* Failed docs table */
+    .failed-table { width: 100%; border-collapse: collapse; }
+    .failed-table th { text-align: left; font-size: 0.7rem; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.05em; padding: 8px 12px; border-bottom: 1px solid var(--border); }
+    .failed-table td { padding: 10px 12px; font-size: 0.8rem; border-bottom: 1px solid var(--border); vertical-align: middle; }
+    .failed-table tr:last-child td { border-bottom: none; }
+    .failed-table .refno { font-family: 'SF Mono', Consolas, monospace; font-weight: 600; color: var(--accent); }
+    .failed-table .category { font-size: 0.7rem; background: rgba(99,102,241,0.15); color: var(--accent); padding: 2px 8px; border-radius: 4px; }
+    .failed-table .step { color: var(--text-dim); }
+    .failed-table .retry { font-size: 0.7rem; color: var(--yellow); }
+    .failed-table .err-msg { color: var(--red); font-size: 0.75rem; max-width: 300px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .empty-state { text-align: center; padding: 32px; color: var(--text-dim); font-size: 0.875rem; }
+    .empty-state::before { content: '✓'; display: block; font-size: 2rem; margin-bottom: 8px; color: var(--green); }
+
+    /* Loading */
+    .loading { opacity: 0.5; pointer-events: none; }
+    .ts { font-size: 0.7rem; color: var(--text-dim); }
+
+    /* Navigation tabs */
+    .tabs { display: flex; gap: 4px; margin-bottom: 20px; }
+    .tab { padding: 8px 16px; border-radius: 8px; font-size: 0.8rem; font-weight: 500; cursor: pointer; color: var(--text-dim); background: transparent; border: none; transition: all 0.15s; }
+    .tab:hover { color: var(--text); background: var(--card); }
+    .tab.active { color: var(--text); background: var(--accent); }
+  </style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-left">
+    <h1>SFC-Fetch Dashboard</h1>
+    <span id="status-badge" class="badge badge-ok">Healthy</span>
+  </div>
+  <div>
+    <span class="refresh-info">Last updated: <span id="last-updated" class="last-updated">—</span></span>
+  </div>
+</div>
+
+<!-- Collection Cards -->
+<div class="grid" id="collection-grid">
+  <div class="card loading">
+    <div class="card-label">Total Documents</div>
+    <div class="card-value" id="total-docs">—</div>
+    <div class="card-sub" id="last-backup">—</div>
+  </div>
+  <div class="card loading">
+    <div class="card-label">Circulars</div>
+    <div class="card-value" id="circulars-count">—</div>
+    <div class="card-sub">Regulatory circulars</div>
+  </div>
+  <div class="card loading">
+    <div class="card-label">Guidelines</div>
+    <div class="card-value" id="guidelines-count">—</div>
+    <div class="card-sub">Code & guidelines</div>
+  </div>
+  <div class="card loading">
+    <div class="card-label">Consultations</div>
+    <div class="card-value" id="consultations-count">—</div>
+    <div class="card-sub">Public consultations</div>
+  </div>
+  <div class="card loading">
+    <div class="card-label">News</div>
+    <div class="card-value" id="news-count">—</div>
+    <div class="card-sub">SFC news releases</div>
+  </div>
+  <div class="card loading">
+    <div class="card-label">Queue Depth</div>
+    <div class="card-value" id="queue-depth">—</div>
+    <div class="card-sub" id="queue-running">—</div>
+  </div>
+</div>
+
+<!-- Workflow Status -->
+<div class="section">
+  <div class="section-header">
+    <div class="section-title">Workflow Status Distribution</div>
+    <span class="ts" id="workflows-ts"></span>
+  </div>
+  <div class="status-bar" id="status-bar"></div>
+  <div class="status-legend" id="status-legend"></div>
+</div>
+
+<!-- Queue + Backup side by side -->
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:24px;">
+  <div class="section">
+    <div class="section-title">Queue Details</div>
+    <div id="queue-details"></div>
+  </div>
+  <div class="section">
+    <div class="section-title">Git Backup</div>
+    <div id="backup-details"></div>
+  </div>
+</div>
+
+<!-- Failed Documents -->
+<div class="section">
+  <div class="section-header">
+    <div class="section-title">Recent Failures</div>
+    <span class="ts" id="failed-ts"></span>
+  </div>
+  <div id="failed-docs">
+    <div class="empty-state">No failed documents — all clear!</div>
+  </div>
+</div>
+
+<script>
+const API = '';
+const POLL_MS = 10000;
+let timer = null;
+
+const $ = (s) => document.querySelector(s);
+const fmt = (n) => n == null ? '—' : n.toLocaleString();
+const relTime = (ts) => {
+  if (!ts) return '—';
+  const d = Math.floor((Date.now() - new Date(ts).getTime()) / 1000);
+  if (d < 60) return `${d}s ago`;
+  if (d < 3600) return `${Math.floor(d/60)}m ago`;
+  if (d < 86400) return `${Math.floor(d/3600)}h ago`;
+  return `${Math.floor(d/86400)}d ago`;
+};
+
+const STATUS_COLORS = {
+  COMPLETED: { cls: 'seg-completed', color: '#22c55e' },
+  FAILED:    { cls: 'seg-failed',    color: '#ef4444' },
+  RETRYING:  { cls: 'seg-retrying',  color: '#eab308' },
+  PENDING:   { cls: 'seg-pending',   color: '#3b82f6' },
+  DISCOVERED: { cls: 'seg-pending',  color: '#3b82f6' },
+  DOWNLOADING: { cls: 'seg-pending', color: '#3b82f6' },
+  PROCESSING: { cls: 'seg-retrying', color: '#eab308' },
+  RE_RUNNING: { cls: 'seg-retrying', color: '#eab308' },
+  STALE:     { cls: 'seg-other',     color: '#8892b0' },
+};
+
+function renderStatusBar(byStatus) {
+  const total = Object.values(byStatus).reduce((s, v) => s + v, 0);
+  const bar = $('#status-bar');
+  const legend = $('#status-legend');
+  bar.innerHTML = '';
+  legend.innerHTML = '';
+
+  if (total === 0) {
+    bar.innerHTML = '<div class="seg-other" style="width:100%">No data</div>';
+    return;
+  }
+
+  for (const [status, count] of Object.entries(byStatus)) {
+    const info = STATUS_COLORS[status] || { cls: 'seg-other', color: '#8892b0' };
+    const pct = ((count / total) * 100).toFixed(1);
+    const seg = document.createElement('div');
+    seg.className = `status-segment ${info.cls}`;
+    seg.style.width = pct + '%';
+    seg.title = `${status}: ${count} (${pct}%)`;
+    seg.textContent = count > 0 ? `${status} ${count}` : '';
+    bar.appendChild(seg);
+
+    const item = document.createElement('div');
+    item.className = 'legend-item';
+    item.innerHTML = `<span class="legend-dot" style="background:${info.color}"></span> ${status}: <strong>${count}</strong>`;
+    legend.appendChild(item);
+  }
+}
+
+function renderQueueDetails(stats) {
+  const el = $('#queue-details');
+  if (!stats) { el.innerHTML = '<div class="empty-state">—</div>'; return; }
+  const rows = [
+    ['Pending', stats.pendingPersisted, ''],
+    ['In Progress', stats.inProgressPersisted, ''],
+    ['Completed', stats.completedPersisted, ''],
+    ['Failed', stats.failedPersisted, stats.failedPersisted > 0 ? 'crit' : ''],
+    ['Running (live)', stats.running, stats.running > 0 ? 'warn' : ''],
+  ];
+  el.innerHTML = rows.map(([label, val, cls]) =>
+    `<div class="queue-row">
+      <span class="queue-label">${label}</span>
+      <span class="queue-value ${cls}">${fmt(val)}</span>
+    </div>`
+  ).join('');
+}
+
+function renderBackupDetails(data) {
+  const el = $('#backup-details');
+  if (!data) { el.innerHTML = '<div class="empty-state">—</div>'; return; }
+  el.innerHTML = `
+    <div class="queue-row"><span class="queue-label">Status</span><span class="queue-value ${data.hasLocalData ? 'warn' : ''}">${data.hasLocalData ? 'Has local changes' : 'Clean'}</span></div>
+    <div class="queue-row"><span class="queue-label">Backup branch</span><span class="queue-value">${data.backupBranch || '—'}</span></div>
+    <div class="queue-row"><span class="queue-label">Last backup</span><span class="queue-value">${relTime(data.lastBackup) || 'Never'}</span></div>
+    <div class="queue-row"><span class="queue-label">Is repo</span><span class="queue-value">${data.isRepo ? 'Yes' : 'No'}</span></div>
+  `;
+}
+
+function renderFailedDocs(workflows) {
+  const el = $('#failed-docs');
+  if (!workflows || workflows.length === 0) {
+    el.innerHTML = '<div class="empty-state">No failed documents — all clear!</div>';
+    return;
+  }
+  const rows = workflows.slice(0, 20).map(w => {
+    const wf = w.workflow || {};
+    return `<tr>
+      <td><span class="refno">${w.refNo}</span></td>
+      <td><span class="category">${w.category}</span></td>
+      <td class="step">${wf.currentStep || '—'}</td>
+      <td class="retry">${wf.retryCount ? `↻ ${wf.retryCount}` : ''}</td>
+      <td class="err-msg" title="${wf.error || ''}">${wf.error || '—'}</td>
+    </tr>`;
+  }).join('');
+
+  el.innerHTML = `
+    <table class="failed-table">
+      <thead><tr>
+        <th>Ref No</th><th>Category</th><th>Step</th><th>Retries</th><th>Error</th>
+      </tr></thead>
+      <tbody>${rows}</tbody>
+    </table>
+  `;
+}
+
+async function fetchJSON(url) {
+  try {
+    const r = await fetch(API + url);
+    if (!r.ok) throw new Error(`HTTP ${r.status}`);
+    return await r.json();
+  } catch (e) {
+    return null;
+  }
+}
+
+async function poll() {
+  $('#last-updated').textContent = new Date().toLocaleTimeString();
+
+  const [health, queue, wfStats, backup, failed] = await Promise.all([
+    fetchJSON('/health'),
+    fetchJSON('/queue/status'),
+    fetchJSON('/workflows/stats'),
+    fetchJSON('/backup/status'),
+    fetchJSON('/workflows?status=FAILED'),
+  ]);
+
+  // Collection cards
+  if (health) {
+    const badge = $('#status-badge');
+    badge.className = `badge ${health.status === 'healthy' ? 'badge-ok' : 'badge-err'}`;
+    badge.textContent = health.status === 'healthy' ? 'Healthy' : 'Unhealthy';
+
+    const total = health.totalDocuments || 0;
+    const cols = health.collections || {};
+    $('#total-docs').textContent = fmt(total);
+    $('#circulars-count').textContent = fmt(cols.circulars?.count);
+    $('#guidelines-count').textContent = fmt(cols.guidelines?.count);
+    $('#consultations-count').textContent = fmt(cols.consultations?.count);
+    $('#news-count').textContent = fmt(cols.news?.count);
+    $('#last-backup').textContent = health.lastBackup ? `Backup: ${relTime(health.lastBackup)}` : 'No backup yet';
+  }
+
+  // Queue
+  if (queue) {
+    const depth = queue.length || 0;
+    $('#queue-depth').textContent = fmt(depth);
+    const badge = depth > 500 ? 'crit' : depth > 100 ? 'warn' : '';
+    $('#queue-depth').className = `card-value ${badge}`;
+    $('#queue-running').textContent = `${fmt(queue.running)} running`;
+    renderQueueDetails(queue);
+  } else {
+    renderQueueDetails(null);
+  }
+
+  // Workflow stats
+  if (wfStats) {
+    renderStatusBar(wfStats.byStatus || {});
+    const total = wfStats.total || 0;
+  }
+
+  // Backup
+  renderBackupDetails(backup);
+
+  // Failed docs
+  if (failed) {
+    renderFailedDocs(failed.workflows || []);
+    const ts = failed.workflows?.[0]?.workflow?.updatedAt;
+    $('#failed-ts').textContent = ts ? `Oldest: ${relTime(ts)}` : '';
+  }
+
+  // Remove loading state
+  document.querySelectorAll('.card.loading').forEach(el => el.classList.remove('loading'));
+}
+
+poll();
+timer = setInterval(poll, POLL_MS);
+</script>
+</body>
+</html>

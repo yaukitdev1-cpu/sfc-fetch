@@ -10,6 +10,7 @@
     "test": "bun test tests/"
   },
   "dependencies": {
+    "@fastify/static": "7",
     "@fastify/view": "^9.0.0",
     "@nestjs/common": "^10.4.0",
     "@nestjs/config": "^3.3.0",

@@ -117,6 +117,11 @@ export class LowdbService implements OnModuleInit, OnModuleDestroy {
     }
   }
 
+  /** Explicitly flush pending changes to disk. Use after bulk operations. */
+  async flush(): Promise<void> {
+    await this.safeWrite();
+  }
+
   async onModuleDestroy() {
     await this.close();
   }
@@ -518,6 +523,22 @@ export class LowdbService implements OnModuleInit, OnModuleDestroy {
     this.idIndex.set(jobId, job);
     await this.safeWrite();
     return job;
+  }
+
+  /**
+   * Bulk-update queue job statuses WITHOUT per-job safeWrite.
+   * Caller is responsible for calling safeWrite() once after all updates.
+   */
+  bulkUpdateQueueJobStatuses(jobIds: string[], status: string): void {
+    const now = new Date().toISOString();
+    for (const jobId of jobIds) {
+      const job = this.idIndex.get(jobId) || this.db.data.queue.find((j: any) => j._id === jobId);
+      if (job) {
+        job.status = status;
+        job.updatedAt = now;
+        this.idIndex.set(jobId, job);
+      }
+    }
   }
 
   getQueueJob(jobId: string): any | null {
