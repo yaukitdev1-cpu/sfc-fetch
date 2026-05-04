@@ -1,6 +1,7 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { spawn } from 'child_process';
 import * as fs from 'fs-extra';
+import * as fsSync from 'fs';
 import * as os from 'os';
 import * as path from 'path';
 import { execSync } from 'child_process';
@@ -56,7 +57,7 @@ export class ZipBundleConverter {
   }
 
   private async findMainCircularPdf(dir: string): Promise<string | null> {
-    const entries = await fs.readdir(dir, { recursive: true });
+    const entries = fsSync.readdirSync(dir, { recursive: true }) as string[];
     const pdfs = entries.filter(e => String(e).toLowerCase().endsWith('.pdf')) as string[];
     
     if (pdfs.length === 0) return null;

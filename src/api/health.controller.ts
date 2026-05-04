@@ -1,8 +1,9 @@
-import { Controller, Get, Inject } from '@nestjs/common';
+import { Controller, Get } from '@nestjs/common';
 import { LowdbService } from '../database/lowdb.service';
 import { BackupService } from '../backup/backup.service';
 import { ContentService } from '../services/content.service';
 import { ConfigService } from '@nestjs/config';
+import { QueueService } from '../workflows/queue.service';
 
 @Controller('health')
 export class HealthController {
@@ -12,7 +13,8 @@ export class HealthController {
     private readonly db: LowdbService,
     private readonly backupService: BackupService,
     private readonly contentService: ContentService,
-    @Inject(ConfigService) private readonly configService: ConfigService
+    private readonly configService: ConfigService,
+    private readonly queueService: QueueService,
   ) {
     this.nodeEnv = this.configService.get<string>('nodeEnv') || 'development';
   }
@@ -42,7 +44,7 @@ export class HealthController {
         consultations: { count: counts.consultations || 0, status: 'loaded' },
         news: { count: counts.news || 0, status: 'loaded' },
       };
-      response.activeWorkflows = 0;
+      response.activeWorkflows = this.queueService.getStats().running;
     }
 
     return response;

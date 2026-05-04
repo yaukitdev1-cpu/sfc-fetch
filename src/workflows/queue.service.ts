@@ -6,8 +6,8 @@ import * as fs from 'fs-extra';
 import { LowdbService } from '../database/lowdb.service';
 import { ContentService } from '../services/content.service';
 import { DoclingService } from '../converters/docling.service';
-import { FormatDetector, FileFormat } from '../converters/format-detector';
-import { Ole2Converter } from '../converters/ole2.converter';
+import { FormatDetectorService, FileFormat } from '../converters/format-detector.service';
+import { OleDocConverter } from '../converters/ole-doc.converter';
 import { ZipBundleConverter } from '../converters/zip-bundle.converter';
 import { CircularClient } from '../sfc-clients/circular.client';
 import { ConsultationClient } from '../sfc-clients/consultation.client';
@@ -42,8 +42,8 @@ export class QueueService implements OnModuleInit, OnModuleDestroy {
     private lowdbService: LowdbService,
     private contentService: ContentService,
     private doclingService: DoclingService,
-    private formatDetectorService: FormatDetector,
-    private oleDocConverter: Ole2Converter,
+    private formatDetectorService: FormatDetectorService,
+    private oleDocConverter: OleDocConverter,
     private zipBundleConverter: ZipBundleConverter,
     private circularClient: CircularClient,
     private consultationClient: ConsultationClient,
