@@ -79,7 +79,7 @@ export class DoclingService {
         '--output',
         outputPath,
       ], {
-        timeout: this.timeout,
+        timeout: Number(this.timeout),
       });
 
       let stdout = '';

@@ -59,7 +59,7 @@ describe('ContentService', () => {
 
   describe('saveMarkdown', () => {
     test('saves markdown file for circulars with year', async () => {
-      const content = '# Test Circular\n\nTest content';
+      const content = '# Test Circular\n\nTest content that is long enough to pass the 100-byte guard in the service. Adding more text here to ensure we have sufficient content length.';
       const result = await contentService.saveMarkdown('circulars', '26EC01', content, { year: 2026 });
 
       expect(result.markdownPath).toContain('circulars');
@@ -71,7 +71,7 @@ describe('ContentService', () => {
     });
 
     test('saves markdown file for guidelines with language', async () => {
-      const content = '# Test Guideline\n\nTest content';
+      const content = '# Test Guideline\n\nTest content that is long enough to pass the 100-byte guard in the service. Adding more text here to ensure we have sufficient content length.';
       const result = await contentService.saveMarkdown('guidelines', 'GL01', content, { language: 'EN' });
 
       expect(result.markdownPath).toContain('guidelines');
@@ -79,21 +79,21 @@ describe('ContentService', () => {
     });
 
     test('saves markdown file with appendix index', async () => {
-      const content = '# Appendix A';
+      const content = '# Appendix A\n\nThis is the content of Appendix A which is long enough to pass the 100-byte guard in the saveMarkdown method of the ContentService class.';
       const result = await contentService.saveMarkdown('circulars', '26EC01', content, { year: 2026, appendixIndex: 0 });
 
       expect(result.markdownPath).toContain('appendix_0');
     });
 
     test('saves markdown file with conclusion flag', async () => {
-      const content = '# Conclusion';
+      const content = '# Conclusion\n\nThis is the conclusion section of a test document with enough content to pass the 100-byte guard check in the saveMarkdown method.';
       const result = await contentService.saveMarkdown('circulars', '26EC01', content, { year: 2026, isConclusion: true });
 
       expect(result.markdownPath).toContain('conclusion');
     });
 
     test('creates directory structure if not exists', async () => {
-      const content = '# Test';
+      const content = '# Test\n\nThis is a test document with sufficient content to pass the 100-byte guard in the saveMarkdown method of the ContentService class.';
       await contentService.saveMarkdown('circulars', 'TEST01', content, { year: 2026 });
 
       const dirExists = await fs.pathExists(path.join(testContentDir, 'circulars', 'markdown', '2026'));
@@ -101,10 +101,10 @@ describe('ContentService', () => {
     });
 
     test('calculates correct word count', async () => {
-      const content = 'One two three four five';
+      const content = 'One two three four five six seven eight nine ten eleven twelve thirteen fourteen fifteen sixteen seventeen eighteen nineteen twenty twenty-one twenty-two';
       const result = await contentService.saveMarkdown('circulars', 'TEST02', content, { year: 2026 });
 
-      expect(result.wordCount).toBe(5);
+      expect(result.wordCount).toBe(22);
     });
   });
 
@@ -115,7 +115,7 @@ describe('ContentService', () => {
     });
 
     test('returns content for existing file', async () => {
-      const content = '# Test Content';
+      const content = '# Test Content\n\nThis is test content that is sufficiently long to pass the 100-byte guard check in the saveMarkdown method of the ContentService.';
       await contentService.saveMarkdown('circulars', 'TEST03', content, { year: 2026 });
 
       const result = contentService.getMarkdown('circulars/markdown/2026/TEST03.md');
@@ -130,7 +130,7 @@ describe('ContentService', () => {
     });
 
     test('returns content with metadata for existing file', async () => {
-      const content = '# Test\nContent here';
+      const content = '# Test\nContent here with enough text to pass the 100-byte guard in the saveMarkdown method of the ContentService class.';
       await contentService.saveMarkdown('circulars', 'TEST04', content, { year: 2026 });
 
       const result = await contentService.getMarkdownWithMeta('circulars', 'TEST04', { year: 2026 });
@@ -150,7 +150,7 @@ describe('ContentService', () => {
     });
 
     test('archives existing file', async () => {
-      const content = '# Test to Archive';
+      const content = '# Test to Archive\n\nThis is the content of the test file to be archived, which must be long enough to pass the 100-byte guard in the saveMarkdown method.';
       await contentService.saveMarkdown('circulars', 'TEST05', content, { year: 2026 });
 
       const result = await contentService.archiveMarkdown('circulars/markdown/2026/TEST05.md');
@@ -167,7 +167,7 @@ describe('ContentService', () => {
     });
 
     test('deletes existing file', async () => {
-      const content = '# Test';
+      const content = '# Test file content that is long enough to pass the 100-byte guard check in the saveMarkdown method of the ContentService class.';
       await contentService.saveMarkdown('circulars', 'TEST06', content, { year: 2026 });
 
       const result = await contentService.deleteMarkdown('circulars/markdown/2026/TEST06.md');
@@ -186,8 +186,8 @@ describe('ContentService', () => {
     });
 
     test('returns correct stats with files', async () => {
-      await contentService.saveMarkdown('circulars', 'TEST07', 'content 1', { year: 2026 });
-      await contentService.saveMarkdown('guidelines', 'TEST08', 'content 2', { language: 'EN' });
+      await contentService.saveMarkdown('circulars', 'TEST07', 'This is test content for the stats test. It must be at least 100 bytes long to pass the guard in saveMarkdown.', { year: 2026 });
+      await contentService.saveMarkdown('guidelines', 'TEST08', 'This is more test content for the stats test. It must also be at least 100 bytes long to pass the guard.', { language: 'EN' });
 
       const stats = contentService.getStats();
       expect(stats.files).toBe(2);

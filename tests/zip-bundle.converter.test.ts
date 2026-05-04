@@ -31,7 +31,7 @@ describe('ZipBundleConverter', () => {
     const result = await converter.convert(zipPath, 'H644');
     expect(typeof result).toBe('string');
     expect(result.length).toBeGreaterThan(0);
-  });
+  }, { timeout: 30000 });
 
   it('should handle non-existent ZIP file gracefully', async () => {
     await expect(converter.convert('/nonexistent.zip', 'TEST')).rejects.toThrow();

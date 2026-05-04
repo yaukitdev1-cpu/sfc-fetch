@@ -29,14 +29,14 @@ describe('GitService', () => {
     });
   });
 
-  describe('addAndCommit', () => {
+  describe('stageAndCommit', () => {
     test('method exists', () => {
-      expect(typeof gitService.addAndCommit).toBe('function');
+      expect(typeof gitService.stageAndCommit).toBe('function');
     });
 
     test('handles file path and message', async () => {
       try {
-        await gitService.addAndCommit('/tmp/test.txt', 'Test commit');
+        await gitService.stageAndCommit(['/tmp/test.txt'], 'Test commit');
       } catch (error) {
         // Expected to fail since /tmp/test.txt doesn't exist and not a git repo
         expect(error).toBeDefined();
@@ -50,27 +50,27 @@ describe('GitService', () => {
     });
   });
 
-  describe('push', () => {
+  describe('pushCurrentBranch', () => {
     test('method exists', () => {
-      expect(typeof gitService.push).toBe('function');
+      expect(typeof gitService.pushCurrentBranch).toBe('function');
     });
   });
 
-  describe('pull', () => {
+  describe('syncWithRemote', () => {
     test('method exists', () => {
-      expect(typeof gitService.pull).toBe('function');
+      expect(typeof gitService.syncWithRemote).toBe('function');
     });
   });
 
-  describe('getLatestBackupFile', () => {
+  describe('getLatestBackupInfo', () => {
     test('method exists', () => {
-      expect(typeof gitService.getLatestBackupFile).toBe('function');
+      expect(typeof gitService.getLatestBackupInfo).toBe('function');
     });
   });
 
-  describe('downloadFile', () => {
+  describe('downloadBackupFile', () => {
     test('method exists', () => {
-      expect(typeof gitService.downloadFile).toBe('function');
+      expect(typeof gitService.downloadBackupFile).toBe('function');
     });
   });
 
@@ -82,12 +82,6 @@ describe('GitService', () => {
     test('returns boolean', async () => {
       const result = await gitService.isRepo();
       expect(typeof result).toBe('boolean');
-    });
-  });
-
-  describe('init', () => {
-    test('method exists', () => {
-      expect(typeof gitService.init).toBe('function');
     });
   });
 });
