@@ -4,6 +4,7 @@ import { ConfigService } from '@nestjs/config';
 import { FastifyAdapter, NestFastifyApplication } from '@nestjs/platform-fastify';
 import * as fs from 'fs';
 import * as path from 'path';
+import FastifyStatic from '@fastify/static';
 
 const LOGS_DIR = path.join(process.cwd(), 'logs');
 const MAX_LOG_SIZE = 100 * 1024 * 1024; // 100MB max per file
@@ -162,6 +163,15 @@ async function bootstrap() {
   
   console.log(`[SFC-Fetch] Calling fastify.listen() on port ${port}...`);
   fileLogger.log(`Calling fastify.listen() on port ${port}...`, 'Bootstrap');
+
+  // Register static file serving for dashboard at root
+  const PUBLIC_DIR = path.join(process.cwd(), 'public');
+  await app.register(FastifyStatic, {
+    root: PUBLIC_DIR,
+    prefix: '/',
+    decorateReply: false,
+    index: 'index.html',
+  });
 
   await new Promise<void>((resolve, reject) => {
     // @ts-ignore

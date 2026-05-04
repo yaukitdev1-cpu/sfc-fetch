@@ -35,3 +35,5 @@ describe('ZipBundleConverter', () => {
 
   it('should handle non-existent ZIP file gracefully', async () => {
     await expect(converter.convert('/nonexistent.zip', 'TEST')).rejects.toThrow();
+  });
+});

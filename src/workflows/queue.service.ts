@@ -235,6 +235,52 @@ export class QueueService implements OnModuleInit, OnModuleDestroy {
     } catch (error) {
       this.logger.error('[Recovery] Error during stuck document recovery:', error);
     }
+
+    // Clean up orphaned in_progress queue jobs — documents that have already
+    // moved past that step don't need stale queue entries sitting around.
+    await this.cleanupStaleQueueJobs();
+  }
+
+  /**
+   * Removes stale in_progress queue entries where the document has already
+   * progressed past the job's action (e.g., discover job still marked
+   * in_progress but document is already DOWNLOADING or later).
+   */
+  private async cleanupStaleQueueJobs(): Promise<void> {
+    try {
+      const allJobs = this.lowdbService.getAllQueueJobs();
+      const stale = allJobs.filter((j: any) => {
+        if (j.status !== 'in_progress') return false;
+        const doc = this.lowdbService.getDocument(j.refNo, j.category);
+        if (!doc) return false; // document gone — orphan, clean it
+        const docStatus = doc.workflow?.status || 'DISCOVERED';
+
+        if (j.action === 'discover') {
+          // discover is stale if doc is past DISCOVERED
+          return docStatus !== 'DISCOVERED' && docStatus !== 'UNKNOWN';
+        }
+        if (j.action === 'download') {
+          // download is stale if doc already has rawFilePath or is past DOWNLOADING
+          return !!(doc.content?.rawFilePath || doc.source?.rawFilePath);
+        }
+        if (j.action === 'convert') {
+          // convert is stale if doc already has markdownPath or is past PROCESSING
+          return !!(doc.content?.markdownPath);
+        }
+        return false;
+      });
+
+      if (stale.length > 0) {
+        this.logger.log(`[Recovery] Cleaning up ${stale.length} stale in_progress queue entries`);
+        const staleIds = stale.map((j: any) => j._id);
+        this.lowdbService.bulkUpdateQueueJobStatuses(staleIds, 'completed');
+        await this.lowdbService.flush();
+      } else {
+        this.logger.debug(`[Recovery] No stale queue entries found among ${allJobs.filter((j: any) => j.status === 'in_progress').length} in_progress entries`);
+      }
+    } catch (error) {
+      this.logger.error('[Recovery] Error cleaning up stale queue jobs:', error);
+    }
   }
 
   private async cleanupRawFile(filePath: string): Promise<void> {
@@ -765,7 +811,7 @@ export class QueueService implements OnModuleInit, OnModuleDestroy {
         markdownContent = await this.zipBundleConverter.convert(rawFilePath, refNo);
       } else if (detectedFormat === FileFormat.OLE2) {
         // Legacy .doc (OLE2) — extract text via antiword
-        markdownContent = await this.oleDocConverter.convert(rawFilePath);
+        markdownContent = await this.oleDocConverter.convertToMarkdown(rawFilePath);
       } else if (detectedFormat === FileFormat.PDF) {
         // Standard PDF — try Docling first, fall back to pdftotext
         try {
@@ -867,22 +913,6 @@ export class QueueService implements OnModuleInit, OnModuleDestroy {
       .replace(/&lt;/g, '<')
       .replace(/&gt;/g, '>')
       .trim();
-  }
-
-  private hexDumpFallback(filePath: string): string {
-    // Last-resort hex dump of the OLE2 file for manual inspection
-    try {
-      const buffer: Buffer = fs.readFileSync(filePath);
-      const lines: string[] = ['# OLE2 file — hex dump fallback\n', 'Raw hex (first 1KB):'];
-      for (let i = 0; i < Math.min(buffer.length, 1024); i += 16) {
-        const hex = buffer.slice(i, i + 16).toString('hex').match(/.{1,2}/g)?.join(' ') || '';
-        const ascii = buffer.slice(i, i + 16).toString('utf8').replace(/[^\x20-\x7e]/g, '.');
-        lines.push(`${i.toString(16).padStart(8, '0')}  ${hex.padEnd(48)}  ${ascii}`);
-      }
-      return lines.join('\n');
-    } catch {
-      return '# OLE2 file — could not read file for hex dump\n';
-    }
   }
 
   private async basicPdfFallback(buffer: Buffer): Promise<string> {
