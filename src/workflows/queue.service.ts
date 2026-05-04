@@ -106,7 +106,21 @@ export class QueueService implements OnModuleInit, OnModuleDestroy {
       this.logger.error(`[Queue] Task failed: ${taskId}`, error);
     });
 
-    // Load pending jobs from LowDB
+    // Fix orphaned in_progress entries from prior runs.
+    // When the service restarts, better-queue's in-memory state is lost but
+    // LowDB still has entries marked in_progress. These block submitJob()'s
+    // dedup check, causing the queue to get stuck. Reset them to pending so
+    // they get loaded into better-queue properly.
+    const allJobs = this.lowdbService.getAllQueueJobs();
+    const orphanedInProgress = allJobs.filter((j: any) => j.status === 'in_progress');
+    if (orphanedInProgress.length > 0) {
+      this.logger.warn(`[Queue] Found ${orphanedInProgress.length} orphaned in_progress entries from prior run — resetting to pending`);
+      const orphanedIds = orphanedInProgress.map((j: any) => j._id);
+      this.lowdbService.bulkUpdateQueueJobStatuses(orphanedIds, 'pending');
+      await this.lowdbService.flush();
+    }
+
+    // Load pending jobs from LowDB (includes freshly-reset orphaned entries)
     // Queue consumer is auto-started via constructor (processor passed to Queue)
     const pendingJobs = this.lowdbService.getPendingQueueJobs();
     if (pendingJobs.length > 0) {
