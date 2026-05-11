@@ -87,11 +87,13 @@ export class QueueService implements OnModuleInit, OnModuleDestroy {
     };
 
     // Initialize queue FIRST with processor
+    // Disable better-queue's built-in retry — we manage retry lifecycle ourselves
+    // via document status (RETRYING) and workflow retryCount in the DB.
     this.queue = new Queue(processor, {
       concurrent: 4,
-      maxRetries,
-      retryDelay: 1000,
-      retryBackoff: true,
+      maxRetries: 0,
+      retryDelay: 0,
+      retryBackoff: false,
     });
 
     this.queue.on('task_finish', (taskId: string, result: JobResult) => {
@@ -211,6 +213,34 @@ export class QueueService implements OnModuleInit, OnModuleDestroy {
               category,
               refNo,
             }).catch(err => this.logger.error(`[Recovery] Failed to enqueue convert job for ${category}/${refNo}:`, err));
+            recoveredCount++;
+          } else if (status === 'RETRYING') {
+            // Document failed but hasn't exhausted retries — re-enqueue for processing
+            const retryCount = doc.workflow?.retryCount || 0;
+            if (retryCount >= 3) {
+              this.logger.warn(`[Recovery] ${category}/${refNo} exceeded max retries (${retryCount}), marking as FAILED`);
+              await this.lowdbService.upsertDocument(refNo, category, {
+                ...doc,
+                workflow: {
+                  ...doc.workflow,
+                  status: 'FAILED',
+                },
+              });
+            } else {
+              const existingJobs = this.lowdbService.getPendingQueueJobs()
+                .filter(j => j.category === category && j.refNo === refNo);
+              if (existingJobs.length > 0) {
+                this.logger.debug(`[Recovery] Job already exists for ${category}/${refNo}, skipping`);
+              } else {
+                this.logger.log(`[Recovery] Re-submitting download job for RETRYING ${category}/${refNo} (retry ${retryCount + 1}/3)`);
+                this.submitJob({
+                  action: 'download',
+                  category,
+                  refNo,
+                  sourceUrl: category === 'circulars' ? undefined : (doc.source?.pdfUrl || doc.source?.htmlUrl),
+                }).catch(err => this.logger.error(`[Recovery] Failed to enqueue download job for ${category}/${refNo}:`, err));
+              }
+            }
             recoveredCount++;
           } else if (status === 'PROCESSING') {
             // If markdownPath exists, conversion finished but workflow wasn't completed
@@ -825,7 +855,7 @@ export class QueueService implements OnModuleInit, OnModuleDestroy {
         markdownContent = await this.zipBundleConverter.convert(rawFilePath, refNo);
       } else if (detectedFormat === FileFormat.OLE2) {
         // Legacy .doc (OLE2) — extract text via antiword
-        markdownContent = await this.oleDocConverter.convertToMarkdown(rawFilePath);
+        markdownContent = await this.oleDocConverter.convert(rawFilePath);
       } else if (detectedFormat === FileFormat.PDF) {
         // Standard PDF — try Docling first, fall back to pdftotext
         try {
