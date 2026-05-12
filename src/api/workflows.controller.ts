@@ -1,6 +1,7 @@
 import { Controller, Get, Query } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { LowdbService } from '../database/lowdb.service';
+import { QueueService } from '../workflows/queue.service';
 
 @Controller('workflows')
 export class WorkflowsController {
@@ -9,6 +10,7 @@ export class WorkflowsController {
   constructor(
     private readonly db: LowdbService,
     private readonly configService: ConfigService,
+    private readonly queueService: QueueService,
   ) {
     this.categories = this.configService.get<string[]>('categories') || [
       'circulars',
@@ -60,5 +62,10 @@ export class WorkflowsController {
       byCategory: counts,
       byStatus,
     };
+  }
+
+  @Get('queue/status')
+  getQueueStatus() {
+    return this.queueService.getStats();
   }
 }
