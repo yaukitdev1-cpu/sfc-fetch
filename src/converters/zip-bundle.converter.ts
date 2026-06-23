@@ -19,7 +19,7 @@ export class ZipBundleConverter {
     this.doclingService = new DoclingService(configService);
   }
 
-  async convert(zipPath: string, refNo: string): Promise<string> {
+  async convert(zipPath: string, refNo: string, htmlContent?: string): Promise<string> {
     const tempDir = path.join(os.tmpdir(), `zip-conv-${Date.now()}`);
     await fs.ensureDir(tempDir);
 
@@ -36,11 +36,38 @@ export class ZipBundleConverter {
       this.logger.log(`Found main PDF: ${mainPdf}`);
       
       // Convert with Docling
-      const markdown = await this.doclingService.convertPdfToMarkdown(mainPdf);
+      let markdown = await this.doclingService.convertPdfToMarkdown(mainPdf);
+      const meaningfulChars = markdown.replace(/[\x00-\x1f\x7f]/g, '').replace(/\s/g, '').length;
+      
+      // If PDF conversion produced insufficient content and HTML is available, use HTML
+      if (meaningfulChars < 50 && htmlContent) {
+        this.logger.warn(`ZIP main PDF produced only ${meaningfulChars} chars, using HTML fallback`);
+        markdown = this.basicHtmlToMarkdown(htmlContent);
+      }
+      
       return markdown;
     } finally {
       await fs.remove(tempDir).catch(() => {});
     }
+  }
+
+  private basicHtmlToMarkdown(html: string): string {
+    // Simple HTML to markdown conversion
+    return html
+      .replace(/<br\s*\/?>/gi, '\n')
+      .replace(/<\/p>/gi, '\n\n')
+      .replace(/<p[^>]*>/gi, '')
+      .replace(/<h1[^>]*>(.*?)<\/h1>/gi, '# $1\n\n')
+      .replace(/<h2[^>]*>(.*?)<\/h2>/gi, '## $1\n\n')
+      .replace(/<h3[^>]*>(.*?)<\/h3>/gi, '### $1\n\n')
+      .replace(/<li[^>]*>(.*?)<\/li>/gi, '- $1\n')
+      .replace(/<[^>]+>/g, '')
+      .replace(/&nbsp;/g, ' ')
+      .replace(/&amp;/g, '&')
+      .replace(/&lt;/g, '<')
+      .replace(/&gt;/g, '>')
+      .replace(/\n{3,}/g, '\n\n')
+      .trim();
   }
 
   private async extractZip(zipPath: string, destDir: string): Promise<void> {

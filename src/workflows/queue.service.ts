@@ -90,7 +90,7 @@ export class QueueService implements OnModuleInit, OnModuleDestroy {
     // Disable better-queue's built-in retry — we manage retry lifecycle ourselves
     // via document status (RETRYING) and workflow retryCount in the DB.
     this.queue = new Queue(processor, {
-      concurrent: 4,
+      concurrent: 1,
       maxRetries: 0,
       retryDelay: 0,
       retryBackoff: false,
@@ -108,7 +108,13 @@ export class QueueService implements OnModuleInit, OnModuleDestroy {
       this.logger.error(`[Queue] Task failed: ${taskId}`, error);
     });
 
-    // Fix orphaned in_progress entries from prior runs.
+    // STEP 1: Clean up stale queue entries FIRST — before orphan reset.
+    // Stale entries are in_progress jobs whose documents have already progressed
+    // past that step (e.g., discover job still in_progress but doc is already
+    // DOWNLOADING). Mark them completed so they don't get loaded into the queue.
+    await this.cleanupStaleQueueJobs();
+
+    // STEP 2: Fix orphaned in_progress entries from prior runs.
     // When the service restarts, better-queue's in-memory state is lost but
     // LowDB still has entries marked in_progress. These block submitJob()'s
     // dedup check, causing the queue to get stuck. Reset them to pending so
@@ -122,8 +128,15 @@ export class QueueService implements OnModuleInit, OnModuleDestroy {
       await this.lowdbService.flush();
     }
 
-    // Load pending jobs from LowDB (includes freshly-reset orphaned entries)
-    // Queue consumer is auto-started via constructor (processor passed to Queue)
+    // STEP 3: Recovery BEFORE loading pending jobs.
+    // This ensures that FAILED docs with valid markdown get completed,
+    // and DOWNLOADING docs with existing markdown don't get redundant
+    // convert jobs that would fail because raw files were cleaned up.
+    await this.recoverStuckDocuments();
+
+    // STEP 4: Load pending jobs from LowDB LAST, after recovery has
+    // cleaned up what it can. This prevents doomed ENOENT convert jobs
+    // from being loaded when recovery already completed the workflow.
     const pendingJobs = this.lowdbService.getPendingQueueJobs();
     if (pendingJobs.length > 0) {
       this.logger.log(`[Queue] Loading ${pendingJobs.length} pending jobs from LowDB`);
@@ -134,9 +147,6 @@ export class QueueService implements OnModuleInit, OnModuleDestroy {
       });
     }
 
-    // Recovery: Re-submit jobs for documents stuck in intermediate workflow states
-    await this.recoverStuckDocuments();
-
     // Cleanup stale completed/failed entries older than 7 days
     const cleaned = this.lowdbService.cleanupQueueJobs(7);
     if (cleaned > 0) {
@@ -144,6 +154,12 @@ export class QueueService implements OnModuleInit, OnModuleDestroy {
     }
 
     this.logger.log('[Queue] Initialized');
+
+    // Worker heartbeat: log every 30s so we can tell if the worker is alive
+    setInterval(() => {
+      const stats = this.getStats();
+      this.logger.log(`[Queue] Heartbeat: running=${stats.running}, pending=${stats.pendingPersisted}, length=${stats.length}`);
+    }, 30000);
   }
 
   /**
@@ -198,7 +214,23 @@ export class QueueService implements OnModuleInit, OnModuleDestroy {
             }).catch(err => this.logger.error(`[Recovery] Failed to enqueue download job for ${category}/${refNo}:`, err));
             recoveredCount++;
           } else if (status === 'DOWNLOADING') {
-            // Document download was completed but convert wasn't submitted
+            // Document download was completed but convert wasn't submitted.
+            // But if markdownPath already exists (from a prior successful convert),
+            // complete the workflow instead of re-submitting a doomed convert job.
+            if (doc.content?.markdownPath) {
+              const contentDir = path.join(process.cwd(), 'data', 'content');
+              const fullPath = path.join(contentDir, doc.content.markdownPath);
+              if (await fs.pathExists(fullPath)) {
+                this.logger.log(`[Recovery] DOWNLOADING doc ${category}/${refNo} already has markdown — completing workflow`);
+                try {
+                  await this.workflowService.completeWorkflow(refNo, category);
+                  recoveredCount++;
+                  continue;
+                } catch (error) {
+                  this.logger.warn(`[Recovery] Failed to complete stuck workflow for ${category}/${refNo}: ${error}`);
+                }
+              }
+            }
             // Check for existing pending/in_progress jobs to avoid duplicates
             const existingJobs = this.lowdbService.getPendingQueueJobs()
               .filter(j => j.category === category && j.refNo === refNo);
@@ -269,6 +301,24 @@ export class QueueService implements OnModuleInit, OnModuleDestroy {
               }
             }
             recoveredCount++;
+          } else if (status === 'FAILED' && doc.content?.markdownPath) {
+            // Document is FAILED but has a valid markdownPath on disk — conversion
+            // succeeded but the workflow was never completed (e.g., ENOENT from a
+            // subsequent retry after cleanupRawFile deleted the source PDF).
+            // Instead of resubmitting (which would fail again), complete the workflow.
+            const contentDir = path.join(process.cwd(), 'data', 'content');
+            const fullPath = path.join(contentDir, doc.content.markdownPath);
+            try {
+              if (await fs.pathExists(fullPath)) {
+                this.logger.log(`[Recovery] FAILED doc ${category}/${refNo} has valid markdown (${doc.content.markdownSize}B) — completing workflow`);
+                await this.workflowService.completeWorkflow(refNo, category);
+                recoveredCount++;
+              } else {
+                this.logger.warn(`[Recovery] FAILED doc ${category}/${refNo} has stale markdownPath (file missing) — leaving as FAILED`);
+              }
+            } catch (error) {
+              this.logger.warn(`[Recovery] Failed to complete workflow for FAILED ${category}/${refNo}: ${error}`);
+            }
           }
         }
       }
@@ -279,10 +329,6 @@ export class QueueService implements OnModuleInit, OnModuleDestroy {
     } catch (error) {
       this.logger.error('[Recovery] Error during stuck document recovery:', error);
     }
-
-    // Clean up orphaned in_progress queue jobs — documents that have already
-    // moved past that step don't need stale queue entries sitting around.
-    await this.cleanupStaleQueueJobs();
   }
 
   /**
@@ -434,16 +480,11 @@ export class QueueService implements OnModuleInit, OnModuleDestroy {
 
           // Auto-submit convert job after download succeeds
           this.logger.log(`[Queue] Auto-submitting convert job for ${category}/${refNo} after direct PDF fetch`);
-          try {
-            await this.submitJob({
-              action: 'convert',
-              category,
-              refNo,
-            });
-          } catch (err) {
-            this.logger.error(`[Queue] Failed to chain convert job for ${category}/${refNo}:`, err);
-            // Don't rollback - current step still completes
-          }
+          this.submitJob({
+            action: 'convert',
+            category,
+            refNo,
+          }).catch(err => this.logger.error(`[Queue] Failed to chain convert job for ${category}/${refNo}:`, err));
         } catch (pdfError) {
           // If PDF fails, try HTML for modern circulars (2012+)
           const year = updatedDoc.metadata?.year || new Date().getFullYear();
@@ -470,15 +511,11 @@ export class QueueService implements OnModuleInit, OnModuleDestroy {
 
               // Auto-submit convert job after download succeeds
               this.logger.log(`[Queue] Auto-submitting convert job for ${category}/${refNo} after HTML fetch`);
-              try {
-                await this.submitJob({
-                  action: 'convert',
-                  category,
-                  refNo,
-                });
-              } catch (err) {
-                this.logger.error(`[Queue] Failed to chain convert job for ${category}/${refNo}:`, err);
-              }
+              this.submitJob({
+                action: 'convert',
+                category,
+                refNo,
+              }).catch(err => this.logger.error(`[Queue] Failed to chain convert job for ${category}/${refNo}:`, err));
             } else {
               throw pdfError;
             }
@@ -513,30 +550,20 @@ export class QueueService implements OnModuleInit, OnModuleDestroy {
         });
 
         this.logger.log(`[Queue] Auto-submitting convert job for ${category}/${refNo} (inline HTML from discover)`);
-        try {
-          await this.submitJob({
-            action: 'convert',
-            category,
-            refNo,
-          });
-        } catch (err) {
-          this.logger.error(`[Queue] Failed to chain convert job for ${category}/${refNo}:`, err);
-          // Don't rollback — current step still completes
-        }
+        this.submitJob({
+          action: 'convert',
+          category,
+          refNo,
+        }).catch(err => this.logger.error(`[Queue] Failed to chain convert job for ${category}/${refNo}:`, err));
       } else {
         // Consultations and other categories: URL-based download, then convert
         this.logger.log(`[Queue] Auto-submitting download job for ${category}/${refNo} after discover`);
-        try {
-          await this.submitJob({
-            action: 'download',
-            category,
-            refNo,
-            sourceUrl: metadata.pdfUrl || metadata.pdfLink || metadata.url,
-          });
-        } catch (err) {
-          this.logger.error(`[Queue] Failed to chain download job for ${category}/${refNo}:`, err);
-          // Don't rollback — current step still completes
-        }
+        this.submitJob({
+          action: 'download',
+          category,
+          refNo,
+          sourceUrl: metadata.pdfUrl || metadata.pdfLink || metadata.url,
+        }).catch(err => this.logger.error(`[Queue] Failed to chain download job for ${category}/${refNo}:`, err));
       }
 
       return job;
@@ -762,18 +789,15 @@ export class QueueService implements OnModuleInit, OnModuleDestroy {
       await this.workflowService.completeStep(refNo, category, 'download', { rawFilePath: rawPath });
 
       // Auto-submit convert job after download succeeds
-      // Use try/catch to prevent chain failures from affecting download completion
+      // Fire-and-forget: don't await to avoid deadlocking the single worker thread
       this.logger.log(`[Queue] Auto-submitting convert job for ${category}/${refNo} after download`);
-      try {
-        await this.submitJob({
-          action: 'convert',
-          category,
-          refNo,
-        });
-      } catch (err) {
+      this.submitJob({
+        action: 'convert',
+        category,
+        refNo,
+      }).catch(err => {
         this.logger.error(`[Queue] Failed to chain convert job for ${category}/${refNo}:`, err);
-        // Don't rollback - current step still completes
-      }
+      });
 
       return job;
     } catch (error: any) {
@@ -845,19 +869,40 @@ export class QueueService implements OnModuleInit, OnModuleDestroy {
 
       let markdownPath: string;
       let markdownContent: string;
+      let needsManualOcr = false;
 
       // Detect actual file format via magic bytes, not extension
       const detectedFormat = await this.formatDetectorService.detectFormat(rawFilePath);
       this.logger.debug(`[Queue] Format detected for ${refNo}: ${detectedFormat} (path: ${rawFilePath})`);
 
+      // For circulars, try to get HTML content as fallback
+      let htmlContent: string | null = null;
+      if (category === 'circulars') {
+        try {
+          htmlContent = await this.circularClient.getCircularHtml(refNo);
+        } catch (htmlError) {
+          this.logger.debug(`[Queue] Could not fetch HTML for ${refNo}: ${(htmlError as Error).message}`);
+        }
+      }
+
       if (detectedFormat === FileFormat.ZIP) {
         // ZIP bundle — extract and convert the main circular PDF
-        markdownContent = await this.zipBundleConverter.convert(rawFilePath, refNo);
+        markdownContent = await this.zipBundleConverter.convert(rawFilePath, refNo, htmlContent || undefined);
+        const meaningfulChars = markdownContent.replace(/[\x00-\x1f\x7f]/g, '').replace(/\s/g, '').length;
+        if (meaningfulChars < 50) {
+          this.logger.error(`[Queue] ZIP conversion produced only ${meaningfulChars} chars for ${category}/${refNo} - needs manual OCR`);
+          needsManualOcr = true;
+        }
       } else if (detectedFormat === FileFormat.OLE2) {
         // Legacy .doc (OLE2) — extract text via antiword
         markdownContent = await this.oleDocConverter.convert(rawFilePath);
+        const meaningfulChars = markdownContent.replace(/[\x00-\x1f\x7f]/g, '').replace(/\s/g, '').length;
+        if (meaningfulChars < 50) {
+          this.logger.error(`[Queue] OLE2 conversion produced only ${meaningfulChars} chars for ${category}/${refNo} - needs manual OCR`);
+          needsManualOcr = true;
+        }
       } else if (detectedFormat === FileFormat.PDF) {
-        // Standard PDF — try Docling first, fall back to pdftotext
+        // Standard PDF — try Docling first, fall back to pdftotext, then HTML
         try {
           markdownContent = await this.doclingService.convertPdfToMarkdown(rawFilePath);
           const meaningfulChars = markdownContent.replace(/[\x00-\x1f\x7f]/g, '').replace(/\s/g, '').length;
@@ -869,8 +914,21 @@ export class QueueService implements OnModuleInit, OnModuleDestroy {
           const fileBuffer: Buffer = await fs.readFile(rawFilePath) as Buffer;
           markdownContent = await this.basicPdfFallback(fileBuffer);
           const fallbackMeaningful = markdownContent.replace(/[\x00-\x1f\x7f]/g, '').replace(/\s/g, '').length;
+          
+          // If fallback also insufficient, try HTML
           if (fallbackMeaningful < 50) {
-            this.logger.warn(`Fallback also produced insufficient content (${fallbackMeaningful} chars) for ${category}/${refNo}`);
+            if (htmlContent) {
+              this.logger.log(`[Queue] PDF fallback insufficient for ${category}/${refNo}, using HTML content`);
+              markdownContent = this.basicHtmlToMarkdown(htmlContent);
+              const htmlMeaningful = markdownContent.replace(/[\x00-\x1f\x7f]/g, '').replace(/\s/g, '').length;
+              if (htmlMeaningful < 50) {
+                this.logger.error(`[Queue] HTML also insufficient (${htmlMeaningful} chars) for ${category}/${refNo} - needs manual OCR`);
+                needsManualOcr = true;
+              }
+            } else {
+              this.logger.error(`[Queue] No HTML fallback available for ${category}/${refNo} - needs manual OCR`);
+              needsManualOcr = true;
+            }
           }
         }
       } else {
@@ -882,6 +940,29 @@ export class QueueService implements OnModuleInit, OnModuleDestroy {
         } else {
           markdownContent = fileContent;
         }
+        const meaningfulChars = markdownContent.replace(/[\x00-\x1f\x7f]/g, '').replace(/\s/g, '').length;
+        if (meaningfulChars < 50) {
+          this.logger.error(`[Queue] Conversion produced only ${meaningfulChars} chars for ${category}/${refNo} - needs manual OCR`);
+          needsManualOcr = true;
+        }
+      }
+
+      // If needs manual OCR, don't save broken markdown - mark for manual processing
+      if (needsManualOcr) {
+        this.logger.warn(`[Queue] Marking ${category}/${refNo} for manual OCR`);
+        await this.lowdbService.upsertDocument(refNo, category, {
+          ...doc,
+          workflow: {
+            ...doc.workflow,
+            status: 'NEEDS_MANUAL_OCR',
+            error: `Conversion produced insufficient content - PDF may be scanned images with no text layer`,
+            needsManualOcr: true,
+          },
+        });
+        // Don't cleanup raw file - keep it for manual processing
+        await this.lowdbService.updateQueueJobStatus(job._id, 'failed');
+        await this.workflowService.failStep(refNo, category, 'convert', new Error('Needs manual OCR'));
+        return job;
       }
 
       // Save markdown
