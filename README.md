@@ -1,505 +1,651 @@
-# SFC Fetch Microservice
+# SFC-Fetch: Hong Kong Securities and Futures Commission Document Pipeline
 
-Document-oriented workflow service with Git-backed persistence for SFC (Securities and Futures Commission of Hong Kong) documents.
+**Version:** 2.0.0  
+**Last Updated:** 2026-06-23  
+**Status:** Production
 
-**Tech Stack:** NestJS + Bun + LowDB + TypeScript
+---
 
-## Features
+## Overview
 
-- **Document-Centric Model**: Each document (identified by refNo) is stored as a complete record containing all metadata, workflow state, and processing history
-- **Category-Specific Collections**: Guidelines, Circulars, Consultations, and News
-- **Git Backup Strategy**: Compressed archives committed to GitHub for backup and history
-- **Markdown-Only Storage**: Only processed markdown is stored
-- **Workflow State Machine**: Full lifecycle management with retry and re-run capabilities
-- **Queue-Based Processing**: Async job processing with better-queue
-- **Multi-Format Conversion**: Docling (PDF → Markdown) and Turndown (HTML → Markdown)
+SFC-Fetch is an automated document processing pipeline that fetches, converts, and archives regulatory documents from the Hong Kong Securities and Futures Commission (SFC) website. It processes four document categories:
 
-## Quick Start
+- **Circulars** (944 documents): Regulatory notices to licensed corporations
+- **Guidelines** (51 documents): Compliance guidelines and codes
+- **Consultations** (217 documents): Public consultation papers and conclusions
+- **News** (4,237 documents): Press releases and announcements
 
-### Prerequisites
+The system converts PDFs, HTML, and ZIP archives to markdown format, stores metadata in a local database, and provides a REST API for querying the processed documents.
 
-- **Bun** runtime (install: `curl -fsSL https://bun.sh/install | bash`)
-- **Docling CLI** for PDF conversion (optional, falls back to Turndown)
-- Git repository configured for backup (optional)
+---
 
-### Installation
+## Architecture
 
-```bash
-cd sfc-fetch
-bun install
+### Technology Stack
+
+| Component | Technology | Purpose |
+|-----------|-----------|---------|
+| **Runtime** | Bun | Fast TypeScript/JavaScript execution |
+| **Framework** | NestJS 10 | Modular application architecture |
+| **HTTP Server** | Fastify | High-performance HTTP server |
+| **Database** | LowDB | JSON-based embedded database |
+| **Queue** | better-queue v3 | Job queue with persistence |
+| **PDF Conversion** | Docling | AI-powered PDF to markdown conversion |
+| **Process Manager** | PM2 | Production process management |
+| **Version Control** | Git | Data backup and synchronization |
+
+### System Architecture
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│                      SFC-Fetch Service                       │
+├─────────────────────────────────────────────────────────────┤
+│                                                               │
+│  ┌──────────────┐      ┌──────────────┐      ┌──────────┐ │
+│  │  Discovery   │─────▶│    Queue     │─────▶│ Convert  │ │
+│  │  Scheduler   │      │  (better-    │      │ (Docling)│ │
+│  │  (node-cron) │      │   queue)     │      │          │ │
+│  └──────────────┘      └──────────────┘      └──────────┘ │
+│         │                      │                    │        │
+│         ▼                      ▼                    ▼        │
+│  ┌──────────────────────────────────────────────────────┐  │
+│  │              LowDB (sfc-db.json)                      │  │
+│  │  - Document metadata                                  │  │
+│  │  - Workflow state                                     │  │
+│  │  - Queue entries                                      │  │
+│  └──────────────────────────────────────────────────────┘  │
+│         │                                                    │
+│         ▼                                                    │
+│  ┌──────────────────────────────────────────────────────┐  │
+│  │              Content Storage                          │  │
+│  │  data/content/circulars/markdown/2026/*.md            │  │
+│  │  data/content/guidelines/markdown/*.md                │  │
+│  │  data/content/consultations/markdown/*.md             │  │
+│  │  data/content/news/markdown/*.md                      │  │
+│  └──────────────────────────────────────────────────────┘  │
+│                                                               │
+│  ┌──────────────┐      ┌──────────────┐      ┌──────────┐ │
+│  │  REST API    │      │   Backup     │      │  Static  │ │
+│  │  (Fastify)   │      │   (Git)      │      │  Files   │ │
+│  │  Port 3401   │      │              │      │ (public) │ │
+│  └──────────────┘      └──────────────┘      └──────────┘ │
+│                                                               │
+└─────────────────────────────────────────────────────────────┘
+                              │
+                              ▼
+                    ┌──────────────────┐
+                    │   SFC Website    │
+                    │ apps.sfc.hk      │
+                    └──────────────────┘
 ```
 
-### Configuration
+---
 
-Create a `.env` file:
+## Data Flow
 
-```env
+### Document Processing Pipeline
+
+```
+1. DISCOVERY (Scheduled: Daily at 2 AM)
+   ├─ Circulars: POST /api/circular/search
+   ├─ Guidelines: Web scraping
+   ├─ Consultations: API endpoints
+   └─ News: API endpoints
+
+2. QUEUE SUBMISSION
+   └─ New documents → Queue (action: "discover")
+
+3. DISCOVER JOB
+   ├─ Fetch metadata from SFC API
+   ├─ Store in LowDB
+   ├─ Download raw file (PDF/HTML/ZIP)
+   └─ Submit convert job
+
+4. CONVERT JOB
+   ├─ Detect file format (magic bytes)
+   ├─ Convert to markdown:
+   │   ├─ PDF → Docling (with OCR fallback)
+   │   ├─ HTML → Turndown
+   │   ├─ ZIP → Extract + convert main PDF
+   │   └─ OLE2 (.doc) → Antiword
+   ├─ Save markdown to data/content/
+   └─ Update workflow status
+
+5. COMPLETION
+   ├─ Mark workflow as COMPLETED
+   ├─ Cleanup raw files (optional)
+   └─ Git commit (auto-dehydrate)
+```
+
+### Workflow States
+
+```
+PENDING → DISCOVERED → DOWNLOADING → PROCESSING → COMPLETED
+                                                      │
+                                                      ▼
+                                                   FAILED
+                                                      │
+                                                      ▼
+                                                  RETRYING
+```
+
+---
+
+## Directory Structure
+
+```
+sfc-fetch/
+├── src/                          # Source code
+│   ├── main.ts                   # Application entry point
+│   ├── app.module.ts             # Root NestJS module
+│   ├── api/                      # REST API controllers
+│   │   ├── circulars.controller.ts
+│   │   ├── guidelines.controller.ts
+│   │   ├── consultations.controller.ts
+│   │   ├── news.controller.ts
+│   │   ├── queue.controller.ts
+│   │   ├── workflows.controller.ts
+│   │   ├── health.controller.ts
+│   │   └── backup.controller.ts
+│   ├── workflows/                # Business logic
+│   │   ├── queue.service.ts      # Job queue processing
+│   │   ├── discovery-scheduler.service.ts
+│   │   └── workflow.service.ts
+│   ├── converters/               # Document converters
+│   │   ├── docling.service.ts    # PDF → Markdown (Docling)
+│   │   ├── zip-bundle.converter.ts
+│   │   ├── ole-doc.converter.ts
+│   │   ├── format-detector.service.ts
+│   │   └── turndown.service.ts
+│   ├── sfc-clients/              # SFC API clients
+│   │   ├── circular.client.ts
+│   │   ├── consultation.client.ts
+│   │   ├── news.client.ts
+│   │   └── guideline.scraper.ts
+│   ├── database/
+│   │   └── lowdb.service.ts      # Database operations
+│   ├── backup/
+│   │   ├── backup.service.ts
+│   │   └── git.service.ts
+│   └── config/
+│       └── configuration.ts
+├── data/                         # Data storage
+│   ├── db/
+│   │   └── sfc-db.json           # LowDB database (34 MB)
+│   ├── content/                  # Converted markdown files
+│   │   ├── circulars/markdown/2026/
+│   │   ├── guidelines/markdown/
+│   │   ├── consultations/markdown/
+│   │   └── news/markdown/
+│   └── raw/                      # Temporary raw files (cleaned up)
+│       ├── circulars/
+│       ├── guidelines/
+│       ├── consultations/
+│       └── news/
+├── manual-ocr/                   # PDFs needing manual OCR
+│   ├── H686.pdf
+│   ├── H686.md
+│   └── README.md
+├── scripts/                      # Maintenance scripts
+│   ├── fix-broken-circulars.py
+│   ├── push-manual-ocr.sh
+│   └── sync-manual-ocr.sh
+├── logs/                         # Application logs
+│   ├── app.log
+│   └── app-error.log
+├── public/                       # Static web files (dashboard)
+├── docs/                         # Documentation
+├── ecosystem.config.js           # PM2 configuration
+├── package.json
+└── README.md
+```
+
+---
+
+## Configuration
+
+### Environment Variables (.env)
+
+```bash
 # Server
-PORT=3000
+PORT=3401
 NODE_ENV=development
 
-# Directories
+# Data paths
 DATA_DIR=./data
-CONTENT_DIR=./data/content
-ARCHIVE_DIR=./data/archive
 DB_PATH=./data/db/sfc-db.json
 
-# Git Backup
+# Git backup
 GIT_REMOTE=origin
-GIT_BRANCH=main
-GIT_REPO_URL=https://github.com/your-org/sfc-fetch.git
-GIT_PAT=your_github_pat_with_repo_access
-GIT_USER_NAME=SFC Bot
-GIT_USER_EMAIL=bot@example.com
-BACKUP_BRANCH=backup/data
-
-# Auto-Backup
+GIT_BRANCH=master
 AUTO_HYDRATE=true
 AUTO_DEHYDRATE=true
 
-# Docling (PDF → Markdown)
-DOCLING_PATH=/usr/local/bin/docling
-DOCLING_TIMEOUT=30000
-
-# Rate Limiting
+# SFC API
 SFC_BASE_URL=https://apps.sfc.hk/edistributionWeb
 SFC_RATE_LIMIT=2
 SFC_RETRY_ATTEMPTS=5
 
+# Discovery scheduler
+DISCOVERY_ENABLED=true
+DISCOVERY_SCHEDULE_CRON=0 2 * * *
+DISCOVERY_CATEGORIES=circulars,consultations,news
+DISCOVERY_START_YEAR=1990
+DISCOVERY_PAGE_SIZE=100
+
+# Document conversion
+DOCLING_PATH=/home/openclaw/.local/bin/docling
+DOCLING_TIMEOUT=30000
+
 # Queue
-QUEUE_PATH=./data/db/sfc-db.json
 QUEUE_MAX_RETRIES=5
-
-# Backup Retention
-BACKUP_RETENTION=10
 ```
 
-### Running the Service
+### Configuration Hierarchy
+
+1. **Environment variables** (highest priority)
+2. **`.env` file**
+3. **`configuration.ts` defaults** (lowest priority)
+
+---
+
+## API Reference
+
+### Health Check
 
 ```bash
-# Start the service (auto-hydrates if no local data)
-bun run src/main.ts
-
-# Or run in development mode with hot reload
-bun --watch run src/main.ts
-
-# Build for production
-bun run build
+GET /health
 ```
 
-### How to Trigger Workflows
-
-The service supports multiple mechanisms to trigger document processing workflows, from individual document operations to large-scale batch processing.
-
-### Git-Based Backup Strategy
-
-The service uses a dedicated `backup/data` branch to store compressed backup archives:
-
-**Branch Structure:**
-```
-origin/master          # Source code only (data/ is gitignored)
-origin/feature/*       # Feature branches (data/ is gitignored)
-origin/backup/data     # Backup archives only (no source code)
-```
-
-**How Dehydrate Works:**
-1. Creates `data-backup-{timestamp}.zip` at repo root (outside `data/` folder)
-2. Switches to `backup/data` branch
-3. Commits and pushes the zip file
-4. Returns to original branch
-5. Removes local zip file
-
-**How Hydrate Works:**
-1. Switches to `backup/data` branch
-2. Finds the latest backup zip
-3. Downloads and extracts to `data/` folder
-4. Returns to original branch
-
-**Manual Operations:**
-```bash
-# Create backup - commits to backup/data branch
-curl -X POST http://localhost:3000/dehydrate
-
-# Restore from backup - pulls from backup/data branch
-curl -X POST http://localhost:3000/hydrate
-
-# Check status
-curl http://localhost:3000/backup/status
+**Response:**
+```json
+{
+  "status": "healthy",
+  "totalDocuments": 5449,
+  "collections": {
+    "circulars": { "count": 944, "status": "loaded" },
+    "guidelines": { "count": 51, "status": "loaded" },
+    "consultations": { "count": 217, "status": "loaded" },
+    "news": { "count": 4237, "status": "loaded" }
+  },
+  "activeWorkflows": 0
+}
 ```
 
-### Queue Endpoints
-
-Queue jobs for asynchronous processing with built-in retry and concurrency control:
+### Queue Status
 
 ```bash
-# Queue a discover job
-curl -X POST http://localhost:3000/queue/discover \
-  -H "Content-Type: application/json" \
-  -d '{"category": "circulars", "refNo": "26EC6"}'
-
-# Queue a download job
-curl -X POST http://localhost:3000/queue/download \
-  -H "Content-Type: application/json" \
-  -d '{"category": "circulars", "refNo": "26EC6"}'
-
-# Queue a convert job
-curl -X POST http://localhost:3000/queue/convert \
-  -H "Content-Type: application/json" \
-  -d '{"category": "circulars", "refNo": "26EC6"}'
-
-# Get queue statistics
-curl http://localhost:3000/queue/status
+GET /queue/status
 ```
 
-Queue configuration (from environment):
-- `QUEUE_MAX_RETRIES=5` - Maximum retry attempts per job
-- `QUEUE_CONCURRENCY=4` - Concurrent jobs (default: 4)
-- Jobs use exponential backoff on failure
-
-### Document Discovery Endpoints
-
-```bash
-# Discover a single document
-curl -X POST http://localhost:3000/circulars/26EC6/discover \
-  -H "Content-Type: application/json"
-
-# Batch discover documents in a category
-curl -X POST http://localhost:3000/circulars/discover-batch \
-  -H "Content-Type: application/json" \
-  -d '{"filters": {"year": 2024, "status": "PENDING"}}'
+**Response:**
+```json
+{
+  "length": 0,
+  "totalPersisted": 89,
+  "pendingPersisted": 0,
+  "inProgressPersisted": 0,
+  "completedPersisted": 89,
+  "failedPersisted": 0,
+  "running": 0
+}
 ```
-
-### Batch Operations
-
-```bash
-# Batch download all documents in a category
-curl -X POST http://localhost:3000/circulars/batch-download \
-  -H "Content-Type: application/json" \
-  -d '{"filters": {"year": 2024}}'
-
-# Batch download with limit
-curl -X POST http://localhost:3000/circulars/batch-download \
-  -H "Content-Type: application/json" \
-  -d '{"filters": {"year": 2024}, "limit": 50}'
-```
-
-### Single Document Operations
-
-```bash
-# Download a single document
-curl -X POST http://localhost:3000/circulars/26EC6/download \
-  -H "Content-Type: application/json"
-
-# Retry from failure (resume workflow at failed step)
-curl -X POST http://localhost:3000/circulars/26EC6/workflow/retry \
-  -H "Content-Type: application/json" \
-  -d '{"reason": "network_timeout_recovery"}'
-
-# Re-run from scratch (full workflow reset)
-curl -X POST http://localhost:3000/circulars/26EC6/workflow/re-run \
-  -H "Content-Type: application/json" \
-  -d '{"reason": "markdown_converter_bug_fix", "preservePrevious": true}'
-```
-
-### Job Processing Flow
-
-Documents progress through these sequential steps:
-
-```
-discover → download → convert → store
-```
-
-| Step | Description |
-|------|-------------|
-| `discover` | Locates document in SFC source system |
-| `download` | Fetches raw PDF/HTML content |
-| `convert` | Transforms to Markdown (Docling or Turndown) |
-| `store` | Saves markdown to content directory |
-
-Each step can succeed, fail, or be skipped. Failed steps trigger automatic retry with backoff. The workflow state machine tracks all transitions.
-
-### Manual Backup Operations
-
-```bash
-# Create backup (dehydrate) - archives all data to git
-curl -X POST http://localhost:3000/dehydrate
-
-# Restore from backup (hydrate)
-curl -X POST http://localhost:3000/hydrate
-
-# Check backup status
-curl http://localhost:3000/backup/status
-```
-
-## API Examples
-
-```bash
-# Health check
-curl http://localhost:3000/health
-
-# Get document
-curl http://localhost:3000/circulars/26EC6
-
-# Get document content (markdown)
-curl http://localhost:3000/circulars/26EC6/content
-
-# Get workflow status
-curl http://localhost:3000/circulars/26EC6/workflow/status
-
-# Get workflow steps
-curl http://localhost:3000/circulars/26EC6/workflow/steps
-
-# Get processing history
-curl http://localhost:3000/circulars/26EC6/history
-
-# List documents with filters
-curl http://localhost:3000/circulars?status=COMPLETED&year=2024
-
-# Discover a single document
-curl -X POST http://localhost:3000/circulars/26EC6/discover \
-  -H "Content-Type: application/json"
-
-# Download a single document
-curl -X POST http://localhost:3000/circulars/26EC6/download \
-  -H "Content-Type: application/json"
-
-# Batch discover
-curl -X POST http://localhost:3000/circulars/discover-batch \
-  -H "Content-Type: application/json" \
-  -d '{"filters": {"year": 2024}}'
-
-# Batch download
-curl -X POST http://localhost:3000/circulars/batch-download \
-  -H "Content-Type: application/json" \
-  -d '{"filters": {"year": 2024}}'
-
-# Queue a discover job
-curl -X POST http://localhost:3000/queue/discover \
-  -H "Content-Type: application/json" \
-  -d '{"category": "circulars", "refNo": "26EC6"}'
-
-# Queue a download job
-curl -X POST http://localhost:3000/queue/download \
-  -H "Content-Type: application/json" \
-  -d '{"category": "circulars", "refNo": "26EC6"}'
-
-# Queue a convert job
-curl -X POST http://localhost:3000/queue/convert \
-  -H "Content-Type: application/json" \
-  -d '{"category": "circulars", "refNo": "26EC6"}'
-
-# Get queue statistics
-curl http://localhost:3000/queue/status
-
-# Health check
-curl http://localhost:3000/health
-
-# Get backup status
-curl http://localhost:3000/backup/status
-```
-
-## API Endpoints
-
-### Queue Endpoints
-
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| POST | `/queue/discover` | Queue a discover job |
-| POST | `/queue/download` | Queue a download job |
-| POST | `/queue/convert` | Queue a convert job |
-| GET | `/queue/status` | Get queue statistics |
 
 ### Document Endpoints
 
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| GET | `/:category/:refNo` | Get document by refNo |
-| GET | `/:category/:refNo/content` | Get markdown content |
-| GET | `/:category/:refNo/content?appendix=0` | Get specific appendix content |
-| POST | `/:category/:refNo/discover` | Discover a document |
-| POST | `/:category/:refNo/download` | Download a document |
-| GET | `/:category/:refNo/workflow/status` | Get workflow status |
-| GET | `/:category/:refNo/workflow/steps` | Get sub-workflow steps |
-| POST | `/:category/:refNo/workflow/retry` | Retry from failure |
-| POST | `/:category/:refNo/workflow/re-run` | Re-run from scratch |
-| GET | `/:category/:refNo/history` | Get processing history |
-| GET | `/:category` | List documents with filters |
-| POST | `/:category/discover-batch` | Batch discover documents |
-| POST | `/:category/batch-download` | Batch download documents |
+#### Circulars
 
-**Categories:** `circulars`, `guidelines`, `consultations`, `news`
+```bash
+# Get all circulars
+GET /circulars
 
-**Query Filters:** `status`, `year`
+# Get specific circular
+GET /circulars/:refNo
 
-### Backup Endpoints
+# Trigger discovery
+POST /circulars/discover
 
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| POST | `/dehydrate` | Create backup and commit to git |
-| POST | `/hydrate` | Restore from git backup |
-| GET | `/backup/status` | Get backup status |
-
-### Health Endpoints
-
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| GET | `/health` | Health check |
-
-## Workflow States
-
-| State | Description |
-|-------|-------------|
-| `PENDING` | Not yet discovered or re-run reset |
-| `DISCOVERED` | Found in source, ready to download |
-| `DOWNLOADING` | Fetching raw content from SFC |
-| `PROCESSING` | Converting to markdown |
-| `COMPLETED` | All done, markdown available |
-| `FAILED` | Error during download or processing |
-| `RETRYING` | Attempting recovery from failure |
-| `RE_RUNNING` | Complete reprocessing requested |
-| `STALE` | Source changed since last processing |
-
-## Sub-Workflow Steps
-
-| Step | Status Options |
-|------|----------------|
-| `discover` | PENDING, RUNNING, COMPLETED, FAILED, SKIPPED |
-| `download` | PENDING, RUNNING, COMPLETED, FAILED, SKIPPED |
-| `convert` | PENDING, RUNNING, COMPLETED, FAILED, SKIPPED |
-| `store` | PENDING, RUNNING, COMPLETED, FAILED, SKIPPED |
-
-## Categories
-
-| Category | Document Count | Reference Format | Notes |
-|----------|---------------|-------------------|-------|
-| circulars | ~700 | YYEC## (e.g., 26EC6) | PDF for all years (2000+), HTML for 2012+ |
-| guidelines | ~50 | UUID | PDF scraped from main website |
-| consultations | ~217 | YYCP## (paper), YYCC## (conclusion) | CP + optional CC when concluded |
-| news | ~5,205 | YYPR## | HTML only |
-
-### Consultations
-
-Consultations have a two-document lifecycle:
-1. **Consultation Paper (CP)** - The initial consultation document
-2. **Conclusion Paper (CC)** - Published when the consultation concludes (85% of consultations have conclusions)
-
-When a consultation has a conclusion (`hasConclusion: true`), both the consultation paper and the conclusion paper are downloaded automatically.
-
-## Architecture
-
-```
-sfc-fetch/
-├── src/
-│   ├── main.ts              # NestJS bootstrap
-│   ├── app.module.ts        # Root module
-│   ├── config/
-│   │   └── configuration.ts  # Config schema (TypeScript)
-│   ├── api/                 # Controllers (routes)
-│   │   ├── api.module.ts
-│   │   ├── circulars.controller.ts
-│   │   ├── consultations.controller.ts
-│   │   ├── guidelines.controller.ts
-│   │   ├── news.controller.ts
-│   │   ├── workflows.controller.ts
-│   │   └── health.controller.ts
-│   ├── database/
-│   │   ├── database.module.ts
-│   │   └── lowdb.service.ts  # LowDB service (JSON database)
-│   ├── workflows/
-│   │   ├── workflow.module.ts
-│   │   ├── workflow.service.ts  # Workflow state machine
-│   │   └── queue.service.ts     # Job queue (better-queue)
-│   ├── backup/
-│   │   ├── backup.module.ts
-│   │   ├── backup.service.ts    # Backup orchestration
-│   │   └── git.service.ts       # Git operations
-│   ├── converters/
-│   │   ├── converters.module.ts
-│   │   ├── docling.service.ts   # PDF → Markdown (Docling CLI)
-│   │   └── turndown.service.ts  # HTML → Markdown (Turndown)
-│   ├── sfc-clients/
-│   │   ├── sfc-clients.module.ts
-│   │   ├── circular.client.ts
-│   │   ├── consultation.client.ts
-│   │   ├── guideline.scraper.ts
-│   │   └── news.client.ts
-│   ├── services/
-│   │   └── content.service.ts   # Content management
-│   ├── common/
-│   │   └── ...
-│   └── types.d.ts             # TypeScript definitions
-├── data/                     # Runtime data (created at startup)
-│   ├── db/
-│   │   └── sfc-db.json       # LowDB database
-│   ├── content/              # Markdown files
-│   │   ├── circulars/
-│   │   ├── guidelines/
-│   │   ├── consultations/
-│   │   └── news/
-│   ├── archive/              # Archived re-runs
-│   └── backups/              # Backup metadata
-├── tests/                    # Tests (Bun test)
-├── package.json
-├── tsconfig.json             # TypeScript config
-└── README.md
+# Trigger conversion
+POST /queue/convert
+Body: { "category": "circulars", "refNo": "H686" }
 ```
 
-## Tech Stack Details
+#### Guidelines, Consultations, News
 
-### Core Framework
-- **NestJS**: Progressive Node.js framework for building efficient, scalable applications
-- **Fastify**: High-performance HTTP server (via @nestjs/platform-fastify)
+Similar endpoints available for each category.
 
-### Runtime & Language
-- **Bun**: Fast JavaScript runtime, package manager, and test runner
-- **TypeScript**: Type-safe development with full ES2022 support
+### Workflow Endpoints
 
-### Database & Persistence
-- **LowDB v7**: Small JSON database for Node.js, browser, and Deno
-- **AdmZip**: ZIP file manipulation for backup archives
-- **simple-git**: Git operations for backup/restore
+```bash
+# Get workflow statistics
+GET /workflows/stats
 
-### Document Processing
-- **Docling**: PDF to Markdown conversion (Python CLI)
-- **Turndown**: HTML to Markdown conversion (fallback)
-- **Cheerio**: Server-side jQuery for HTML parsing
+# Get queue status
+GET /workflows/queue/status
+```
 
-### Workflow & Queue
-- **better-queue**: Persistent, prioritized job queue with retry/backoff
-- **p-throttle**: Rate limiting for SFC API calls
+---
 
-### Utilities
-- **date-fns**: Date manipulation and formatting
-- **zod**: Schema validation
-- **uuid**: Unique ID generation
-- **fs-extra**: Enhanced file system operations
+## Deployment
+
+### Prerequisites
+
+- **Node.js** 18+ or **Bun** 1.0+
+- **PM2** (process manager)
+- **Docling** (PDF conversion tool)
+- **Git** (for backup/sync)
+
+### Installation
+
+```bash
+# Clone repository
+git clone https://github.com/yaukitdev1-cpu/sfc-fetch.git
+cd sfc-fetch
+
+# Install dependencies
+bun install
+
+# Configure environment
+cp .env.example .env
+# Edit .env with your settings
+
+# Install Docling (PDF converter)
+# See: https://github.com/DS4SD/docling
+pip install docling
+```
+
+### Running with PM2
+
+```bash
+# Start service
+pm2 start ecosystem.config.js
+
+# Check status
+pm2 status
+
+# View logs
+pm2 logs sfc-fetch
+
+# Restart
+pm2 restart sfc-fetch
+
+# Stop
+pm2 stop sfc-fetch
+```
+
+### Running in Development
+
+```bash
+# Start with hot reload
+bun run dev
+
+# Or without watch
+bun run start
+```
+
+---
+
+## Maintenance
+
+### Checking Pipeline Health
+
+```bash
+# Check service status
+pm2 status sfc-fetch
+
+# Check queue status
+curl -s http://localhost:3401/queue/status | jq
+
+# Check for failed documents
+curl -s http://localhost:3401/workflows/stats | jq
+
+# View recent logs
+tail -100 logs/app.log
+```
+
+### Fixing Broken Documents
+
+If documents have broken markdown (e.g., scanned PDFs with no text):
+
+```bash
+# 1. Identify broken circulars
+python3 scripts/fix-broken-circulars.py
+
+# 2. Restart service to re-process
+pm2 restart sfc-fetch
+```
+
+### Manual OCR Workflow
+
+For PDFs that cannot be automatically converted:
+
+```bash
+# 1. Copy PDFs to manual-ocr/ directory
+cp data/raw/circulars/H686.pdf manual-ocr/
+
+# 2. Use OCR tool (e.g., Adobe Acrobat, Tesseract)
+# 3. Save result as manual-ocr/H686.md
+
+# 4. Sync back to database
+bash scripts/sync-manual-ocr.sh
+```
+
+### Database Backup
+
+The database is automatically backed up via Git:
+
+```bash
+# Manual backup
+curl -X POST http://localhost:3401/dehydrate
+
+# Restore from Git
+curl -X POST http://localhost:3401/hydrate
+```
+
+---
+
+## Troubleshooting
+
+### Common Issues
+
+#### 1. Service Won't Start
+
+**Symptom:** PM2 shows `errored` status
+
+**Solution:**
+```bash
+# Check error logs
+pm2 logs sfc-fetch --err
+
+# Common causes:
+# - Port 3401 already in use
+# - Missing dependencies (bun install)
+# - Invalid .env configuration
+```
+
+#### 2. Queue Stuck
+
+**Symptom:** Queue shows `running: 1` but no progress
+
+**Solution:**
+```bash
+# Restart service
+pm2 restart sfc-fetch
+
+# If still stuck, reset queue
+pm2 stop sfc-fetch
+# Edit data/db/sfc-db.json: set all queue entries to "status": "pending"
+pm2 start sfc-fetch
+```
+
+#### 3. Docling Conversion Fails
+
+**Symptom:** Documents marked as FAILED with Docling errors
+
+**Solution:**
+```bash
+# Check Docling installation
+which docling
+docling --version
+
+# Re-process failed documents
+python3 scripts/fix-broken-circulars.py
+pm2 restart sfc-fetch
+```
+
+#### 4. ENOENT Errors
+
+**Symptom:** `ENOENT: no such file or directory` in logs
+
+**Cause:** Raw PDF was deleted before conversion completed
+
+**Solution:**
+```bash
+# The system auto-recovery should handle this
+# If not, manually re-download and convert
+curl -X POST http://localhost:3401/queue/convert \
+  -H "Content-Type: application/json" \
+  -d '{"category":"circulars","refNo":"H686"}'
+```
+
+#### 5. Scanned PDFs with No Text
+
+**Symptom:** Markdown files are very small (< 100 bytes)
+
+**Cause:** PDF contains only scanned images, no text layer
+
+**Solution:**
+- If SFC has HTML version: System will auto-fallback (implemented)
+- If no HTML: Manual OCR required (see Manual OCR Workflow)
+
+---
+
+## Known Issues & Fixes
+
+### Issue 1: ZIP Files Saved as PDF
+
+**Problem:** Some circulars (H644, H664, H679) are ZIP archives from SFC but were saved with `.pdf` extension.
+
+**Fix:** Added format detection via magic bytes. ZIP files are now properly extracted and the main PDF is converted.
+
+**Status:** ✅ Fixed (2026-06-23)
+
+### Issue 2: Scanned PDFs with HTML Fallback
+
+**Problem:** Scanned PDFs (no text layer) failed conversion, but SFC often has HTML versions available.
+
+**Fix:** Added HTML fallback in conversion pipeline. When PDF conversion produces < 50 chars, system fetches HTML from SFC API.
+
+**Status:** ✅ Fixed (2026-06-23)
+
+### Issue 3: Manual OCR Required
+
+**Problem:** Some scanned PDFs have no HTML fallback on SFC.
+
+**Fix:** Created manual OCR workflow with scripts to push PDFs to remote repo and sync OCR'd markdown back.
+
+**Status:** ✅ Implemented (2026-06-23)
+
+**Documents Requiring Manual OCR:**
+- H686 (1 page): Proposed India Taxation Legislation
+- H398 (3 pages): Suspicious Transactions Reports Classification
+- H480 (3 pages): Streamlining of Authorisation Process
+- H692 (6 pages): SFC Disciplinary Fining Guidelines
+- H592 (12 pages): FATF Statements on AML/CFT
+
+---
+
+## Performance
+
+### Current Statistics
+
+| Metric | Value |
+|--------|-------|
+| Total Documents | 5,449 |
+| Circulars | 944 |
+| Guidelines | 51 |
+| Consultations | 217 |
+| News | 4,237 |
+| Database Size | 34 MB |
+| Markdown Files | 5,449 |
+| Average Conversion Time | 5-30 seconds |
+
+### Resource Usage
+
+- **Memory:** ~200 MB (idle), ~400 MB (converting)
+- **CPU:** Low (mostly I/O bound)
+- **Disk:** ~100 MB (database + markdown files)
+
+---
 
 ## Development
 
-```bash
-# Run tests
-bun test
+### Project Structure
 
-# Development with hot reload
-bun --watch run src/main.ts
+- **Modular Architecture:** NestJS modules for separation of concerns
+- **Dependency Injection:** All services are injected via NestJS DI
+- **Type Safety:** Full TypeScript with strict mode
+- **Testing:** Unit tests in `tests/` directory
 
-# Build for production
-bun run build
+### Adding New Document Types
 
-# Type checking
-tsc --noEmit
-```
+1. Create new client in `src/sfc-clients/`
+2. Add controller in `src/api/`
+3. Update `configuration.ts` categories
+4. Update `LowdbService` schema
 
-## Migration Notes
+### Code Style
 
-This service was migrated from **Node.js + Express + SQLite** to **Bun + NestJS + LowDB** in recent sessions:
+- TypeScript strict mode
+- ESLint + Prettier
+- Conventional commits
 
-- **Runtime**: Node.js → Bun
-- **Framework**: Express → NestJS
-- **Database**: SQLite → LowDB (JSON)
-- **Language**: JavaScript → TypeScript
-- **HTTP Server**: Express → Fastify
-- **Queue Processing**: Manual → better-queue
-- **PDF Conversion**: Native → Docling CLI
+---
 
-The sfc-research design docs reflect the old architecture. See current source code for accurate implementation details.
+## Security
+
+- **No Authentication:** API is open (intended for internal use)
+- **Rate Limiting:** SFC API calls limited to 2 req/sec
+- **Input Validation:** Zod schemas for API inputs
+- **No Secrets in Code:** All credentials in `.env`
+
+---
+
+## License
+
+This project is for internal use. SFC documents are public domain.
+
+---
+
+## Support
+
+For issues or questions:
+1. Check this README
+2. Review `docs/MONITORING_PLAN.md`
+3. Check logs: `logs/app.log`
+4. Contact: York (project owner)
+
+---
+
+## Changelog
+
+### 2026-06-23
+- ✅ Fixed ZIP file handling (H644, H664, H679)
+- ✅ Added HTML fallback for scanned PDFs
+- ✅ Implemented manual OCR workflow
+- ✅ Converted 5 remaining scanned PDFs using vision AI
+- ✅ All 944 circulars now have valid markdown
+
+### 2026-05-23
+- Fixed OOM crashes (reduced Docling concurrency)
+- Added swap space
+- Fixed journald crash
+
+### 2026-04-30
+- Initial production deployment
+- Implemented discovery scheduler
+- Added Git backup integration
+
+---
+
+**End of Documentation**
