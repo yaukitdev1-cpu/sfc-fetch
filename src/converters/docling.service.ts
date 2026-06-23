@@ -70,17 +70,30 @@ export class DoclingService {
 
   private runDocling(inputPath: string, outputPath: string): Promise<void> {
     return new Promise((resolve, reject) => {
-      // Docling outputs to a directory and creates a file named after the input
-      // Use the docling CLI directly
+      const timeoutMs = Number(this.timeout) || 30000;
+      let settled = false;
+
       const proc = spawn(this.doclingPath, [
         inputPath,
         '--to',
         'md',
         '--output',
         outputPath,
-      ], {
-        timeout: Number(this.timeout),
-      });
+      ]);
+
+      // Hard-kill timer: if docling doesn't finish within timeoutMs,
+      // send SIGKILL to the entire process group to force termination.
+      const killTimer = setTimeout(() => {
+        if (!settled) {
+          settled = true;
+          try {
+            process.kill(-proc.pid!, 'SIGKILL');
+          } catch {
+            proc.kill('SIGKILL');
+          }
+          reject(new Error(`Docling timed out after ${timeoutMs}ms`));
+        }
+      }, timeoutMs);
 
       let stdout = '';
       let stderr = '';
@@ -94,6 +107,9 @@ export class DoclingService {
       });
 
       proc.on('close', (code) => {
+        clearTimeout(killTimer);
+        if (settled) return;
+        settled = true;
         if (code === 0) {
           resolve();
         } else {
@@ -102,6 +118,9 @@ export class DoclingService {
       });
 
       proc.on('error', (error) => {
+        clearTimeout(killTimer);
+        if (settled) return;
+        settled = true;
         reject(error);
       });
     });

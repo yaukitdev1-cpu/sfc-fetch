@@ -546,7 +546,7 @@ export class LowdbService implements OnModuleInit, OnModuleDestroy {
   }
 
   getPendingQueueJobs(): any[] {
-    return this.db.data.queue.filter((j: any) => j.status === 'pending' || j.status === 'in_progress');
+    return this.db.data.queue.filter((j: any) => j.status === 'pending');
   }
 
   getAllQueueJobs(): any[] {

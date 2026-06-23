@@ -479,6 +479,12 @@ export class DiscoverySchedulerService implements OnModuleInit, OnModuleDestroy 
       return false; // Already in progress or completed
     }
 
+    // FAILED docs with valid markdown output don't need re-queuing — the content
+    // exists on disk and the workflow can be completed by recovery.
+    if (status === 'FAILED' && doc.content?.markdownPath) {
+      return false;
+    }
+
     return true; // Failed, stale, or unknown - should queue
   }
 
