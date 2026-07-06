@@ -1,0 +1,16 @@
+A new Chapter 36 has been introduced into the GEM Listing Rules to deal with conflicts of interest between the Exchange and persons whom the Exchange regulates in relation to GEM. The SFC, HKEx and the Exchange have also replaced the memorandum of understanding dated 19 June 2000 with a new memorandum of understanding that covers GEM listing matters. 
+
+The amendments to the GEM Listing Rules come into immediate effect.
+
+ 
+
+In preparation for the listing of Hong Kong Exchanges and Clearing Limited ("HKEx") on the Main Board of the Exchange, the Securities and Futures Commission ("SFC"), HKEx and the Exchange entered into a memorandum of understanding on 19 June 2000. At the same time, Chapter 38 was introduced to the Rules Governing the Listing of Securities on The Stock Exchange of Hong Kong Limited (the "Main Board Listing Rules"). Among other things, the MOU and Chapter 38 provide the SFC with the powers and functions equivalent to those of the Exchange as front line regulator of listed companies and listing applicants on the Main Board in the event the Exchange is prevented from acting in that capacity by conflicts of interest. (For background information on Chapter 38 and the MOU, please refer to the Exchange's announcement dated 19 June 2000.)
+
+As conflicts of interest may also arise between the Exchange and persons whom it regulates in relation to the Growth Enterprise Market ("GEM"), it is appropriate to extend the framework to deal with conflicts of interests as described above to GEM. The SFC, HKEx and the Exchange have entered into a new memorandum of understanding to extend the scope of the MOU to cover GEM. A new Chapter 36, following the principles set out in Chapter 38 of the Main Board Listing Rules, has been introduced into the Rules Governing the Listing of Securities on the Growth Enterprise Market of The Stock Exchange of Hong Kong Limited (the "GEM Listing Rules").
+
+The new Chapter 36 of the GEM Listing Rules contains, among other things, provisions which deal with the following:
+
+- SFC's role in relation to applicants for listing and listed issuers on GEM;
+- powers and functions of the SFC in relation to the listed issuers and listing applicants on GEM in the event of an actual or potential conflict of interest between the Exchange and such issuers or applicants; and
+- extension of the powers and functions of the SFC (HKEC Listing) Committee, SFC (HKEC Listing) Appeals Committee (and the Secretary to these committees) and SFC (HKEC Listing) Executive and the Executive Director in charge of the Corporate Finance Division of the SFC (all as referred to in Chapter 38 of the Main Board Listing Rules) to exercise SFC's listing related powers and functions with respect to GEM.
+The new memorandum of understanding will be available on HKEx's and the [SFC's respective websites](http://www.sfc.hk/sfc/doc/EN/general/general/press_release/01/gem-mou.pdf). The amendments to the GEM Listing Rules come into immediate effect. Re-printed pages of the GEM Listing Rules will be distributed in due course.

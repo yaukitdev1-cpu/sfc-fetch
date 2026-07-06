@@ -309,31 +309,38 @@ export class DiscoverySchedulerService implements OnModuleInit, OnModuleDestroy 
         this.logger.log(`DEBUG discoverAllAtOnce: totalFound now ${pageResults.totalFound}, starting item loop`);
 
         for (const item of items) {
-          this.logger.log(`DEBUG discoverAllAtOnce: processing item`);
-          const refNo = this.extractRefNo(category, item);
-          if (!refNo) {
-            this.logger.warn(`Could not extract refNo from item in ${category}`, item);
-            continue;
-          }
-
-          this.logger.log(`DEBUG discoverAllAtOnce: refNo=${refNo}`);
-          pageResults.documentRefs.push(refNo);
-
-          this.logger.log(`DEBUG discoverAllAtOnce: calling shouldQueueDocument for ${refNo}`);
-          const shouldQueue = await this.shouldQueueDocument(refNo, category);
-          this.logger.log(`DEBUG discoverAllAtOnce: shouldQueue=${shouldQueue} for ${refNo}`);
-          if (shouldQueue) {
-            this.logger.log(`DEBUG discoverAllAtOnce: queueing document ${refNo}`);
-            await this.queueDocument(refNo, category, item);
-            pageResults.newlyQueued++;
-            this.logger.log(`DEBUG discoverAllAtOnce: queued, newlyQueued=${pageResults.newlyQueued}`);
-          } else {
-            const doc = this.lowdbService.getDocument(refNo, category);
-            if (doc?.workflow?.status === 'COMPLETED') {
-              pageResults.alreadyCompleted++;
-            } else {
-              pageResults.inProgress++;
+          try {
+            this.logger.log(`DEBUG discoverAllAtOnce: processing item`);
+            const refNo = this.extractRefNo(category, item);
+            if (!refNo) {
+              this.logger.warn(`Could not extract refNo from item in ${category}`, item);
+              continue;
             }
+
+            this.logger.log(`DEBUG discoverAllAtOnce: refNo=${refNo}`);
+            pageResults.documentRefs.push(refNo);
+
+            this.logger.log(`DEBUG discoverAllAtOnce: calling shouldQueueDocument for ${refNo}`);
+            const shouldQueue = await this.shouldQueueDocument(refNo, category);
+            this.logger.log(`DEBUG discoverAllAtOnce: shouldQueue=${shouldQueue} for ${refNo}`);
+            if (shouldQueue) {
+              this.logger.log(`DEBUG discoverAllAtOnce: queueing document ${refNo}`);
+              await this.queueDocument(refNo, category, item);
+              pageResults.newlyQueued++;
+              this.logger.log(`DEBUG discoverAllAtOnce: queued, newlyQueued=${pageResults.newlyQueued}`);
+            } else {
+              const doc = this.lowdbService.getDocument(refNo, category);
+              if (doc?.workflow?.status === 'COMPLETED') {
+                pageResults.alreadyCompleted++;
+              } else {
+                pageResults.inProgress++;
+              }
+            }
+          } catch (itemError: any) {
+            // Per-item error handling: don't let one bad refNo abort the entire discovery
+            this.logger.warn(`Skipping item due to error in ${category}: ${itemError?.message || itemError}`);
+            pageResults.errors++;
+            continue;
           }
         }
 
@@ -389,25 +396,32 @@ export class DiscoverySchedulerService implements OnModuleInit, OnModuleDestroy 
         pageResults.totalFound += items.length;
 
         for (const item of items) {
-          const refNo = this.extractRefNo(category, item);
-          if (!refNo) {
-            this.logger.warn(`Could not extract refNo from item in ${category}`, item);
-            continue;
-          }
-
-          pageResults.documentRefs.push(refNo);
-
-          const shouldQueue = await this.shouldQueueDocument(refNo, category);
-          if (shouldQueue) {
-            await this.queueDocument(refNo, category, item);
-            pageResults.newlyQueued++;
-          } else {
-            const doc = this.lowdbService.getDocument(refNo, category);
-            if (doc?.workflow?.status === 'COMPLETED') {
-              pageResults.alreadyCompleted++;
-            } else {
-              pageResults.inProgress++;
+          try {
+            const refNo = this.extractRefNo(category, item);
+            if (!refNo) {
+              this.logger.warn(`Could not extract refNo from item in ${category}`, item);
+              continue;
             }
+
+            pageResults.documentRefs.push(refNo);
+
+            const shouldQueue = await this.shouldQueueDocument(refNo, category);
+            if (shouldQueue) {
+              await this.queueDocument(refNo, category, item);
+              pageResults.newlyQueued++;
+            } else {
+              const doc = this.lowdbService.getDocument(refNo, category);
+              if (doc?.workflow?.status === 'COMPLETED') {
+                pageResults.alreadyCompleted++;
+              } else {
+                pageResults.inProgress++;
+              }
+            }
+          } catch (itemError: any) {
+            // Per-item error handling: don't let one bad refNo abort the entire discovery
+            this.logger.warn(`Skipping item due to error in ${category}/${year}: ${itemError?.message || itemError}`);
+            pageResults.errors++;
+            continue;
           }
         }
 

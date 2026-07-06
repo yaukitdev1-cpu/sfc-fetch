@@ -1,6 +1,10 @@
 #!/bin/bash
 # Sync manually OCR'd markdown files back into sfc-fetch
 # Usage: ./scripts/sync-manual-ocr.sh
+#
+# Reads .md files from manual-ocr/, matches them to documents in the DB
+# by refNo (filename without extension), copies the markdown to the correct
+# content directory, and marks the workflow as COMPLETED.
 
 set -e
 
@@ -23,11 +27,17 @@ from datetime import datetime
 
 db_path = 'data/db/sfc-db.json'
 manual_ocr_dir = 'manual-ocr'
-content_dir = 'data/content/circulars/markdown/2026'
 
 # Load DB
 with open(db_path) as f:
     db = json.load(f)
+
+# Build a lookup: refNo -> (category, doc) across all categories
+categories = ['circulars', 'consultations', 'news', 'guidelines']
+doc_lookup = {}
+for category in categories:
+    for doc in db.get(category, []):
+        doc_lookup[doc['_id']] = (category, doc)
 
 # Find all .md files in manual-ocr directory
 md_files = glob.glob(os.path.join(manual_ocr_dir, '*.md'))
@@ -39,37 +49,48 @@ skipped = 0
 for md_path in md_files:
     basename = os.path.basename(md_path)
     ref = basename.replace('.md', '')
-    
+
     # Find the document in DB
-    doc = next((d for d in db['circulars'] if d['_id'] == ref), None)
-    if not doc:
+    lookup = doc_lookup.get(ref)
+    if not lookup:
         print(f"  SKIP {ref}: not found in DB")
         skipped += 1
         continue
-    
+
+    category, doc = lookup
+
     # Read markdown content
     with open(md_path, 'r') as f:
         content = f.read()
-    
+
     meaningful_chars = len(content.replace(' ', '').replace('\n', '').replace('\t', ''))
     if meaningful_chars < 50:
         print(f"  SKIP {ref}: markdown too small ({meaningful_chars} chars)")
         skipped += 1
         continue
-    
-    # Save to content directory
+
+    # Determine content output path based on category
+    if category == 'circulars':
+        content_dir = f'data/content/{category}/markdown/2026'
+    elif category == 'consultations':
+        content_dir = f'data/content/{category}/markdown'
+    elif category == 'guidelines':
+        content_dir = f'data/content/{category}/markdown'
+    else:
+        content_dir = f'data/content/{category}/markdown'
+
     os.makedirs(content_dir, exist_ok=True)
     dest_path = os.path.join(content_dir, f'{ref}.md')
     with open(dest_path, 'w') as f:
         f.write(content)
-    
+
     # Calculate hash
     md_hash = hashlib.sha256(content.encode()).hexdigest()
-    
-    # Update DB
+
+    # Update document
     doc['content'] = {
         **doc.get('content', {}),
-        'markdownPath': f'circulars/markdown/2026/{ref}.md',
+        'markdownPath': f'{category}/markdown/{ref}.md' if category != 'circulars' else f'circulars/markdown/2026/{ref}.md',
         'markdownSize': len(content),
         'markdownHash': f'sha256:{md_hash}',
         'lastConverted': datetime.utcnow().isoformat() + 'Z',
@@ -82,9 +103,9 @@ for md_path in md_files:
         'needsManualOcr': False,
         'completedAt': datetime.utcnow().isoformat() + 'Z',
     }
-    
+
     processed += 1
-    print(f"  OK {ref}: {len(content)} chars -> {dest_path}")
+    print(f"  OK [{category}] {ref}: {len(content)} chars -> {dest_path}")
 
 # Save DB
 with open(db_path, 'w') as f:

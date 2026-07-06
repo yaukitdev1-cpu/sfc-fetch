@@ -533,6 +533,39 @@ export class QueueService implements OnModuleInit, OnModuleDestroy {
           // Let discover complete but don't chain — the convert will fail with proper error
           return job;
         }
+
+        // Check for placeholder HTML (e.g., "English version not available")
+        // These are legitimately empty — mark as COMPLETED with 0 bytes instead of failing
+        const placeholderPatterns = [
+          /english version.*not available/i,
+          /中文版本.*不可用/,
+          /please use chinese version/i,
+          /请使用中文版本/,
+        ];
+        const isPlaceholder = placeholderPatterns.some(pattern => pattern.test(htmlContent));
+
+        if (isPlaceholder) {
+          this.logger.log(`[Queue] News ${refNo} has placeholder HTML (legitimately empty), marking as COMPLETED`);
+          await this.lowdbService.upsertDocument(refNo, category, {
+            ...updatedDoc,
+            source: {
+              ...updatedDoc.source,
+              rawFilePath: this.getRawFilePath(category, refNo, 'html'),
+            },
+            workflow: {
+              ...updatedDoc.workflow,
+              status: 'COMPLETED',
+              currentStep: 'convert',
+              completedAt: new Date().toISOString(),
+            },
+            content: {
+              ...updatedDoc.content,
+              markdownSize: 0,
+            },
+          });
+          return job;
+        }
+
         const rawPath = this.getRawFilePath(category, refNo, 'html');
         await fs.ensureDir(path.dirname(rawPath));
         await fs.writeFile(rawPath, htmlContent);
@@ -707,23 +740,15 @@ export class QueueService implements OnModuleInit, OnModuleDestroy {
         // Consultations: check available assets first
         const assets = await this.consultationClient.checkConsultationAssets(refNo);
 
-        if (assets.hasPdf) {
-          // Try PDF first, fall back to HTML if PDF unavailable
-          const pdfBuffer = await this.consultationClient.getConsultationPdf(refNo);
-          if (pdfBuffer) {
-            content = pdfBuffer;
-            rawPath = this.getRawFilePath(category, refNo, 'pdf');
-          } else if (assets.hasHtml) {
-            // PDF check returned null but HTML available - use HTML
-            this.logger.log(`[Queue] PDF not available for ${category}/${refNo}, using HTML content`);
-            content = assets.html || '';
-            rawPath = this.getRawFilePath(category, refNo, 'html');
-          } else {
-            throw new Error(`PDF not available and no HTML content for consultation ${refNo}`);
-          }
+        // Always try PDF first — fileKeySeq may be null for old consultations (1989-2001)
+        // but PDFs are still available via the openFile endpoint
+        const pdfBuffer = await this.consultationClient.getConsultationPdf(refNo);
+        if (pdfBuffer) {
+          content = pdfBuffer;
+          rawPath = this.getRawFilePath(category, refNo, 'pdf');
         } else if (assets.hasHtml) {
-          // No PDF available, use HTML content
-          this.logger.log(`[Queue] No PDF for ${category}/${refNo}, using HTML content`);
+          // PDF not available, fall back to HTML content
+          this.logger.log(`[Queue] PDF not available for ${category}/${refNo}, using HTML content`);
           content = assets.html || '';
           rawPath = this.getRawFilePath(category, refNo, 'html');
         } else {

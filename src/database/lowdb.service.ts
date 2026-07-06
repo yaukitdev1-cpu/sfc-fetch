@@ -11,7 +11,7 @@ import * as crypto from 'crypto';
 
 // Reuse validation schemas from ContentService for consistency
 const CategorySchema = z.enum(['circulars', 'guidelines', 'consultations', 'news']);
-const RefNoSchema = z.string().regex(/^[A-Z0-9-]+$/, 'RefNo must contain only uppercase letters, numbers, and hyphens');
+const RefNoSchema = z.string().regex(/^[A-Z0-9_-]+$/, 'RefNo must contain only uppercase letters, numbers, hyphens, and underscores');
 const StatusSchema = z.string().regex(/^[a-z_-]+$/, 'Status must contain only lowercase letters, underscores, and hyphens');
 const StepNameSchema = z.string().regex(/^[a-z_-]+$/, 'Step name must contain only lowercase letters, underscores, and hyphens');
 const BackupIdSchema = z.string().regex(/^[A-Z0-9-]+$/, 'Backup ID must contain only uppercase letters, numbers, and hyphens');

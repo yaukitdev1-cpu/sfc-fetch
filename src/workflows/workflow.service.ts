@@ -22,6 +22,7 @@ export class WorkflowService {
       RETRYING: 'RETRYING',
       RE_RUNNING: 'RE_RUNNING',
       STALE: 'STALE',
+      NEEDS_MANUAL_OCR: 'NEEDS_MANUAL_OCR',
     };
 
     this.stepStatuses = this.configService.get<Record<string, string>>('stepStatuses') || {
@@ -302,7 +303,10 @@ export class WorkflowService {
 
     // Always record the error at workflow level for visibility
     doc.workflow.error = error.message || String(error);
-    doc.workflow.status = this.workflowStates.FAILED;
+    // Preserve NEEDS_MANUAL_OCR status if already set (don't override with FAILED)
+    if (doc.workflow.status !== this.workflowStates.NEEDS_MANUAL_OCR) {
+      doc.workflow.status = this.workflowStates.FAILED;
+    }
     doc.updatedAt = now;
     await this.db.upsertDocument(refNo, category, doc);
 

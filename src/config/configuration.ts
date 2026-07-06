@@ -29,6 +29,7 @@ export default () => ({
     RETRYING: 'RETRYING',
     RE_RUNNING: 'RE_RUNNING',
     STALE: 'STALE',
+    NEEDS_MANUAL_OCR: 'NEEDS_MANUAL_OCR',
   },
 
   stepStatuses: {

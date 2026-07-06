@@ -1,0 +1,1 @@
+SFC/HKEx Joint Announcement on the Market Consultation and Changes to the Rules governing the Listing of Securities on the Growth Enterprise Market
