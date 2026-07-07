@@ -15,7 +15,7 @@ cd "$REPO_DIR"
 
 echo "Pulling latest from remote..."
 cd "$MANUAL_OCR_DIR"
-git pull
+git pull || echo "WARNING: git pull failed, continuing with local files..."
 
 echo "Processing OCR'd markdown files..."
 python3 << 'PYTHON_SCRIPT'
