@@ -711,6 +711,13 @@ def main():
     # ── Fix mode: sync DB from disk before scanning ──
     if args.fix:
         print("\n🔧 Running DB/disk sync fix...")
+        # CRITICAL: Stop service first to prevent LowDB race condition
+        # (service holds stale in-memory copy that overwrites our fix)
+        import subprocess
+        print("  ⏸  Stopping sfc-fetch service...")
+        subprocess.run(["pm2", "stop", "sfc-fetch"], capture_output=True)
+        import time; time.sleep(2)
+        
         fixed_count, fixed_refs = fix_db_disk_sync(db, args.category)
         if fixed_count > 0:
             save_db(db)
@@ -718,10 +725,18 @@ def main():
             for ref, cat, old_size, new_size in fixed_refs:
                 print(f"      [{cat}] {ref}: {old_size}B → {new_size}B")
             print(f"  DB saved to {DB_PATH}")
+            # Restart service so it loads the fixed DB
+            print("  ▶️  Restarting sfc-fetch service...")
+            subprocess.run(["pm2", "restart", "sfc-fetch"], capture_output=True)
+            time.sleep(2)
             # Reload DB for clean scan
             db = load_db()
         else:
             print("  ✅ No mismatches found — DB is in sync with disk.")
+            # Restart service even if no fix needed (it was stopped above)
+            print("  ▶️  Restarting sfc-fetch service...")
+            subprocess.run(["pm2", "restart", "sfc-fetch"], capture_output=True)
+            time.sleep(2)
 
     # Build result
     result = ScanResult(

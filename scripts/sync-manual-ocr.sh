@@ -18,6 +18,14 @@ cd "$MANUAL_OCR_DIR"
 git pull || echo "WARNING: git pull failed, continuing with local files..."
 
 cd "$REPO_DIR"
+
+# CRITICAL: Stop the service before syncing to prevent race condition.
+# LowDB keeps the entire DB in memory. If the service is running, it will
+# overwrite our disk changes with its stale in-memory copy on next save.
+echo "Stopping sfc-fetch service to prevent DB race condition..."
+pm2 stop sfc-fetch 2>/dev/null || echo "WARNING: pm2 stop failed, continuing..."
+sleep 2
+
 echo "Processing OCR'd markdown files..."
 python3 << 'PYTHON_SCRIPT'
 import json
@@ -114,5 +122,9 @@ with open(db_path, 'w') as f:
 
 print(f"\nProcessed: {processed}, Skipped: {skipped}")
 PYTHON_SCRIPT
+
+# Restart the service so it loads the updated DB from disk
+echo "Restarting sfc-fetch service with updated DB..."
+pm2 restart sfc-fetch 2>/dev/null || echo "WARNING: pm2 restart failed"
 
 echo "Done!"
