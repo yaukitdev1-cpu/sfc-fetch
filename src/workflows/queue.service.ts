@@ -535,7 +535,7 @@ export class QueueService implements OnModuleInit, OnModuleDestroy {
         }
 
         // Check for placeholder HTML (e.g., "English version not available")
-        // These are legitimately empty — mark as COMPLETED with 0 bytes instead of failing
+        // These are legitimately empty — mark as FAILED with clear error instead of COMPLETED
         const placeholderPatterns = [
           /english version.*not available/i,
           /中文版本.*不可用/,
@@ -545,7 +545,7 @@ export class QueueService implements OnModuleInit, OnModuleDestroy {
         const isPlaceholder = placeholderPatterns.some(pattern => pattern.test(htmlContent));
 
         if (isPlaceholder) {
-          this.logger.log(`[Queue] News ${refNo} has placeholder HTML (legitimately empty), marking as COMPLETED`);
+          this.logger.warn(`[Queue] News ${refNo} has placeholder HTML (no English content), marking as FAILED`);
           await this.lowdbService.upsertDocument(refNo, category, {
             ...updatedDoc,
             source: {
@@ -554,9 +554,10 @@ export class QueueService implements OnModuleInit, OnModuleDestroy {
             },
             workflow: {
               ...updatedDoc.workflow,
-              status: 'COMPLETED',
+              status: 'FAILED',
               currentStep: 'convert',
-              completedAt: new Date().toISOString(),
+              error: 'No English content available (placeholder HTML detected)',
+              failedAt: new Date().toISOString(),
             },
             content: {
               ...updatedDoc.content,

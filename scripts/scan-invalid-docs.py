@@ -51,6 +51,12 @@ WARNING_MD_SIZE = 200   # Below this = suspiciously small
 # Queue orphans threshold
 ORPHAN_WARN_THRESHOLD = 100
 
+# Known legitimately short docs (e.g., supersession notices)
+# These are flagged as WARNING by the < 200B threshold but are valid content
+LEGITIMATELY_SHORT_DOCS = {
+    "H114",  # Circular supersession notice (132B)
+}
+
 
 # ── Types ──────────────────────────────────────────────────────────────────────
 
@@ -142,6 +148,10 @@ def scan_broken_markdown(db: dict, category_filter: Optional[str] = None) -> lis
 
             md_size = doc.get("content", {}).get("markdownSize", 0)
             ref = get_ref(doc, cat)
+
+            # Skip known legitimately short docs
+            if ref in LEGITIMATELY_SHORT_DOCS:
+                continue
 
             if md_size < CRITICAL_MD_SIZE:
                 critical_refs.append(f"{ref} ({md_size}B)")
@@ -247,12 +257,23 @@ def scan_failed_docs(db: dict, category_filter: Optional[str] = None) -> list:
     findings = []
     cats = [category_filter] if category_filter else CATEGORIES
 
+    # Expected failure reasons (not actual bugs)
+    expected_failures = [
+        "No English content available",
+        "placeholder HTML detected",
+    ]
+
     for cat in cats:
         failed = []
         for doc in db[cat]:
             if doc.get("workflow", {}).get("status") == "FAILED":
                 ref = get_ref(doc, cat)
                 err = doc.get("workflow", {}).get("error", "")
+                
+                # Skip expected failures (e.g., no English content)
+                if any(expected in err for expected in expected_failures):
+                    continue
+                
                 # Truncate long errors for summary
                 err_short = err[:100] + "..." if len(err) > 100 else err
                 failed.append(f"{ref}: {err_short}")
@@ -363,7 +384,8 @@ def scan_workflow_anomalies(db: dict, category_filter: Optional[str] = None) -> 
                     no_timestamp.append(ref)
 
                 md_size = doc.get("content", {}).get("markdownSize", 0)
-                if md_size == 0:
+                # Skip known legitimately short docs from zero-markdown check
+                if md_size == 0 and ref not in LEGITIMATELY_SHORT_DOCS:
                     zero_md_completed.append(ref)
 
         if no_timestamp:
