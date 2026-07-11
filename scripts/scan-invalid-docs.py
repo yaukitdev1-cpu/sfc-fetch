@@ -51,10 +51,18 @@ WARNING_MD_SIZE = 200   # Below this = suspiciously small
 # Queue orphans threshold
 ORPHAN_WARN_THRESHOLD = 100
 
-# Known legitimately short docs (e.g., supersession notices)
+# Known legitimately short docs (e.g., supersession notices, PDF link placeholders)
 # These are flagged as WARNING by the < 200B threshold but are valid content
 LEGITIMATELY_SHORT_DOCS = {
-    "H114",  # Circular supersession notice (132B)
+    "H114",       # Circular supersession notice (132B)
+    "04PR55",     # Brief announcement: "speech attached" (193B)
+    "02PR249",    # Brief announcement: "statement attached" (125B)
+    "02PR231",    # Brief announcement: "speech attached" (127B)
+    "HKEX-GEM-1", # PDF link placeholder (147B)
+    "1509",       # PDF link placeholder (197B)
+    "2207",       # PDF link placeholder (187B)
+    "1606",       # PDF link placeholder (185B)
+    "107",        # PDF link placeholder (135B)
 }
 
 
