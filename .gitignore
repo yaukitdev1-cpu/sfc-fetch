@@ -51,4 +51,4 @@ lerna-debug.log*
 data/
 
 # Keep db directory structure marker (use: git add -f data/db/.gitkeep to track if needed)
-# !data/db/.gitkeep
+# !data/db/.gitkeep.openrouter_key
