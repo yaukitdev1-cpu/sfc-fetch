@@ -973,6 +973,70 @@ export class QueueService implements OnModuleInit, OnModuleDestroy {
         }
       }
 
+      // For news items, extract and process PDF attachments from HTML
+      let appendices: Array<{ url: string; text: string; localPath: string; markdownPath?: string }> = [];
+      if (category === 'news' && !needsManualOcr) {
+        const htmlContent = (await fs.readFile(rawFilePath)).toString();
+        const pdfLinks = this.extractPdfLinksFromHtml(htmlContent);
+        
+        if (pdfLinks.length > 0) {
+          this.logger.log(`[Queue] Found ${pdfLinks.length} PDF link(s) in news ${refNo}`);
+          
+          for (let i = 0; i < pdfLinks.length; i++) {
+            const link = pdfLinks[i];
+            const appendixRef = `${refNo}_appendix_${i + 1}`;
+            const pdfPath = this.getRawFilePath(category, appendixRef, 'pdf');
+            
+            try {
+              this.logger.log(`[Queue] Downloading PDF attachment ${i + 1}/${pdfLinks.length}: ${link.url}`);
+              await this.downloadPdf(link.url, pdfPath);
+              
+              // Convert PDF to markdown
+              const { markdown: pdfMarkdown, needsManualOcr: pdfNeedsOcr } = await this.convertPdfToMarkdown(pdfPath);
+              
+              if (pdfNeedsOcr) {
+                this.logger.warn(`[Queue] PDF attachment ${i + 1} for ${refNo} needs manual OCR`);
+                // Don't fail the whole doc, just note it
+                appendices.push({
+                  url: link.url,
+                  text: link.text,
+                  localPath: pdfPath,
+                  markdownPath: undefined, // Will be handled separately
+                });
+              } else {
+                // Save the appendix markdown
+                const year = doc.metadata?.year || new Date().getFullYear();
+                const appendixResult = await this.contentService.saveMarkdown(
+                  category,
+                  appendixRef,
+                  pdfMarkdown,
+                  { year }
+                );
+                
+                // Append to main markdown content
+                markdownContent += `\n\n---\n\n## Attachment: ${link.text || 'PDF'}\n\n${pdfMarkdown}`;
+                
+                appendices.push({
+                  url: link.url,
+                  text: link.text,
+                  localPath: pdfPath,
+                  markdownPath: appendixResult.markdownPath,
+                });
+                
+                this.logger.log(`[Queue] Successfully processed PDF attachment ${i + 1}/${pdfLinks.length} for ${refNo}`);
+              }
+              
+              // Cleanup the raw PDF after conversion
+              await this.cleanupRawFile(pdfPath);
+              
+            } catch (pdfError) {
+              this.logger.warn(`[Queue] Failed to process PDF attachment ${i + 1} for ${refNo}: ${(pdfError as Error).message}`);
+              // Continue with other attachments
+            }
+          }
+        }
+      }
+
       // If needs manual OCR, don't save broken markdown - mark for manual processing
       if (needsManualOcr) {
         this.logger.warn(`[Queue] Marking ${category}/${refNo} for manual OCR`);
@@ -1004,6 +1068,14 @@ export class QueueService implements OnModuleInit, OnModuleDestroy {
           markdownSize: result.markdownSize,
           markdownHash: result.markdownHash,
           lastConverted: new Date().toISOString(),
+          // Track PDF appendices if any
+          ...(appendices.length > 0 && {
+            appendices: appendices.map(a => ({
+              url: a.url,
+              text: a.text,
+              markdownPath: a.markdownPath,
+            })),
+          }),
         },
         workflow: {
           ...doc.workflow,
@@ -1105,6 +1177,83 @@ export class QueueService implements OnModuleInit, OnModuleDestroy {
     } catch (error) {
       return '# PDF fallback - error\n\nError: ' + (error as Error).message;
     }
+  }
+
+  /**
+   * Extract PDF links from HTML content
+   * Returns array of { url, text } objects
+   */
+  private extractPdfLinksFromHtml(html: string): Array<{ url: string; text: string }> {
+    const links: Array<{ url: string; text: string }> = [];
+    // Match <a> tags with href containing .pdf
+    const linkRegex = /<a[^>]*href=["']([^"']*\.pdf[^"']*)["'][^>]*>(.*?)<\/a>/gi;
+    let match;
+    while ((match = linkRegex.exec(html)) !== null) {
+      const url = match[1];
+      const text = match[2].replace(/<[^>]+>/g, '').trim(); // Strip HTML tags from link text
+      links.push({ url, text });
+    }
+    return links;
+  }
+
+  /**
+   * Download a PDF from URL to local file
+   * Returns the local file path
+   */
+  private async downloadPdf(url: string, destPath: string): Promise<string> {
+    // Ensure https
+    const httpsUrl = url.replace(/^http:\/\//i, 'https://');
+    
+    // Use AbortController for timeout
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 60000);
+    
+    try {
+      const response = await fetch(httpsUrl, {
+        headers: {
+          'User-Agent': 'Mozilla/5.0 (compatible; SFC-Fetch/1.0)',
+        },
+        signal: controller.signal,
+      });
+
+      if (!response.ok) {
+        throw new Error(`Failed to download PDF: HTTP ${response.status}`);
+      }
+
+      const buffer = Buffer.from(await response.arrayBuffer());
+      await fs.ensureDir(path.dirname(destPath));
+      await fs.writeFile(destPath, buffer);
+      
+      return destPath;
+    } finally {
+      clearTimeout(timeoutId);
+    }
+  }
+
+  /**
+   * Convert a PDF file to markdown, with fallback
+   * Returns { markdown, needsManualOcr }
+   */
+  private async convertPdfToMarkdown(pdfPath: string): Promise<{ markdown: string; needsManualOcr: boolean }> {
+    try {
+      const markdown = await this.doclingService.convertPdfToMarkdown(pdfPath);
+      const meaningfulChars = markdown.replace(/[\x00-\x1f\x7f]/g, '').replace(/\s/g, '').length;
+      if (meaningfulChars >= 50) {
+        return { markdown, needsManualOcr: false };
+      }
+    } catch (doclingError) {
+      this.logger.warn(`Docling failed for PDF ${pdfPath}, using fallback: ${(doclingError as Error).message}`);
+    }
+
+    // Fallback to basicPdfFallback
+    const fileBuffer = await fs.readFile(pdfPath) as Buffer;
+    const markdown = await this.basicPdfFallback(fileBuffer);
+    const meaningfulChars = markdown.replace(/[\x00-\x1f\x7f]/g, '').replace(/\s/g, '').length;
+    
+    return {
+      markdown,
+      needsManualOcr: meaningfulChars < 50,
+    };
   }
 
   private async processJob(job: any): Promise<any> {
