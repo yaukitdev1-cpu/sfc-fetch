@@ -159,8 +159,13 @@ def ocr_pdf(ref, model, api_key, dry_run=False):
     """OCR a single PDF and return markdown content."""
     pdf_path = RAW_DIR / f"{ref}.pdf"
 
+    # Fallback: check manual-ocr/ directory (where scanned PDFs are stored)
     if not pdf_path.exists():
-        raise FileNotFoundError(f"PDF not found: {pdf_path}")
+        alt_path = MANUAL_OCR_DIR / f"{ref}.pdf"
+        if alt_path.exists():
+            pdf_path = alt_path
+        else:
+            raise FileNotFoundError(f"PDF not found: checked {RAW_DIR / f'{ref}.pdf'} and {alt_path}")
 
     # Get page count
     result = subprocess.run(
