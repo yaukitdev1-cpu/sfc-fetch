@@ -499,6 +499,25 @@ export class DiscoverySchedulerService implements OnModuleInit, OnModuleDestroy 
       return false;
     }
 
+    // FAILED docs with permanent/non-recoverable errors should not be re-queued.
+    // These are documents that will never succeed no matter how many times we retry.
+    if (status === 'FAILED') {
+      const error = doc.workflow?.error || '';
+      const permanentErrors = [
+        /no english content/i,
+        /placeholder html/i,
+        /english version.*not available/i,
+        /请使用中文版本/,
+        /please use chinese version/i,
+        /suspiciously small markdown/i,  // Content too small to be valid (stub/placeholder)
+      ];
+      const isPermanent = permanentErrors.some(pattern => pattern.test(error));
+      if (isPermanent) {
+        this.logger.debug(`Skipping ${category}/${refNo} - permanent failure: ${error}`);
+        return false;
+      }
+    }
+
     return true; // Failed, stale, or unknown - should queue
   }
 
