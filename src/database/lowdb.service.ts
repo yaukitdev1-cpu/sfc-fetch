@@ -503,26 +503,43 @@ export class LowdbService implements OnModuleInit, OnModuleDestroy {
 
     // Upsert: find existing entry by _id and update it, otherwise push new entry
     const existingIndex = this.db.data.queue.findIndex((j: any) => j._id === jobId);
+    let stored: any;
     if (existingIndex >= 0) {
-      this.db.data.queue[existingIndex] = { ...this.db.data.queue[existingIndex], ...job };
+      stored = { ...this.db.data.queue[existingIndex], ...job };
+      this.db.data.queue[existingIndex] = stored;
     } else {
-      this.db.data.queue.push(job);
+      stored = job;
+      this.db.data.queue.push(stored);
     }
 
-    this.idIndex.set(jobId, job);
+    // CRITICAL: idIndex MUST point to the SAME object reference as db.data.queue
+    // so that updateQueueJobStatus() mutations are visible to safeWrite().
+    this.idIndex.set(jobId, stored);
     await this.safeWrite();
-    return job;
+    return stored;
   }
 
   async updateQueueJobStatus(jobId: string, status: string, error?: any): Promise<any | null> {
-    const job = this.idIndex.get(jobId) || this.db.data.queue.find((j: any) => j._id === jobId);
-    if (!job) return null;
-    job.status = status;
-    job.updatedAt = new Date().toISOString();
-    if (error) job.error = error;
-    this.idIndex.set(jobId, job);
+    // Update in BOTH idIndex AND db.data.queue to stay in sync
+    const now = new Date().toISOString();
+    let job = this.idIndex.get(jobId);
+    if (job) {
+      job.status = status;
+      job.updatedAt = now;
+      if (error) job.error = error;
+    }
+    // Also find and update the array entry (in case references diverged)
+    const arrayJob = this.db.data.queue.find((j: any) => j._id === jobId);
+    if (arrayJob) {
+      arrayJob.status = status;
+      arrayJob.updatedAt = now;
+      if (error) arrayJob.error = error;
+      // Re-sync idIndex to the same reference
+      this.idIndex.set(jobId, arrayJob);
+    }
+    if (!job && !arrayJob) return null;
     await this.safeWrite();
-    return job;
+    return job || arrayJob;
   }
 
   /**

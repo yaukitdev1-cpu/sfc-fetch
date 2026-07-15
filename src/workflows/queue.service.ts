@@ -160,6 +160,15 @@ export class QueueService implements OnModuleInit, OnModuleDestroy {
       const stats = this.getStats();
       this.logger.log(`[Queue] Heartbeat: running=${stats.running}, pending=${stats.pendingPersisted}, length=${stats.length}`);
     }, 30000);
+
+    // Periodic stale in_progress cleanup: runs every 10 minutes.
+    // Detects queue entries stuck in in_progress for >15 minutes and resolves them
+    // based on document state — prevents orphans from accumulating between restarts.
+    setInterval(() => {
+      this.cleanupStuckInProgressJobs().catch(err =>
+        this.logger.error('[Queue] Periodic stuck cleanup failed:', err),
+      );
+    }, 10 * 60 * 1000);
   }
 
   /**
@@ -370,6 +379,55 @@ export class QueueService implements OnModuleInit, OnModuleDestroy {
       }
     } catch (error) {
       this.logger.error('[Recovery] Error cleaning up stale queue jobs:', error);
+    }
+  }
+
+  /**
+   * Periodic cleanup for in_progress queue entries stuck for >15 minutes.
+   * Resolves them based on document state — prevents orphans accumulating
+   * between restarts when the startup-only cleanup can't reach them.
+   */
+  private async cleanupStuckInProgressJobs(): Promise<void> {
+    try {
+      const allJobs = this.lowdbService.getAllQueueJobs();
+      const stuckThreshold = 15 * 60 * 1000; // 15 minutes
+      const now = Date.now();
+
+      const stuck = allJobs.filter((j: any) => {
+        if (j.status !== 'in_progress') return false;
+        const updatedAt = new Date(j.updatedAt).getTime();
+        return (now - updatedAt) > stuckThreshold;
+      });
+
+      if (stuck.length === 0) return;
+
+      this.logger.log(`[Queue] Found ${stuck.length} in_progress entries stuck for >15min`);
+      const resolvedIds: string[] = [];
+
+      for (const j of stuck) {
+        const doc = this.lowdbService.getDocument(j.refNo, j.category);
+        const docStatus = doc?.workflow?.status;
+
+        if (!doc || docStatus === 'COMPLETED' || docStatus === 'FAILED') {
+          // Document is done or gone — the queue job is orphaned
+          resolvedIds.push(j._id);
+          this.logger.log(`[Queue] Resolving orphaned ${j.action}/${j.refNo} → completed (doc=${docStatus || 'missing'})`);
+        } else if (j.action === 'discover' && docStatus !== 'DISCOVERED') {
+          resolvedIds.push(j._id);
+          this.logger.log(`[Queue] Resolving stale discover/${j.refNo} → completed (doc=${docStatus})`);
+        } else if (j.action === 'convert' && doc.content?.markdownPath) {
+          resolvedIds.push(j._id);
+          this.logger.log(`[Queue] Resolving stale convert/${j.refNo} → completed (has markdown)`);
+        }
+      }
+
+      if (resolvedIds.length > 0) {
+        this.lowdbService.bulkUpdateQueueJobStatuses(resolvedIds, 'completed');
+        await this.lowdbService.flush();
+        this.logger.log(`[Queue] Resolved ${resolvedIds.length} stuck in_progress entries`);
+      }
+    } catch (error) {
+      this.logger.error('[Queue] Error in periodic stuck cleanup:', error);
     }
   }
 
