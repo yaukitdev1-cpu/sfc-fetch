@@ -136,6 +136,12 @@ def md_full_path(md_path: str) -> str:
 
 # ── Scans ──────────────────────────────────────────────────────────────────────
 
+def is_excluded(doc: dict) -> bool:
+    """True when doc was intentionally excluded (e.g. EN placeholder HTML, BUG-11)."""
+    md = doc.get("metadata") or {}
+    return bool(md.get("excluded") is True)
+
+
 def scan_broken_markdown(db: dict, category_filter: Optional[str] = None) -> list:
     """Check 1: COMPLETED docs with tiny or zero markdown content."""
     findings = []
@@ -148,6 +154,10 @@ def scan_broken_markdown(db: dict, category_filter: Optional[str] = None) -> lis
         for doc in db[cat]:
             wf = doc.get("workflow", {})
             if wf.get("status") != "COMPLETED":
+                continue
+
+            # Intentional empty (placeholder EN HTML etc.) — not broken content
+            if is_excluded(doc):
                 continue
 
             md_size = doc.get("content", {}).get("markdownSize", 0)
@@ -386,6 +396,10 @@ def scan_workflow_anomalies(db: dict, category_filter: Optional[str] = None) -> 
             if status == "COMPLETED":
                 if not wf.get("completedAt"):
                     no_timestamp.append(ref)
+
+                # Excluded stubs intentionally have markdownSize=0
+                if is_excluded(doc):
+                    continue
 
                 md_size = doc.get("content", {}).get("markdownSize", 0)
                 # Skip known legitimately short docs from zero-markdown check
