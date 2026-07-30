@@ -593,7 +593,8 @@ export class QueueService implements OnModuleInit, OnModuleDestroy {
         }
 
         // Check for placeholder HTML (e.g., "English version not available")
-        // These are legitimately empty — mark as FAILED with clear error instead of COMPLETED
+        // Legitimately empty source — COMPLETED + excluded (NOT FAILED).
+        // FAILED without markdownPath is re-queued by discovery every cycle (BUG-11).
         const placeholderPatterns = [
           /english version.*not available/i,
           /中文版本.*不可用/,
@@ -603,7 +604,11 @@ export class QueueService implements OnModuleInit, OnModuleDestroy {
         const isPlaceholder = placeholderPatterns.some(pattern => pattern.test(htmlContent));
 
         if (isPlaceholder) {
-          this.logger.warn(`[Queue] News ${refNo} has placeholder HTML (no English content), marking as FAILED`);
+          this.logger.warn(
+            `[Queue] News ${refNo} has placeholder HTML (no English content), marking COMPLETED+excluded`,
+          );
+          const { error: _dropError, failedAt: _dropFailedAt, ...wfRest } =
+            updatedDoc.workflow || {};
           await this.lowdbService.upsertDocument(refNo, category, {
             ...updatedDoc,
             source: {
@@ -611,15 +616,20 @@ export class QueueService implements OnModuleInit, OnModuleDestroy {
               rawFilePath: this.getRawFilePath(category, refNo, 'html'),
             },
             workflow: {
-              ...updatedDoc.workflow,
-              status: 'FAILED',
+              ...wfRest,
+              status: 'COMPLETED',
               currentStep: 'convert',
-              error: 'No English content available (placeholder HTML detected)',
-              failedAt: new Date().toISOString(),
+              completedAt: new Date().toISOString(),
+            },
+            metadata: {
+              ...updatedDoc.metadata,
+              excluded: true,
+              exclusionReason: 'No English content (placeholder HTML)',
             },
             content: {
               ...updatedDoc.content,
               markdownSize: 0,
+              note: 'Permanently excluded: No English content available (placeholder HTML detected)',
             },
           });
           return job;
