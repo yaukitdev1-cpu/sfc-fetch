@@ -155,11 +155,11 @@ export class QueueService implements OnModuleInit, OnModuleDestroy {
 
     this.logger.log('[Queue] Initialized');
 
-    // Worker heartbeat: log every 30s so we can tell if the worker is alive
+    // Worker heartbeat: every 5 min (30s flooded app.log; stuck-cleanup is 10 min)
     setInterval(() => {
       const stats = this.getStats();
       this.logger.log(`[Queue] Heartbeat: running=${stats.running}, pending=${stats.pendingPersisted}, length=${stats.length}`);
-    }, 30000);
+    }, 5 * 60 * 1000);
 
     // Periodic stale in_progress cleanup: runs every 10 minutes.
     // Detects queue entries stuck in in_progress for >15 minutes and resolves them

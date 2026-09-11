@@ -53,3 +53,7 @@ data/
 # Keep db directory structure marker (use: git add -f data/db/.gitkeep to track if needed)
 # !data/db/.gitkeep.openrouter_key
 .openrouter_key
+
+# Local leftovers — not corpus
+queue.db
+manual-ocr/92CP2.md
